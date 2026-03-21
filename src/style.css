@@ -1,0 +1,97 @@
+:root{
+    --light-gray1 : #ECEFF1;
+    --light-gray2 : white;
+}
+.fs-14{
+    font-size: 14px !important;
+}
+
+
+body{
+    background-color: white !important;
+}
+
+/* Add to your CSS */
+::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: #aaa;
+    border-radius: 10px;
+  }
+  
+.addpackageinput{
+    background-color: var(--light-gray1) !important;
+    outline: none;
+    border: none;
+    box-shadow:0px 0px 2px 2px var(--light-gray2);
+    font-size: 14px;
+}
+.addpackageinput:focus{
+    background-color: var(--light-gray2) !important;
+    outline: none;
+    border: none;
+    box-shadow:0px 0px 2px 2px var(--light-gray1);
+    font-size: 14px;
+} 
+
+.tag-box{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    border: 2px solid var(--light-gray1);
+    border-radius: 8px;
+    padding: 12px;
+    align-items: center; 
+}
+.tag-item-box{
+    background-color: var(--light-gray1) !important;
+    gap: 5px;
+    line-height: 1px;
+    height: fit-content;
+    padding: 5px;
+}
+.input-tag-clear{
+    width: 15px;
+    height: 15px;
+    padding: 0;
+    font-size: 15px;
+    cursor: pointer;
+    font-weight: 700;
+}
+.tag-input, .tag-input:focus{
+    border: 0;
+    outline: none;  
+    flex-grow: 1; 
+    min-width: 200px;
+
+}
+.project-status-btn-box{
+    border: 1px solid #ccc;
+    border-radius: 50px;
+    display: inline-block;
+    width: 70px;
+    height: 20px;
+    background-color: white;
+    margin: 0;
+    overflow: hidden;
+    text-align: start;
+}
+.project-status-btn{
+    background-color: aqua;
+    display: inline-block;
+    width: 40px;
+    height: 100%;
+    border-radius: 50px;
+}
+
+
+
+
+
+
+
+
+
+
+
