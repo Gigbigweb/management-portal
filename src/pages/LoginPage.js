@@ -70,7 +70,7 @@ export default function LoginPage() {
         <Container maxWidth="sm">
           <StyledContent>
             <Typography variant="h4" gutterBottom>
-              Sign in to Teamlans
+              Sign in to Gig-big Mangemnet
             </Typography>
             
             <LoginForm />
