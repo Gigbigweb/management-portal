@@ -657,186 +657,387 @@
 
 
 
-import React, { useState, useEffect } from "react";
-import { Helmet } from "react-helmet-async";
-import { Container } from "@mui/material";
-import { useSelector, useDispatch } from "react-redux";
-import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { Url } from "../url/url";
-import { categorydata } from "../redux/slice/category";
+// import React, { useState, useEffect } from "react";
+// import { Helmet } from "react-helmet-async";
+// import { Container } from "@mui/material";
+// import { useSelector, useDispatch } from "react-redux";
+// import axios from "axios";
+// import { ToastContainer, toast } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
+// import { Url } from "../url/url";
+// import { categorydata } from "../redux/slice/category";
 
-const CategoryPage = () => {
-  const dispatch = useDispatch();
-  const categoryAllData = useSelector((store) => store.category.data);
+// const CategoryPage = () => {
+//   const dispatch = useDispatch();
+//   const categoryAllData = useSelector((store) => store.category.data);
 
-  const [category, setCategory] = useState("");
-  const [image, setImage] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [deleteLoading, setDeleteLoading] = useState(null);
+//   const [category, setCategory] = useState("");
+//   const [image, setImage] = useState(null);
+//   const [loading, setLoading] = useState(false);
+//   const [deleteLoading, setDeleteLoading] = useState(null);
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 4;
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const itemsPerPage = 4;
 
-  useEffect(() => {
-    dispatch(categorydata());
-  }, [dispatch]);
+//   useEffect(() => {
+//     dispatch(categorydata());
+//   }, [dispatch]);
 
-  const formHandle = (e) => {
-    setCategory(e.target.value);
-  };
+//   const formHandle = (e) => {
+//     setCategory(e.target.value);
+//   };
 
-  const addCategory = async (e) => {
-    e.preventDefault();
-    if (!category || !image) return toast.error("Please fill all fields!");
+//   const addCategory = async (e) => {
+//     e.preventDefault();
+//     if (!category || !image) return toast.error("Please fill all fields!");
 
-    setLoading(true);
+//     setLoading(true);
 
-    try {
-      const formData = new FormData();
-      formData.append("category", category);
-      formData.append("image", image);
+//     try {
+//       const formData = new FormData();
+//       formData.append("category", category);
+//       formData.append("image", image);
 
-      await axios.post(`${Url}/category/add`, formData);
+//       await axios.post(`${Url}/category/add`, formData);
 
-      toast.success("✅ Category Added Successfully!");
+//       toast.success("✅ Category Added Successfully!");
 
-      setCategory("");
-      setImage(null);
-      document.getElementById("fileInput").value = null;
+//       setCategory("");
+//       setImage(null);
+//       document.getElementById("fileInput").value = null;
 
+//       dispatch(categorydata());
+//     } catch (error) {
+//       toast.error("❌ Something went wrong!");
+//     }
+
+//     setLoading(false);
+//   };
+
+//   const deleteCategory = async (id) => {
+//     const confirmDelete = window.confirm("Are you sure to delete?");
+//     if (!confirmDelete) return;
+
+//     setDeleteLoading(id);
+
+//     try {
+//       await axios.delete(`${Url}/category/delete/${id}`);
+//       toast.success("✅ Category Deleted!");
+//       dispatch(categorydata());
+//     } catch (error) {
+//       toast.error("❌ Something went wrong!");
+//     }
+
+//     setDeleteLoading(null);
+//   };
+
+//   const indexOfLast = currentPage * itemsPerPage;
+//   const indexOfFirst = indexOfLast - itemsPerPage;
+//   const currentCategories = categoryAllData.slice(indexOfFirst, indexOfLast);
+//   const totalPages = Math.ceil(categoryAllData.length / itemsPerPage);
+
+//   return (
+//     <>
+//       <ToastContainer />
+//       <Helmet><title>Dashboard: Category</title></Helmet>
+
+//       <Container>
+//         <h3 className="fw-bold text-dark mb-3">📁 Manage Categories</h3>
+
+//         <div className="card p-4 shadow-sm mb-4 rounded-4">
+//           <h5 className="fw-bold text-primary mb-3">➕ Add Category</h5>
+//           <form onSubmit={addCategory}>
+//             <div className="row g-2">
+//               <div className="col-md-5">
+//                 <input
+//                   type="text"
+//                   value={category}
+//                   onChange={formHandle}
+//                   className="form-control"
+//                   placeholder="Category Name"
+//                 />
+//               </div>
+
+//               <div className="col-md-5">
+//                 <input
+//                   type="file"
+//                   id="fileInput"
+//                   className="form-control"
+//                   onChange={(e) => setImage(e.target.files[0])}
+//                   accept="image/*"
+//                 />
+//               </div>
+
+//               <div className="col-md-2 d-grid">
+//                 <button type="submit" className="btn btn-primary" disabled={loading}>
+//                   {loading ? (
+//                     <span className="spinner-border spinner-border-sm"></span>
+//                   ) : (
+//                     "Add"
+//                   )}
+//                 </button>
+//               </div>
+//             </div>
+//           </form>
+//         </div>
+
+//         <div className="card shadow-sm p-3 rounded-4">
+//           <table className="table align-middle text-center table-hover">
+//             <thead className="table-dark">
+//               <tr>
+//                 <th>S No</th>
+//                 <th>Category</th>
+//                 <th>Image</th>
+//                 <th>Action</th>
+//               </tr>
+//             </thead>
+
+//             <tbody>
+//               {currentCategories.map((cv, i) => (
+//                 <tr key={cv._id}>
+//                   <td>{indexOfFirst + i + 1}</td>
+//                   <td className="text-capitalize fw-semibold">{cv.category}</td>
+//                   <td>
+//                     {cv.image && (
+//                       <img src={cv.image} alt="img" width="50" className="rounded" />
+//                     )}
+//                   </td>
+//                   <td>
+//                     <button
+//                       className="btn btn-outline-danger btn-sm"
+//                       onClick={() => deleteCategory(cv._id)}
+//                       disabled={deleteLoading === cv._id}
+//                     >
+//                       {deleteLoading === cv._id ? (
+//                         <span className="spinner-border spinner-border-sm"></span>
+//                       ) : (
+//                         "Delete"
+//                       )}
+//                     </button>
+//                   </td>
+//                 </tr>
+//               ))}
+//             </tbody>
+//           </table>
+
+//           {/* Pagination */}
+//           <ul className="pagination justify-content-center mt-3">
+//             {[...Array(totalPages)].map((_, idx) => (
+//               <li
+//                 key={idx}
+//                 className={`page-item ${currentPage === idx + 1 ? "active" : ""}`}
+//                 onClick={() => setCurrentPage(idx + 1)}
+//                 style={{ cursor: "pointer" }}
+//               >
+//                 <span className="page-link">{idx + 1}</span>
+//               </li>
+//             ))}
+//           </ul>
+//         </div>
+//       </Container>
+//     </>
+//   );
+// };
+
+// export default CategoryPage;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  import React, { useState, useEffect } from "react";
+  import { Helmet } from "react-helmet-async";
+  import { Container } from "@mui/material";
+  import { useSelector, useDispatch } from "react-redux";
+  import axios from "axios";
+  import { ToastContainer, toast } from "react-toastify";
+  import "react-toastify/dist/ReactToastify.css";
+  import { Url } from "../url/url";
+  import { categorydata } from "../redux/slice/category";
+import { permissions } from "src/utils/SessionfileData";
+
+  const CategoryPage = () => {
+    const dispatch = useDispatch();
+    const categoryAllData = useSelector((store) => store.category.data);
+
+    const [category, setCategory] = useState("");
+    const [image, setImage] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [deleteLoading, setDeleteLoading] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 4;
+
+    // ── Permissions ─────────────────────────────────────────────
+    // const permissions = JSON.parse(sessionStorage.getItem('management_permissions') || '{}')
+    const perm      = permissions?.category || {}
+    const enabled   = perm?.enable === true
+    const canView   = perm?.view   === true
+    const canAdd    = perm?.add    === true
+    const canEdit   = perm?.edit   === true
+    const canDelete = perm?.delete === true
+  console.log("perm",perm)
+    useEffect(() => {
       dispatch(categorydata());
-    } catch (error) {
-      toast.error("❌ Something went wrong!");
+    }, [dispatch]);
+
+    const addCategory = async (e) => {
+      e.preventDefault();
+      if (!category || !image) return toast.error("Please fill all fields!");
+      setLoading(true);
+      try {
+        const formData = new FormData();
+        formData.append("category", category);
+        formData.append("image", image);
+        await axios.post(`${Url}/category/add`, formData);
+        toast.success("✅ Category Added Successfully!");
+        setCategory("");
+        setImage(null);
+        document.getElementById("fileInput").value = null;
+        dispatch(categorydata());
+      } catch (error) {
+        toast.error("❌ Something went wrong!");
+      }
+      setLoading(false);
+    };
+
+    const deleteCategory = async (id) => {
+      const confirmDelete = window.confirm("Are you sure to delete?");
+      if (!confirmDelete) return;
+      setDeleteLoading(id);
+      try {
+        await axios.delete(`${Url}/category/delete/${id}`);
+        toast.success("✅ Category Deleted!");
+        dispatch(categorydata());
+      } catch (error) {
+        toast.error("❌ Something went wrong!");
+      }
+      setDeleteLoading(null);
+    };
+
+    const indexOfLast       = currentPage * itemsPerPage;
+    const indexOfFirst      = indexOfLast - itemsPerPage;
+    const currentCategories = categoryAllData.slice(indexOfFirst, indexOfLast);
+    const totalPages        = Math.ceil(categoryAllData.length / itemsPerPage);
+
+    // ── Access Denied ────────────────────────────────────────────
+    if (!enabled) {
+      return (
+        <Container>
+          <div style={{ textAlign: 'center', padding: '80px 0', color: '#94a3b8' }}>
+            <div style={{ fontSize: 50 }}>🔒</div>
+            <h4 style={{ marginTop: 16, color: '#1e293b' }}>Access Denied</h4>
+            <p>Aapke paas is page ka access nahi hai.</p>
+          </div>
+        </Container>
+      )
     }
 
-    setLoading(false);
-  };
+    return (
+      <>
+        <ToastContainer />
+        <Helmet><title>Dashboard: Category</title></Helmet>
 
-  const deleteCategory = async (id) => {
-    const confirmDelete = window.confirm("Are you sure to delete?");
-    if (!confirmDelete) return;
+        <Container>
+          <h3 className="fw-bold text-dark mb-3">📁 Manage Categories</h3>
 
-    setDeleteLoading(id);
-
-    try {
-      await axios.delete(`${Url}/category/delete/${id}`);
-      toast.success("✅ Category Deleted!");
-      dispatch(categorydata());
-    } catch (error) {
-      toast.error("❌ Something went wrong!");
-    }
-
-    setDeleteLoading(null);
-  };
-
-  const indexOfLast = currentPage * itemsPerPage;
-  const indexOfFirst = indexOfLast - itemsPerPage;
-  const currentCategories = categoryAllData.slice(indexOfFirst, indexOfLast);
-  const totalPages = Math.ceil(categoryAllData.length / itemsPerPage);
-
-  return (
-    <>
-      <ToastContainer />
-      <Helmet><title>Dashboard: Category</title></Helmet>
-
-      <Container>
-        <h3 className="fw-bold text-dark mb-3">📁 Manage Categories</h3>
-
-        <div className="card p-4 shadow-sm mb-4 rounded-4">
-          <h5 className="fw-bold text-primary mb-3">➕ Add Category</h5>
-          <form onSubmit={addCategory}>
-            <div className="row g-2">
-              <div className="col-md-5">
-                <input
-                  type="text"
-                  value={category}
-                  onChange={formHandle}
-                  className="form-control"
-                  placeholder="Category Name"
-                />
-              </div>
-
-              <div className="col-md-5">
-                <input
-                  type="file"
-                  id="fileInput"
-                  className="form-control"
-                  onChange={(e) => setImage(e.target.files[0])}
-                  accept="image/*"
-                />
-              </div>
-
-              <div className="col-md-2 d-grid">
-                <button type="submit" className="btn btn-primary" disabled={loading}>
-                  {loading ? (
-                    <span className="spinner-border spinner-border-sm"></span>
-                  ) : (
-                    "Add"
-                  )}
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
-
-        <div className="card shadow-sm p-3 rounded-4">
-          <table className="table align-middle text-center table-hover">
-            <thead className="table-dark">
-              <tr>
-                <th>S No</th>
-                <th>Category</th>
-                <th>Image</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {currentCategories.map((cv, i) => (
-                <tr key={cv._id}>
-                  <td>{indexOfFirst + i + 1}</td>
-                  <td className="text-capitalize fw-semibold">{cv.category}</td>
-                  <td>
-                    {cv.image && (
-                      <img src={cv.image} alt="img" width="50" className="rounded" />
-                    )}
-                  </td>
-                  <td>
-                    <button
-                      className="btn btn-outline-danger btn-sm"
-                      onClick={() => deleteCategory(cv._id)}
-                      disabled={deleteLoading === cv._id}
-                    >
-                      {deleteLoading === cv._id ? (
-                        <span className="spinner-border spinner-border-sm"></span>
-                      ) : (
-                        "Delete"
-                      )}
+          {/* Add Form — canAdd */}
+          {canAdd && (
+            <div className="card p-4 shadow-sm mb-4 rounded-4">
+              <h5 className="fw-bold text-primary mb-3">➕ Add Category</h5>
+              <form onSubmit={addCategory}>
+                <div className="row g-2">
+                  <div className="col-md-5">
+                    <input type="text" value={category} onChange={(e) => setCategory(e.target.value)}
+                      className="form-control" placeholder="Category Name" />
+                  </div>
+                  <div className="col-md-5">
+                    <input type="file" id="fileInput" className="form-control"
+                      onChange={(e) => setImage(e.target.files[0])} accept="image/*" />
+                  </div>
+                  <div className="col-md-2 d-grid">
+                    <button type="submit" className="btn btn-primary" disabled={loading}>
+                      {loading ? <span className="spinner-border spinner-border-sm"></span> : "Add"}
                     </button>
-                  </td>
+                  </div>
+                </div>
+              </form>
+            </div>
+          )}
+
+          {/* Table */}
+          <div className="card shadow-sm p-3 rounded-4">
+            <table className="table align-middle text-center table-hover">
+              <thead className="table-dark">
+                <tr>
+                  <th>S No</th>
+                  <th>Category</th>
+                  <th>Image</th>
+                  {/* Action column sirf canDelete ya canEdit pe */}
+                  {(canDelete || canEdit) && <th>Action</th>}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {currentCategories.length === 0 ? (
+                  <tr>
+                    <td colSpan={canDelete || canEdit ? 4 : 3} className="text-muted py-4">
+                      No categories found.
+                    </td>
+                  </tr>
+                ) : currentCategories.map((cv, i) => (
+                  <tr key={cv._id}>
+                    <td>{indexOfFirst + i + 1}</td>
+                    <td className="text-capitalize fw-semibold">{cv.category}</td>
+                    <td>
+                      {cv.image && <img src={cv.image} alt="img" width="50" className="rounded" />}
+                    </td>
+                    {/* Action — canDelete / canEdit */}
+                    {(canDelete || canEdit) && (
+                      <td>
+                        <div className="d-flex justify-content-center gap-2">
+                          {canDelete && (
+                            <button className="btn btn-outline-danger btn-sm"
+                              onClick={() => deleteCategory(cv._id)}
+                              disabled={deleteLoading === cv._id}>
+                              {deleteLoading === cv._id
+                                ? <span className="spinner-border spinner-border-sm"></span>
+                                : 'Delete'}
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
 
-          {/* Pagination */}
-          <ul className="pagination justify-content-center mt-3">
-            {[...Array(totalPages)].map((_, idx) => (
-              <li
-                key={idx}
-                className={`page-item ${currentPage === idx + 1 ? "active" : ""}`}
-                onClick={() => setCurrentPage(idx + 1)}
-                style={{ cursor: "pointer" }}
-              >
-                <span className="page-link">{idx + 1}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </Container>
-    </>
-  );
-};
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <ul className="pagination justify-content-center mt-3">
+                {[...Array(totalPages)].map((_, idx) => (
+                  <li key={idx}
+                    className={`page-item ${currentPage === idx + 1 ? "active" : ""}`}
+                    onClick={() => setCurrentPage(idx + 1)}
+                    style={{ cursor: "pointer" }}>
+                    <span className="page-link">{idx + 1}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </Container>
+      </>
+    );
+  };
 
-export default CategoryPage;
+  export default CategoryPage;
+

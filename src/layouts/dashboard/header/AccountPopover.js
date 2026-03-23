@@ -173,15 +173,16 @@ export default function AccountPopover() {
   const navigate = useNavigate();
 
   // ✅ management staff data localStorage se
-  const staff = JSON.parse(localStorage.getItem('management_staff') || '{}');
+  const staff = JSON.parse(sessionStorage.getItem('management_staff') || '{}');
 
   const handleOpen = (event) => setOpen(event.currentTarget);
   const handleClose = () => setOpen(null);
 
   const logOutFunc = () => {
     // ✅ sirf management tokens clear karo
-    localStorage.removeItem('management_token');
-    localStorage.removeItem('management_staff');
+    sessionStorage.removeItem('management_token');
+    sessionStorage.removeItem('management_staff');
+    sessionStorage.removeItem('management_permissions');
     handleClose();
     navigate('/login', { replace: true });
   };

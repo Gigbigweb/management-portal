@@ -1,11 +1,12 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import { permissions } from 'src/utils/SessionfileData'
 
 const DashBoard = () => {
   const navigate = useNavigate()
 
-  const staff = JSON.parse(localStorage.getItem('management_staff') || '{}')
-  const permissions = JSON.parse(localStorage.getItem('management_permissions') || '{}')
+  const staff = JSON.parse(sessionStorage.getItem('management_staff') || '{}')
+  // const permissions = JSON.parse(localStorage.getItem('management_permissions') || '{}')
   const slug = staff?.slug || 'Management'
 
   const getGreeting = () => {

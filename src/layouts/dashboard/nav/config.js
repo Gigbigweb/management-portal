@@ -402,6 +402,160 @@
 
 
 
+// import DashboardIcon from '@mui/icons-material/Dashboard';
+// import BadgeIcon from '@mui/icons-material/Badge';
+// import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
+// import HandymanIcon from '@mui/icons-material/Handyman';
+// import ChatIcon from '@mui/icons-material/Chat';
+// import Inventory2Icon from '@mui/icons-material/Inventory2';
+// import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+// import CategoryIcon from '@mui/icons-material/Category';
+// import AccountTreeIcon from '@mui/icons-material/AccountTree';
+// import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+// import StarRateIcon from '@mui/icons-material/StarRate';
+// import ArticleIcon from '@mui/icons-material/Article';
+// import AssignmentIcon from '@mui/icons-material/Assignment';
+// import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+// import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
+// import TaskAltIcon from '@mui/icons-material/TaskAlt';
+// import MoneyOffIcon from '@mui/icons-material/MoneyOff';
+// import GroupsIcon from '@mui/icons-material/Groups';
+// import DesignServicesIcon from '@mui/icons-material/DesignServices';
+// import BuildIcon from '@mui/icons-material/Build';
+// import PaletteIcon from '@mui/icons-material/Palette';
+// import HeadsetMicIcon from '@mui/icons-material/HeadsetMic';
+
+// // ✅ Function banao — slug parameter lega
+// const getNavConfig = (slug) => [
+//   // {
+//   //   title: 'dashboard',
+//   //   path: `/${slug}/app`,
+//   //   icon: <DashboardIcon />,
+//   //   permKey: 'dashboard',
+//   // },
+//   {
+//     title: 'DashBoard',
+//     path: `/${slug}/DashBoard`,
+//     icon: <DashboardIcon />,
+//     permKey: 'dashboard',
+//   },
+//   {
+//     title: 'Order Detail',
+//     icon: <AssignmentIcon />,
+//     hasDropdown: true,
+//     permKey: 'orderDetail',
+//     children: [
+//       { title: 'New Projects',      path: `/${slug}/new-project`,      icon: <AddCircleOutlineIcon sx={{ width: 18, height: 18 }} />,  permChildKey: 'newProjects' },
+//       { title: 'Running Projects',  path: `/${slug}/running-project`,  icon: <PlayCircleOutlineIcon sx={{ width: 18, height: 18 }} />, permChildKey: 'runningProjects' },
+//       { title: 'Complete Projects', path: `/${slug}/complete-project`, icon: <TaskAltIcon sx={{ width: 18, height: 18 }} />,           permChildKey: 'completeProjects' },
+//       { title: 'Refund Project',    path: `/${slug}/refund-project`,   icon: <MoneyOffIcon sx={{ width: 18, height: 18 }} />,          permChildKey: 'refundProject' },
+//     ],
+//   },
+//   {
+//     title: 'Team',
+//     icon: <GroupsIcon />,
+//     hasDropdown: true,
+//     permKey: 'team',
+//     children: [
+//       { title: 'staff',       path: `/${slug}/staff`,       icon: <BadgeIcon />,    permChildKey: 'staff' },
+//       { title: 'freelancers', path: `/${slug}/Freelancers`, icon: <HandymanIcon />, permChildKey: 'freelancers' },
+//     ],
+//   },
+//   {
+//     title: 'Services',
+//     icon: <DesignServicesIcon />,
+//     hasDropdown: true,
+//     permKey: 'services',
+//     children: [
+//       { title: 'category',       path: `/${slug}/category`,      icon: <CategoryIcon />,    permChildKey: 'category' },
+//       { title: 'subcategory',    path: `/${slug}/subCategory`,   icon: <AccountTreeIcon />, permChildKey: 'subcategory' },
+//       { title: 'package',        path: `/${slug}/package`,       icon: <Inventory2Icon />,  permChildKey: 'package' },
+//       { title: 'Project',        path: `/${slug}/service`,       icon: <BuildIcon />,       permChildKey: 'project' },
+//       { title: 'combo services', path: `/${slug}/ComboServices`, icon: <BuildIcon />,       permChildKey: 'comboServices' },
+//     ],
+//   },
+//   {
+//     title: 'client',
+//     path: `/${slug}/client`,
+//     icon: <PeopleAltIcon />,
+//     permKey: 'client',
+//   },
+//   {
+//     title: 'Chat',
+//     path: `/${slug}/projectchat`,
+//     icon: <ChatIcon />,
+//     permKey: 'chat',
+//   },
+//   {
+//     title: 'Coupon',
+//     path: `/${slug}/coupon`,
+//     icon: <LocalOfferIcon />,
+//     permKey: 'coupon',
+//   },
+//   {
+//     title: 'icons format',
+//     icon: <DesignServicesIcon />,
+//     hasDropdown: true,
+//     permKey: 'iconsFormat',
+//     children: [
+//       { title: 'icons-format',      path: `/${slug}/iconsformat`,        icon: <PaletteIcon />,     permChildKey: 'iconsFormat' },
+//       { title: 'bulk-email-images', path: `/${slug}/EmailBuilderImages`, icon: <AccountTreeIcon />, permChildKey: 'bulkEmailImages' },
+//     ],
+//   },
+//   {
+//     title: 'staff role',
+//     path: `/${slug}/role`,
+//     icon: <AdminPanelSettingsIcon />,
+//     permKey: 'staffRole',
+//   },
+//   {
+//     title: 'rating',
+//     path: `/${slug}/rating`,
+//     icon: <StarRateIcon />,
+//     permKey: 'rating',
+//   },
+//   {
+//     title: 'blog',
+//     path: `/${slug}/blog`,
+//     icon: <ArticleIcon />,
+//     permKey: 'blog',
+//   },
+//   {
+//     title: 'HelpSupport',
+//     path: `/${slug}/Help-Support`,
+//     icon: <HeadsetMicIcon />,
+//     permKey: 'helpSupport',
+//   },
+//   {
+//     title: 'Bulk-Mailing',
+//     path: `/${slug}/BulkMailing`,
+//     icon: <HeadsetMicIcon />,
+//     permKey: 'bulkMailing',
+//   },
+//   {
+//     title: 'Management Settings',
+//     icon: <GroupsIcon />,
+//     hasDropdown: true,
+//     permKey: 'managementSettings',
+//     children: [
+//       { title: 'Add staff',   path: `/${slug}/Add-Management`, icon: <BadgeIcon />,    permChildKey: 'addStaff' },
+//       { title: 'Permissions', path: `/${slug}/Permissions`,    icon: <HandymanIcon />, permChildKey: 'permissions' },
+//     ],
+//   },
+// ];
+
+// export default getNavConfig;
+
+
+
+
+
+
+
+
+
+
+
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import BadgeIcon from '@mui/icons-material/Badge';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
@@ -425,55 +579,53 @@ import BuildIcon from '@mui/icons-material/Build';
 import PaletteIcon from '@mui/icons-material/Palette';
 import HeadsetMicIcon from '@mui/icons-material/HeadsetMic';
 
-// ✅ Function banao — slug parameter lega
 const getNavConfig = (slug) => [
-  // {
-  //   title: 'dashboard',
-  //   path: `/${slug}/app`,
-  //   icon: <DashboardIcon />,
-  //   permKey: 'dashboard',
-  // },
   {
     title: 'DashBoard',
     path: `/${slug}/DashBoard`,
     icon: <DashboardIcon />,
     permKey: 'dashboard',
   },
+
+  // ── Order Detail — ab har item apna permKey khud check karega ──
   {
     title: 'Order Detail',
     icon: <AssignmentIcon />,
     hasDropdown: true,
-    permKey: 'orderDetail',
+    permKey: 'orderDetail',   // sirf group heading ke liye
     children: [
-      { title: 'New Projects',      path: `/${slug}/new-project`,      icon: <AddCircleOutlineIcon sx={{ width: 18, height: 18 }} />,  permChildKey: 'newProjects' },
-      { title: 'Running Projects',  path: `/${slug}/running-project`,  icon: <PlayCircleOutlineIcon sx={{ width: 18, height: 18 }} />, permChildKey: 'runningProjects' },
-      { title: 'Complete Projects', path: `/${slug}/complete-project`, icon: <TaskAltIcon sx={{ width: 18, height: 18 }} />,           permChildKey: 'completeProjects' },
-      { title: 'Refund Project',    path: `/${slug}/refund-project`,   icon: <MoneyOffIcon sx={{ width: 18, height: 18 }} />,          permChildKey: 'refundProject' },
+      { title: 'New Projects',      path: `/${slug}/new-project`,      icon: <AddCircleOutlineIcon sx={{ width: 18, height: 18 }} />,  permKey: 'newProjects' },
+      { title: 'Running Projects',  path: `/${slug}/running-project`,  icon: <PlayCircleOutlineIcon sx={{ width: 18, height: 18 }} />, permKey: 'runningProjects' },
+      { title: 'Complete Projects', path: `/${slug}/complete-project`, icon: <TaskAltIcon sx={{ width: 18, height: 18 }} />,           permKey: 'completeProjects' },
+      { title: 'Refund Project',    path: `/${slug}/refund-project`,   icon: <MoneyOffIcon sx={{ width: 18, height: 18 }} />,          permKey: 'refundProject' },
     ],
   },
+
   {
     title: 'Team',
     icon: <GroupsIcon />,
     hasDropdown: true,
     permKey: 'team',
     children: [
-      { title: 'staff',       path: `/${slug}/staff`,       icon: <BadgeIcon />,    permChildKey: 'staff' },
-      { title: 'freelancers', path: `/${slug}/Freelancers`, icon: <HandymanIcon />, permChildKey: 'freelancers' },
+      { title: 'staff',       path: `/${slug}/staff`,       icon: <BadgeIcon />,    permKey: 'team' },
+      { title: 'freelancers', path: `/${slug}/Freelancers`, icon: <HandymanIcon />, permKey: 'team' },
     ],
   },
+
   {
     title: 'Services',
     icon: <DesignServicesIcon />,
     hasDropdown: true,
     permKey: 'services',
     children: [
-      { title: 'category',       path: `/${slug}/category`,      icon: <CategoryIcon />,    permChildKey: 'category' },
-      { title: 'subcategory',    path: `/${slug}/subCategory`,   icon: <AccountTreeIcon />, permChildKey: 'subcategory' },
-      { title: 'package',        path: `/${slug}/package`,       icon: <Inventory2Icon />,  permChildKey: 'package' },
-      { title: 'Project',        path: `/${slug}/service`,       icon: <BuildIcon />,       permChildKey: 'project' },
-      { title: 'combo services', path: `/${slug}/ComboServices`, icon: <BuildIcon />,       permChildKey: 'comboServices' },
+      { title: 'category',       path: `/${slug}/category`,      icon: <CategoryIcon />,    permKey: 'category' },
+      { title: 'subcategory',    path: `/${slug}/subCategory`,   icon: <AccountTreeIcon />, permKey: 'subcategory' },
+      { title: 'package',        path: `/${slug}/package`,       icon: <Inventory2Icon />,  permKey: 'package' },
+      { title: 'Project',        path: `/${slug}/service`,       icon: <BuildIcon />,       permKey: 'project' },
+      { title: 'combo services', path: `/${slug}/ComboServices`, icon: <BuildIcon />,       permKey: 'comboServices' },
     ],
   },
+
   {
     title: 'client',
     path: `/${slug}/client`,
@@ -498,8 +650,8 @@ const getNavConfig = (slug) => [
     hasDropdown: true,
     permKey: 'iconsFormat',
     children: [
-      { title: 'icons-format',      path: `/${slug}/iconsformat`,        icon: <PaletteIcon />,     permChildKey: 'iconsFormat' },
-      { title: 'bulk-email-images', path: `/${slug}/EmailBuilderImages`, icon: <AccountTreeIcon />, permChildKey: 'bulkEmailImages' },
+      { title: 'icons-format',      path: `/${slug}/iconsformat`,        icon: <PaletteIcon />,     permKey: 'iconsFormat' },
+      { title: 'bulk-email-images', path: `/${slug}/EmailBuilderImages`, icon: <AccountTreeIcon />, permKey: 'iconsFormat' },
     ],
   },
   {
@@ -538,8 +690,8 @@ const getNavConfig = (slug) => [
     hasDropdown: true,
     permKey: 'managementSettings',
     children: [
-      { title: 'Add staff',   path: `/${slug}/Add-Management`, icon: <BadgeIcon />,    permChildKey: 'addStaff' },
-      { title: 'Permissions', path: `/${slug}/Permissions`,    icon: <HandymanIcon />, permChildKey: 'permissions' },
+      { title: 'Add staff',   path: `/${slug}/Add-Management`, icon: <BadgeIcon />,    permKey: 'managementSettings' },
+      { title: 'Permissions', path: `/${slug}/Permissions`,    icon: <HandymanIcon />, permKey: 'managementSettings' },
     ],
   },
 ];

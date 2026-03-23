@@ -46,7 +46,7 @@ export default function LoginPage() {
   return (
     <>
       <Helmet>
-        <title> Login | Gig-big  </title>
+        <title> Login | Management  </title>
       </Helmet>
 
       <StyledRoot>

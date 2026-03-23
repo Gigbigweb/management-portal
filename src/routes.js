@@ -210,7 +210,7 @@ import DashBoard from './pages/DashBoard';
 
 export default function Router() {
   // ✅ localStorage se slug lo — default 'Management'
-  const staff = JSON.parse(localStorage.getItem('management_staff') || '{}');
+ const staff = JSON.parse(sessionStorage.getItem('management_staff') || '{}');
   const slug = staff?.slug || 'Management';
 
   const routes = useRoutes([
@@ -273,7 +273,8 @@ export default function Router() {
     {
       element: <SimpleLayout />,
       children: [
-        { element: <Navigate to={`/${slug}/app`} />, index: true },
+        // { element: <Navigate to={`/${slug}/app`} />, index: true },
+        { element: <Navigate to={`/${slug}/DashBoard`} />, index: true },
         { path: '404', element: <Page404 /> },
         { path: '*', element: <Navigate to="/404" /> },
       ],

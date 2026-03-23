@@ -478,8 +478,8 @@ export default function Nav({ openNav, onCloseNav }) {
   const isDesktop = useResponsive('up', 'lg');
 
   // ✅ localStorage se staff + permissions + slug
-  const staff = JSON.parse(localStorage.getItem('management_staff') || '{}');
-  const permissions = JSON.parse(localStorage.getItem('management_permissions') || '{}');
+  const staff = JSON.parse(sessionStorage.getItem('management_staff') || '{}');
+  const permissions = JSON.parse(sessionStorage.getItem('management_permissions') || '{}');
   const slug = staff?.slug || 'Management';  // ✅ slug
 
   // ✅ Avatar initials
@@ -490,26 +490,143 @@ export default function Nav({ openNav, onCloseNav }) {
   const navConfig = getNavConfig(slug);
 
   // ✅ Permissions ke hisaab se filter karo
-  const filteredNav = navConfig
-    .filter(item => {
-      if (!item.permKey) return true
-      const perm = permissions[item.permKey]
-      if (!perm) return false
-      if (typeof perm === 'object' && !('view' in perm)) {
-        return Object.values(perm).some(v => v === true)
+  // const filteredNav = navConfig
+  //   .filter(item => {
+  //     if (!item.permKey) return true
+  //     const perm = permissions[item.permKey]
+  //     if (!perm) return false
+  //     if (typeof perm === 'object' && !('view' in perm)) {
+  //       return Object.values(perm).some(v => v === true)
+  //     }
+  //     return perm?.view === true
+  //   })
+  //   .map(item => {
+  //     if (!item.children || !item.permKey) return item
+  //     const perm = permissions[item.permKey]
+  //     if (!perm || typeof perm !== 'object') return item
+  //     const filteredChildren = item.children.filter(child => {
+  //       if (!child.permChildKey) return true
+  //       return perm[child.permChildKey] === true
+  //     })
+  //     return { ...item, children: filteredChildren }
+  //   })
+
+
+
+
+
+// const filteredNav = navConfig
+//   .filter(item => {
+//     if (!item.permKey) return true
+//     if (item.permKey === 'orderDetail') {
+//       return item.children?.some(child =>
+//         permissions[child.permKey]?.enable === true
+//       )
+//     }
+//     return permissions[item.permKey]?.enable === true
+//   })
+//   .map(item => {
+//     if (!item.children) return item
+//     if (item.permKey === 'orderDetail') {
+//       return {
+//         ...item,
+//         children: item.children.filter(child =>
+//           permissions[child.permKey]?.enable === true
+//         )
+//       }
+//     }
+//     return item
+//   })
+//   .filter(item => {
+//     if (item.hasDropdown && item.children?.length === 0) return false
+//     return true
+//   })
+
+
+
+const filteredNav = navConfig
+  .filter(item => {
+    if (!item.permKey) return true
+
+    // orderDetail group
+    if (item.permKey === 'orderDetail') {
+      return item.children?.some(child =>
+        permissions[child.permKey]?.enable === true
+      )
+    }
+
+    // ✅ Services group — children ke permKey check karo
+    if (item.permKey === 'services') {
+      return item.children?.some(child =>
+        permissions[child.permKey]?.enable === true
+      )
+    }
+
+    // ✅ Team group — children ke permKey check karo
+    if (item.permKey === 'team') {
+      return item.children?.some(child =>
+        permissions[child.permKey]?.enable === true
+      )
+    }
+
+    // ✅ iconsFormat group — children ke permKey check karo
+    if (item.permKey === 'iconsFormat') {
+      return permissions[item.permKey]?.enable === true
+    }
+
+    // ✅ managementSettings group
+    if (item.permKey === 'managementSettings') {
+      return permissions[item.permKey]?.enable === true
+    }
+
+    return permissions[item.permKey]?.enable === true
+  })
+  .map(item => {
+    if (!item.children) return item
+
+    // orderDetail children filter
+    if (item.permKey === 'orderDetail') {
+      return {
+        ...item,
+        children: item.children.filter(child =>
+          permissions[child.permKey]?.enable === true
+        )
       }
-      return perm?.view === true
-    })
-    .map(item => {
-      if (!item.children || !item.permKey) return item
-      const perm = permissions[item.permKey]
-      if (!perm || typeof perm !== 'object') return item
-      const filteredChildren = item.children.filter(child => {
-        if (!child.permChildKey) return true
-        return perm[child.permChildKey] === true
-      })
-      return { ...item, children: filteredChildren }
-    })
+    }
+
+    // ✅ Services children filter — har child ka apna permKey check karo
+    if (item.permKey === 'services') {
+      return {
+        ...item,
+        children: item.children.filter(child =>
+          permissions[child.permKey]?.enable === true
+        )
+      }
+    }
+
+    // ✅ Team children filter
+    if (item.permKey === 'team') {
+      return {
+        ...item,
+        children: item.children.filter(child =>
+          permissions[child.permKey]?.enable === true
+        )
+      }
+    }
+
+    return item
+  })
+  .filter(item => {
+    if (item.hasDropdown && item.children?.length === 0) return false
+    return true
+  })
+
+
+
+
+
+
+  
 
   useEffect(() => {
     if (openNav) onCloseNav();

@@ -2142,172 +2142,721 @@
 
 
 
-import React, { useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
-import { Container, Stack, Typography } from '@mui/material';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { Url } from 'src/url/url';
+// import React, { useEffect, useState } from 'react';
+// import { Helmet } from 'react-helmet-async';
+// import { Container, Stack, Typography } from '@mui/material';
+// import { Link } from 'react-router-dom';
+// import axios from 'axios';
+// import { ToastContainer, toast } from 'react-toastify';
+// import 'react-toastify/dist/ReactToastify.css';
+// import { Url } from 'src/url/url';
+
+// const WithoutTeamProjectPage = () => {
+//   const [projects, setProjects] = useState([]);
+//   const [loading, setLoading] = useState(false);
+//   const [page, setPage] = useState(1);
+//   const [totalPages, setTotalPages] = useState(1);
+//   const [limit, setLimit] = useState(10);
+//   const [search, setSearch] = useState('');
+
+//   // 🔥 Refund Modal States
+//   const [showRefundModal, setShowRefundModal] = useState(false);
+//   const [selectedRefundProject, setSelectedRefundProject] = useState(null);
+//   const [refundActionLoading, setRefundActionLoading] = useState(false);
+
+//   const fetchProjects = async (currentPage, currentLimit = limit) => {
+//     setLoading(true);
+//     try {
+//       const response = await axios.get(`${Url}/project/pending?page=${currentPage}&limit=${currentLimit}`);
+//       setProjects(response.data.data || []);
+//       setTotalPages(response.data.totalPages);
+//     } catch (err) {
+//       console.error('Error fetching project data:', err);
+//       toast.error("Failed to load projects");
+//     }
+//     setLoading(false);
+//   };
+
+//   const handleSearchChange = async (e) => {
+//     const value = e.target.value;
+//     setSearch(value);
+    
+//     try {
+//       setLoading(true);
+//       const response = await axios.get(`${Url}/project/searchNewProject?page=1&limit=${limit}&search=${value}`);
+//       setProjects(response.data.data || []);
+//       setTotalPages(response.data.totalPages || 1);
+//       setPage(1);
+//     } catch (err) {
+//       console.error('Error searching projects:', err);
+//       toast.error("Search failed");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     fetchProjects(page, limit);
+//   }, [page, limit]);
+
+//   useEffect(() => {
+//     if (search.trim() === '') {
+//       fetchProjects(1, limit);
+//       setPage(1);
+//     }
+//   }, [search]);
+
+//   const handlePrevPage = () => {
+//     if (page > 1) setPage(prev => prev - 1);
+//   };
+
+//   const handleNextPage = () => {
+//     if (page < totalPages) setPage(prev => prev + 1);
+//   };
+
+//   // 🔥 Open Refund Modal
+//   const handleOpenRefundModal = (project) => {
+//     setSelectedRefundProject(project);
+//     setShowRefundModal(true);
+//   };
+
+//   // 🔥 Close Refund Modal
+//   const handleCloseRefundModal = () => {
+//     setShowRefundModal(false);
+//     setSelectedRefundProject(null);
+//   };
+
+//   // 🔥 Handle Refund Action (Approve/Reject)
+//   const handleRefundAction = async (action) => {
+//     if (!selectedRefundProject) return;
+
+//     setRefundActionLoading(true);
+//     try {
+//       const adminId = 1; // 🔥 Replace with actual admin ID from auth/session
+      
+//       const response = await axios.post(`${Url}/project/refund-review`, {
+//         projectId: selectedRefundProject._id,
+//         action: action, // "approved" or "rejected"
+//         adminId: adminId,
+//         note: action === 'approved' ? 'Refund approved by admin' : 'Refund rejected by admin'
+//       });
+
+//       if (response.data.success) {
+//         toast.success(response.data.message || `Refund ${action} successfully!`);
+//         handleCloseRefundModal();
+//         fetchProjects(page, limit); // Refresh the list
+//       } else {
+//         toast.error(response.data.message || `Failed to ${action} refund`);
+//       }
+//     } catch (error) {
+//       console.error('Refund action error:', error);
+//       toast.error('An error occurred while processing the refund');
+//     } finally {
+//       setRefundActionLoading(false);
+//     }
+//   };
+
+//   // Helper function to get payment status badge
+//   const getPaymentStatusBadge = (payment) => {
+//     if (!payment) {
+//       return <span className="badge bg-secondary">No Payment</span>;
+//     }
+
+//     const status = payment.status?.toLowerCase();
+    
+//     switch(status) {
+//       case 'completed':
+//         return (
+//           <span className="badge bg-success d-flex align-items-center gap-1" style={{ fontSize: '0.85rem' }}>
+//             <i className="bi bi-check-circle-fill"></i>
+//             Completed
+//           </span>
+//         );
+//       case 'pending':
+//         return (
+//           <span className="badge bg-warning text-dark d-flex align-items-center gap-1" style={{ fontSize: '0.85rem' }}>
+//             <i className="bi bi-clock-fill"></i>
+//             Pending
+//           </span>
+//         );
+//       case 'failed':
+//         return (
+//           <span className="badge bg-danger d-flex align-items-center gap-1" style={{ fontSize: '0.85rem' }}>
+//             <i className="bi bi-x-circle-fill"></i>
+//             Failed
+//           </span>
+//         );
+//       case 'refunded':
+//         return (
+//           <span className="badge bg-info text-dark d-flex align-items-center gap-1" style={{ fontSize: '0.85rem' }}>
+//             <i className="bi bi-arrow-counterclockwise"></i>
+//             Refunded
+//           </span>
+//         );
+//       default:
+//         return (
+//           <span className="badge bg-secondary" style={{ fontSize: '0.85rem' }}>
+//             {status || 'Unknown'}
+//           </span>
+//         );
+//     }
+//   };
+
+//   return (
+//     <>
+//       <ToastContainer />
+//       <Helmet>
+//         <title>Project Without Team</title>
+//       </Helmet>
+
+//       <Container>
+//         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={3}>
+//           <Typography variant="h4" gutterBottom>💼 New Project</Typography>
+//         </Stack>
+//       </Container>
+
+//       <Container>
+//         <div className='d-flex align-items-center justify-content-between flex-wrap bg-lightgray rounded-top p-3'>
+//           <form>
+//             <input
+//               type='text'
+//               placeholder="🔍 Search ..."
+//               className='form-control'
+//               value={search}
+//               onChange={handleSearchChange}
+//             />
+//           </form>
+
+//           <div className="d-flex align-items-center gap-2">
+//             <label className='mb-0'>Show</label>
+//             <select
+//               className="form-select"
+//               style={{ width: 'auto' }}
+//               value={limit}
+//               onChange={(e) => {
+//                 setPage(1); 
+//                 setLimit(Number(e.target.value));
+//               }}
+//             >
+//               <option value={1}>1</option>
+//               <option value={5}>5</option>
+//               <option value={10}>10</option>
+//               <option value={25}>25</option>
+//               <option value={50}>50</option>
+//             </select>
+//             <label className='mb-0'>entries</label>
+//           </div>
+//         </div>
+//       </Container>
+
+//       <Container>
+//         <section className='table-responsive bg-white'>
+//           <div className="card rounded-4 newproject-card" style={{overflow:'auto'}}>
+//             <div className="card-body p-4">
+//               <table className="table table-hover table-bordered text-center align-middle newproject-table">
+//                 <thead className="table-primary text-dark">
+//                   <tr>
+//                     <th>S. No.</th>
+//                     <th>Package / Service</th>
+//                     <th>Project ID</th>
+//                     <th>Price ($)</th>
+//                     <th>Payment Status</th>
+//                     <th>Invoice Number</th>
+//                     <th>Invoice</th>
+//                     <th>Invoice Date</th>
+//                     <th>Client ID</th>
+//                     <th>Client Name</th>
+//                     <th>Refund Request</th>
+//                     <th>Action</th>
+//                     {/* <th>Action</th> */}
+//                   </tr>
+//                 </thead>
+//                 <tbody>
+//                   {loading ? (
+//                     <tr>
+//                       <td colSpan="13" className="text-center py-4">
+//                         <div className="spinner-border text-primary" role="status">
+//                           <span className="visually-hidden">Loading...</span>
+//                         </div>
+//                       </td>
+//                     </tr>
+//                   ) : (
+//                     <>
+//                       {projects.length > 0 ? projects.map((cv, i) => (
+//                         <tr key={i} className="newproject-row">
+//                           <td className="fw-semibold">{(page - 1) * limit + i + 1}</td>
+
+//                           <td>
+//                             <span className="badge bg-white text-dark px-3 py-2 rounded-pill shadow-sm text-capitalize">
+//                               {cv.projectType === 'package' ? 'Custom Package' : cv.projectType}
+//                             </span>
+//                           </td>
+
+//                           <td>
+//                             <span className="badge bg-dark text-white rounded-pill px-3 py-2 shadow-sm">
+//                               {cv._id?.toString().slice(-5)}
+//                             </span>
+//                           </td>
+
+//                           <td>
+//                             <span className="fw-bold text-success">${cv.totalPrice}</span>
+//                           </td>
+
+//                           {/* 💰 Payment Status Column */}
+//                           <td>
+//                             <div className="d-flex flex-column align-items-center gap-1">
+//                               {getPaymentStatusBadge(cv.payment)}
+//                               {cv.payment && cv.payment.provider && (
+//                                 <small className="text-muted text-capitalize">
+//                                   via {cv.payment.provider}
+//                                 </small>
+//                               )}
+//                               {cv.payment && cv.payment.refund?.isRefunded && (
+//                                 <span className="badge bg-warning text-dark" style={{ fontSize: '0.7rem' }}>
+//                                   <i className="bi bi-exclamation-triangle-fill"></i> Refunded
+//                                 </span>
+//                               )}
+//                               {cv.payment && cv.payment.dispute?.isDisputed && (
+//                                 <span className="badge bg-danger" style={{ fontSize: '0.7rem' }}>
+//                                   <i className="bi bi-exclamation-circle-fill"></i> Disputed
+//                                 </span>
+//                               )}
+//                             </div>
+//                           </td>
+
+//                           {/* 🔢 Invoice Number Column */}
+//                           <td>
+//                             {cv.payment?.invoiceNumber ? (
+//                               <div className="d-flex flex-column align-items-center">
+//                                 <span className="text-dark px-2 py-1" style={{ fontSize: '0.75rem', fontFamily: 'monospace' }}>
+//                                   <i className="bi bi-file-earmark-text"></i> {cv.payment.invoiceNumber}
+//                                 </span>
+//                                 {cv.payment.invoiceSent && (
+//                                   <small className="text-success mt-1">
+//                                     <i className="bi bi-check-circle-fill"></i> Sent
+//                                   </small>
+//                                 )}
+//                               </div>
+//                             ) : (
+//                               <span className="text-muted">—</span>
+//                             )}
+//                           </td>
+
+//                           {/* 📄 Invoice View Button Column */}
+//                           <td>
+//                             {cv.payment?.invoicePdfKey ? (
+//                               <a 
+//                                 href={`https://s3.ap-south-1.amazonaws.com/bucket.gigbig/${cv.payment.invoicePdfKey}`}
+//                                 target="_blank"
+//                                 rel="noopener noreferrer"
+//                                 className="btn btn-primary btn-sm shadow-sm"
+//                               >
+//                                 <i className="bi bi-file-earmark-pdf me-1"></i> View 
+//                               </a>
+//                             ) : (
+//                               <span className="text-muted">—</span>
+//                             )}
+//                           </td>
+
+//                           {/* 📅 Invoice Date Column */}
+//                           <td>
+//                             {cv.payment?.invoiceDate ? (
+//                               <span className="text-dark" style={{ fontSize: '0.85rem' }}>
+//                                 <i className="bi bi-calendar-check"></i> {cv.payment.invoiceDate}
+//                               </span>
+//                             ) : (
+//                               <span className="text-muted">—</span>
+//                             )}
+//                           </td>
+
+//                           <td>{cv.clientId}</td>
+
+//                           <td className="fw-medium text-capitalize">{cv.clientName}</td>
+
+//                           {/* 🔥 Refund Request Column */}
+//                           <td>
+//                             {cv.refundRequest?.requested ? (
+//                               <div className="d-flex flex-column gap-1 align-items-center">
+//                                 {cv.refundRequest.status === 'pending' && (
+//                                   <button
+//                                     className="btn btn-warning btn-sm shadow-sm"
+//                                     onClick={() => handleOpenRefundModal(cv)}
+//                                   >
+//                                     <i className="bi bi-exclamation-circle me-1"></i>
+//                                     View Request
+//                                   </button>
+//                                 )}
+//                                 {cv.refundRequest.status === 'processing' && (
+//                                   <span className="badge bg-info text-white">
+//                                     <i className="bi bi-hourglass-split me-1"></i>
+//                                     Processing
+//                                   </span>
+//                                 )}
+//                                 {cv.refundRequest.status === 'approved' && (
+//                                   <span className="badge bg-success">
+//                                     <i className="bi bi-check-circle-fill me-1"></i>
+//                                     Approved
+//                                   </span>
+//                                 )}
+//                                 {cv.refundRequest.status === 'rejected' && (
+//                                   <span className="badge bg-danger">
+//                                     <i className="bi bi-x-circle-fill me-1"></i>
+//                                     Rejected
+//                                   </span>
+//                                 )}
+//                               </div>
+//                             ) : (
+//                               <span className="text-muted">—</span>
+//                             )}
+//                           </td>
+
+//                           <td>
+//                             {cv.team ? (
+//                               <span className="badge btn btn-outline-primary rounded-pill px-3 py-2 text-dark shadow-sm">
+//                                 <i className="bi bi-check-circle-fill me-1"></i> Created
+//                               </span>
+//                             ) : (
+//                               <Link to={`/dashboard/make-team/${cv._id}`}>
+//                                 <button className="btn btn-outline-secondary btn-sm rounded-pill shadow-sm">
+//                                   <i className="fa-solid fa-user-plus me-1"></i> Add
+//                                 </button>
+//                               </Link>
+//                             )}
+
+
+//                                            <Link to={`/dashboard/project/${cv._id}`}>
+//                               <button className="btn btn-outline-warning btn-sm rounded-pill shadow-sm mt-3">
+//                                 <i className="fa-solid fa-eye"></i>
+//                               </button>
+//                             </Link>
+//                           </td>
+
+//                           {/* <td>
+             
+//                           </td> */}
+//                         </tr>
+//                       )) : (
+//                         <tr>
+//                           <td colSpan="13" className="text-muted py-4">No projects found.</td>
+//                         </tr>
+//                       )}
+//                     </>
+//                   )}
+//                 </tbody>
+//               </table>
+//             </div>
+//           </div>
+
+//           {/* Pagination */}
+//           {totalPages > 1 && (
+//             <div className="d-flex justify-content-between align-items-center mt-3">
+//               <button
+//                 className="btn btn-outline-primary"
+//                 onClick={handlePrevPage}
+//                 disabled={page === 1}
+//               >
+//                 Previous
+//               </button>
+//               <span>Page {page} of {totalPages}</span>
+//               <button
+//                 className="btn btn-outline-primary"
+//                 onClick={handleNextPage}
+//                 disabled={page === totalPages}
+//               >
+//                 Next
+//               </button>
+//             </div>
+//           )}
+//         </section>
+//       </Container>
+
+//       {/* 🔥 Refund Request Modal */}
+//       {showRefundModal && selectedRefundProject && (
+//         <div
+//           className="modal fade show d-block"
+//           style={{ backgroundColor: 'rgba(0,0,0,0.6)', zIndex: '9999' }}
+//           tabIndex="-1"
+//         >
+//           <div className="modal-dialog modal-dialog-centered modal-lg">
+//             <div className="modal-content">
+//               {/* Header */}
+//               <div className="modal-header bg-warning text-dark">
+//                 <h5 className="modal-title">
+//                   <i className="bi bi-exclamation-triangle-fill me-2"></i>
+//                   Refund Request Details
+//                 </h5>
+//                 <button
+//                   type="button"
+//                   className="btn-close"
+//                   onClick={handleCloseRefundModal}
+//                 />
+//               </div>
+
+//               {/* Body */}
+//               <div className="modal-body">
+//                 <div className="row mb-3">
+//                   <div className="col-md-6">
+//                     <strong>Project ID:</strong>
+//                     <p className="mb-0">{selectedRefundProject._id}</p>
+//                   </div>
+//                   <div className="col-md-6">
+//                     <strong>Client Name:</strong>
+//                     <p className="mb-0 text-capitalize">{selectedRefundProject.clientName}</p>
+//                   </div>
+//                 </div>
+
+//                 <div className="row mb-3">
+//                   <div className="col-md-6">
+//                     <strong>Project Type:</strong>
+//                     <p className="mb-0 text-capitalize">{selectedRefundProject.projectType}</p>
+//                   </div>
+//                   <div className="col-md-6">
+//                     <strong>Total Price:</strong>
+//                     <p className="mb-0 text-success fw-bold">${selectedRefundProject.totalPrice}</p>
+//                   </div>
+//                 </div>
+
+//                 <div className="mb-3">
+//                   <strong>Requested At:</strong>
+//                   <p className="mb-0">
+//                     {new Date(selectedRefundProject.refundRequest.requestedAt).toLocaleString()}
+//                   </p>
+//                 </div>
+
+//                 <div className="mb-3">
+//                   <strong>Status:</strong>
+//                   <p className="mb-0">
+//                     <span className={`badge ${
+//                       selectedRefundProject.refundRequest.status === 'pending' ? 'bg-warning text-dark' :
+//                       selectedRefundProject.refundRequest.status === 'processing' ? 'bg-info text-white' :
+//                       selectedRefundProject.refundRequest.status === 'approved' ? 'bg-success' :
+//                       'bg-danger'
+//                     }`}>
+//                       {selectedRefundProject.refundRequest.status.toUpperCase()}
+//                     </span>
+//                   </p>
+//                 </div>
+
+//                 <div className="mb-3">
+//                   <strong>Reason for Refund:</strong>
+//                   <div className="alert alert-light mt-2">
+//                     <i className="bi bi-chat-left-quote me-2"></i>
+//                     {selectedRefundProject.refundRequest.reason}
+//                   </div>
+//                 </div>
+
+//                 {/* Payment Details */}
+//                 {selectedRefundProject.payment && (
+//                   <div className="border-top pt-3 mt-3">
+//                     <h6 className="mb-3">Payment Information</h6>
+//                     <div className="row">
+//                       <div className="col-md-6 mb-2">
+//                         <strong>Payment Status:</strong>
+//                         <p className="mb-0 text-capitalize">{selectedRefundProject.payment.status}</p>
+//                       </div>
+//                       <div className="col-md-6 mb-2">
+//                         <strong>Payment Provider:</strong>
+//                         <p className="mb-0 text-capitalize">{selectedRefundProject.payment.provider || 'N/A'}</p>
+//                       </div>
+//                       {selectedRefundProject.payment.invoiceNumber && (
+//                         <div className="col-md-6 mb-2">
+//                           <strong>Invoice Number:</strong>
+//                           <p className="mb-0">{selectedRefundProject.payment.invoiceNumber}</p>
+//                         </div>
+//                       )}
+//                     </div>
+//                   </div>
+//                 )}
+//               </div>
+
+//               {/* Footer */}
+//               <div className="modal-footer">
+//                 <button
+//                   type="button"
+//                   className="btn btn-secondary"
+//                   onClick={handleCloseRefundModal}
+//                   disabled={refundActionLoading}
+//                 >
+//                   Close
+//                 </button>
+
+//                 {selectedRefundProject.refundRequest.status === 'pending' && (
+//                   <>
+//                     <button
+//                       type="button"
+//                       className="btn btn-danger d-flex align-items-center gap-2"
+//                       onClick={() => handleRefundAction('rejected')}
+//                       disabled={refundActionLoading}
+//                     >
+//                       <i className="bi bi-x-circle"></i>
+//                       <span>Reject</span>
+//                       {refundActionLoading && (
+//                         <div className="spinner-border spinner-border-sm" role="status">
+//                           <span className="visually-hidden">Loading...</span>
+//                         </div>
+//                       )}
+//                     </button>
+
+//                     <button
+//                       type="button"
+//                       className="btn btn-success d-flex align-items-center gap-2"
+//                       onClick={() => handleRefundAction('approved')}
+//                       disabled={refundActionLoading}
+//                     >
+//                       <i className="bi bi-check-circle"></i>
+//                       <span>Approve Refund</span>
+//                       {refundActionLoading && (
+//                         <div className="spinner-border spinner-border-sm" role="status">
+//                           <span className="visually-hidden">Loading...</span>
+//                         </div>
+//                       )}
+//                     </button>
+//                   </>
+//                 )}
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+//     </>
+//   );
+// };
+
+// export default WithoutTeamProjectPage;
+
+
+
+
+
+
+
+
+
+import axios from 'axios'
+import React, { useEffect, useState } from 'react'
+import { Helmet } from 'react-helmet-async'
+import { Container, Stack, Typography } from '@mui/material'
+import { Link } from 'react-router-dom'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import { Url } from 'src/url/url'
+import { permissions } from 'src/utils/SessionfileData'
 
 const WithoutTeamProjectPage = () => {
-  const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [limit, setLimit] = useState(10);
-  const [search, setSearch] = useState('');
+  const [projects, setProjects]   = useState([])
+  const [loading, setLoading]     = useState(false)
+  const [page, setPage]           = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [limit, setLimit]         = useState(10)
+  const [search, setSearch]       = useState('')
 
-  // 🔥 Refund Modal States
-  const [showRefundModal, setShowRefundModal] = useState(false);
-  const [selectedRefundProject, setSelectedRefundProject] = useState(null);
-  const [refundActionLoading, setRefundActionLoading] = useState(false);
+  const [showRefundModal, setShowRefundModal]             = useState(false)
+  const [selectedRefundProject, setSelectedRefundProject] = useState(null)
+  const [refundActionLoading, setRefundActionLoading]     = useState(false)
 
+  // ── Permissions ───────────────────────────────────────────────
+  // const permissions = JSON.parse(sessionStorage.getItem('management_permissions') || '{}')
+  const perm      = permissions?.newProjects || {}
+  const enabled   = perm?.enable === true  // ← sirf yeh page dikhane ke liye
+  const canView   = perm?.view   === true
+  const canAdd    = perm?.add    === true
+  const canEdit   = perm?.edit   === true
+  const canDelete = perm?.delete === true
+const staff = JSON.parse(sessionStorage.getItem('management_staff') || '{}');
+const slug = staff?.slug || 'Management';
   const fetchProjects = async (currentPage, currentLimit = limit) => {
-    setLoading(true);
+    setLoading(true)
     try {
-      const response = await axios.get(`${Url}/project/pending?page=${currentPage}&limit=${currentLimit}`);
-      setProjects(response.data.data || []);
-      setTotalPages(response.data.totalPages);
+      const response = await axios.get(`${Url}/project/pending?page=${currentPage}&limit=${currentLimit}`)
+      setProjects(response.data.data || [])
+      setTotalPages(response.data.totalPages)
     } catch (err) {
-      console.error('Error fetching project data:', err);
-      toast.error("Failed to load projects");
+      toast.error('Failed to load projects')
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   const handleSearchChange = async (e) => {
-    const value = e.target.value;
-    setSearch(value);
-    
+    const value = e.target.value
+    setSearch(value)
     try {
-      setLoading(true);
-      const response = await axios.get(`${Url}/project/searchNewProject?page=1&limit=${limit}&search=${value}`);
-      setProjects(response.data.data || []);
-      setTotalPages(response.data.totalPages || 1);
-      setPage(1);
+      setLoading(true)
+      const response = await axios.get(`${Url}/project/searchNewProject?page=1&limit=${limit}&search=${value}`)
+      setProjects(response.data.data || [])
+      setTotalPages(response.data.totalPages || 1)
+      setPage(1)
     } catch (err) {
-      console.error('Error searching projects:', err);
-      toast.error("Search failed");
+      toast.error('Search failed')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
+
+  useEffect(() => { fetchProjects(page, limit) }, [page, limit])
 
   useEffect(() => {
-    fetchProjects(page, limit);
-  }, [page, limit]);
+    if (search.trim() === '') { fetchProjects(1, limit); setPage(1) }
+  }, [search])
 
-  useEffect(() => {
-    if (search.trim() === '') {
-      fetchProjects(1, limit);
-      setPage(1);
-    }
-  }, [search]);
+  const handlePrevPage = () => { if (page > 1) setPage(prev => prev - 1) }
+  const handleNextPage = () => { if (page < totalPages) setPage(prev => prev + 1) }
 
-  const handlePrevPage = () => {
-    if (page > 1) setPage(prev => prev - 1);
-  };
+  const handleOpenRefundModal  = (project) => { setSelectedRefundProject(project); setShowRefundModal(true) }
+  const handleCloseRefundModal = () => { setShowRefundModal(false); setSelectedRefundProject(null) }
 
-  const handleNextPage = () => {
-    if (page < totalPages) setPage(prev => prev + 1);
-  };
-
-  // 🔥 Open Refund Modal
-  const handleOpenRefundModal = (project) => {
-    setSelectedRefundProject(project);
-    setShowRefundModal(true);
-  };
-
-  // 🔥 Close Refund Modal
-  const handleCloseRefundModal = () => {
-    setShowRefundModal(false);
-    setSelectedRefundProject(null);
-  };
-
-  // 🔥 Handle Refund Action (Approve/Reject)
   const handleRefundAction = async (action) => {
-    if (!selectedRefundProject) return;
-
-    setRefundActionLoading(true);
+    if (!selectedRefundProject) return
+    setRefundActionLoading(true)
     try {
-      const adminId = 1; // 🔥 Replace with actual admin ID from auth/session
-      
       const response = await axios.post(`${Url}/project/refund-review`, {
         projectId: selectedRefundProject._id,
-        action: action, // "approved" or "rejected"
-        adminId: adminId,
-        note: action === 'approved' ? 'Refund approved by admin' : 'Refund rejected by admin'
-      });
-
+        action,
+        adminId: 1,
+        note: action === 'approved' ? 'Refund approved by admin' : 'Refund rejected by admin',
+      })
       if (response.data.success) {
-        toast.success(response.data.message || `Refund ${action} successfully!`);
-        handleCloseRefundModal();
-        fetchProjects(page, limit); // Refresh the list
+        toast.success(response.data.message || `Refund ${action} successfully!`)
+        handleCloseRefundModal()
+        fetchProjects(page, limit)
       } else {
-        toast.error(response.data.message || `Failed to ${action} refund`);
+        toast.error(response.data.message || `Failed to ${action} refund`)
       }
     } catch (error) {
-      console.error('Refund action error:', error);
-      toast.error('An error occurred while processing the refund');
+      toast.error('An error occurred while processing the refund')
     } finally {
-      setRefundActionLoading(false);
+      setRefundActionLoading(false)
     }
-  };
+  }
 
-  // Helper function to get payment status badge
   const getPaymentStatusBadge = (payment) => {
-    if (!payment) {
-      return <span className="badge bg-secondary">No Payment</span>;
+    if (!payment) return <span className="badge bg-secondary">No Payment</span>
+    const status = payment.status?.toLowerCase()
+    switch (status) {
+      case 'completed': return <span className="badge bg-success d-flex align-items-center gap-1"><i className="bi bi-check-circle-fill" /> Completed</span>
+      case 'pending':   return <span className="badge bg-warning text-dark d-flex align-items-center gap-1"><i className="bi bi-clock-fill" /> Pending</span>
+      case 'failed':    return <span className="badge bg-danger d-flex align-items-center gap-1"><i className="bi bi-x-circle-fill" /> Failed</span>
+      case 'refunded':  return <span className="badge bg-info text-dark d-flex align-items-center gap-1"><i className="bi bi-arrow-counterclockwise" /> Refunded</span>
+      default:          return <span className="badge bg-secondary">{status || 'Unknown'}</span>
     }
+  }
 
-    const status = payment.status?.toLowerCase();
-    
-    switch(status) {
-      case 'completed':
-        return (
-          <span className="badge bg-success d-flex align-items-center gap-1" style={{ fontSize: '0.85rem' }}>
-            <i className="bi bi-check-circle-fill"></i>
-            Completed
-          </span>
-        );
-      case 'pending':
-        return (
-          <span className="badge bg-warning text-dark d-flex align-items-center gap-1" style={{ fontSize: '0.85rem' }}>
-            <i className="bi bi-clock-fill"></i>
-            Pending
-          </span>
-        );
-      case 'failed':
-        return (
-          <span className="badge bg-danger d-flex align-items-center gap-1" style={{ fontSize: '0.85rem' }}>
-            <i className="bi bi-x-circle-fill"></i>
-            Failed
-          </span>
-        );
-      case 'refunded':
-        return (
-          <span className="badge bg-info text-dark d-flex align-items-center gap-1" style={{ fontSize: '0.85rem' }}>
-            <i className="bi bi-arrow-counterclockwise"></i>
-            Refunded
-          </span>
-        );
-      default:
-        return (
-          <span className="badge bg-secondary" style={{ fontSize: '0.85rem' }}>
-            {status || 'Unknown'}
-          </span>
-        );
-    }
-  };
+  // ── Access Denied — sirf enabled check ───────────────────────
+  if (!enabled) {
+    return (
+      <Container>
+        <div style={{ textAlign: 'center', padding: '80px 0', color: '#94a3b8' }}>
+          <div style={{ fontSize: 50 }}>🔒</div>
+          <h4 style={{ marginTop: 16, color: '#1e293b' }}>Access Denied</h4>
+          <p>Aapke paas is page ka access nahi hai.</p>
+        </div>
+      </Container>
+    )
+  }
 
   return (
     <>
       <ToastContainer />
-      <Helmet>
-        <title>Project Without Team</title>
-      </Helmet>
+      <Helmet><title>Project Without Team</title></Helmet>
 
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={3}>
@@ -2318,26 +2867,13 @@ const WithoutTeamProjectPage = () => {
       <Container>
         <div className='d-flex align-items-center justify-content-between flex-wrap bg-lightgray rounded-top p-3'>
           <form>
-            <input
-              type='text'
-              placeholder="🔍 Search ..."
-              className='form-control'
-              value={search}
-              onChange={handleSearchChange}
-            />
+            <input type='text' placeholder="🔍 Search ..." className='form-control'
+              value={search} onChange={handleSearchChange} />
           </form>
-
           <div className="d-flex align-items-center gap-2">
             <label className='mb-0'>Show</label>
-            <select
-              className="form-select"
-              style={{ width: 'auto' }}
-              value={limit}
-              onChange={(e) => {
-                setPage(1); 
-                setLimit(Number(e.target.value));
-              }}
-            >
+            <select className="form-select" style={{ width: 'auto' }} value={limit}
+              onChange={(e) => { setPage(1); setLimit(Number(e.target.value)) }}>
               <option value={1}>1</option>
               <option value={5}>5</option>
               <option value={10}>10</option>
@@ -2351,7 +2887,7 @@ const WithoutTeamProjectPage = () => {
 
       <Container>
         <section className='table-responsive bg-white'>
-          <div className="card rounded-4 newproject-card" style={{overflow:'auto'}}>
+          <div className="card rounded-4 newproject-card" style={{ overflow: 'auto' }}>
             <div className="card-body p-4">
               <table className="table table-hover table-bordered text-center align-middle newproject-table">
                 <thead className="table-primary text-dark">
@@ -2367,8 +2903,8 @@ const WithoutTeamProjectPage = () => {
                     <th>Client ID</th>
                     <th>Client Name</th>
                     <th>Refund Request</th>
-                    <th>Team</th>
-                    <th>Action</th>
+                    {/* Action column sirf tab dikhao jab koi bhi action ho */}
+                    {(canView || canAdd || canEdit || canDelete) && <th>Action</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -2380,333 +2916,215 @@ const WithoutTeamProjectPage = () => {
                         </div>
                       </td>
                     </tr>
-                  ) : (
-                    <>
-                      {projects.length > 0 ? projects.map((cv, i) => (
-                        <tr key={i} className="newproject-row">
-                          <td className="fw-semibold">{(page - 1) * limit + i + 1}</td>
+                  ) : projects.length > 0 ? projects.map((cv, i) => (
+                    <tr key={i} className="newproject-row">
+                      <td className="fw-semibold">{(page - 1) * limit + i + 1}</td>
 
-                          <td>
-                            <span className="badge bg-white text-dark px-3 py-2 rounded-pill shadow-sm text-capitalize">
-                              {cv.projectType === 'package' ? 'Custom Package' : cv.projectType}
+                      <td>
+                        <span className="badge bg-white text-dark px-3 py-2 rounded-pill shadow-sm text-capitalize">
+                          {cv.projectType === 'package' ? 'Custom Package' : cv.projectType}
+                        </span>
+                      </td>
+
+                      <td>
+                        <span className="badge bg-dark text-white rounded-pill px-3 py-2 shadow-sm">
+                          {cv._id?.toString().slice(-5)}
+                        </span>
+                      </td>
+
+                      <td><span className="fw-bold text-success">${cv.totalPrice}</span></td>
+
+                      <td>
+                        <div className="d-flex flex-column align-items-center gap-1">
+                          {getPaymentStatusBadge(cv.payment)}
+                          {cv.payment?.provider && (
+                            <small className="text-muted text-capitalize">via {cv.payment.provider}</small>
+                          )}
+                          {cv.payment?.refund?.isRefunded && (
+                            <span className="badge bg-warning text-dark" style={{ fontSize: '0.7rem' }}>
+                              <i className="bi bi-exclamation-triangle-fill" /> Refunded
                             </span>
-                          </td>
-
-                          <td>
-                            <span className="badge bg-dark text-white rounded-pill px-3 py-2 shadow-sm">
-                              {cv._id?.toString().slice(-5)}
+                          )}
+                          {cv.payment?.dispute?.isDisputed && (
+                            <span className="badge bg-danger" style={{ fontSize: '0.7rem' }}>
+                              <i className="bi bi-exclamation-circle-fill" /> Disputed
                             </span>
-                          </td>
+                          )}
+                        </div>
+                      </td>
 
-                          <td>
-                            <span className="fw-bold text-success">${cv.totalPrice}</span>
-                          </td>
-
-                          {/* 💰 Payment Status Column */}
-                          <td>
-                            <div className="d-flex flex-column align-items-center gap-1">
-                              {getPaymentStatusBadge(cv.payment)}
-                              {cv.payment && cv.payment.provider && (
-                                <small className="text-muted text-capitalize">
-                                  via {cv.payment.provider}
-                                </small>
-                              )}
-                              {cv.payment && cv.payment.refund?.isRefunded && (
-                                <span className="badge bg-warning text-dark" style={{ fontSize: '0.7rem' }}>
-                                  <i className="bi bi-exclamation-triangle-fill"></i> Refunded
-                                </span>
-                              )}
-                              {cv.payment && cv.payment.dispute?.isDisputed && (
-                                <span className="badge bg-danger" style={{ fontSize: '0.7rem' }}>
-                                  <i className="bi bi-exclamation-circle-fill"></i> Disputed
-                                </span>
-                              )}
-                            </div>
-                          </td>
-
-                          {/* 🔢 Invoice Number Column */}
-                          <td>
-                            {cv.payment?.invoiceNumber ? (
-                              <div className="d-flex flex-column align-items-center">
-                                <span className="text-dark px-2 py-1" style={{ fontSize: '0.75rem', fontFamily: 'monospace' }}>
-                                  <i className="bi bi-file-earmark-text"></i> {cv.payment.invoiceNumber}
-                                </span>
-                                {cv.payment.invoiceSent && (
-                                  <small className="text-success mt-1">
-                                    <i className="bi bi-check-circle-fill"></i> Sent
-                                  </small>
-                                )}
-                              </div>
-                            ) : (
-                              <span className="text-muted">—</span>
+                      <td>
+                        {cv.payment?.invoiceNumber ? (
+                          <div className="d-flex flex-column align-items-center">
+                            <span className="text-dark px-2 py-1" style={{ fontSize: '0.75rem', fontFamily: 'monospace' }}>
+                              <i className="bi bi-file-earmark-text" /> {cv.payment.invoiceNumber}
+                            </span>
+                            {cv.payment.invoiceSent && (
+                              <small className="text-success mt-1"><i className="bi bi-check-circle-fill" /> Sent</small>
                             )}
-                          </td>
+                          </div>
+                        ) : <span className="text-muted">—</span>}
+                      </td>
 
-                          {/* 📄 Invoice View Button Column */}
-                          <td>
-                            {cv.payment?.invoicePdfKey ? (
-                              <a 
-                                href={`https://s3.ap-south-1.amazonaws.com/bucket.gigbig/${cv.payment.invoicePdfKey}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="btn btn-primary btn-sm shadow-sm"
-                              >
-                                <i className="bi bi-file-earmark-pdf me-1"></i> View 
-                              </a>
-                            ) : (
-                              <span className="text-muted">—</span>
+                      <td>
+                        {cv.payment?.invoicePdfKey ? (
+                          <a href={`https://s3.ap-south-1.amazonaws.com/bucket.gigbig/${cv.payment.invoicePdfKey}`}
+                            target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-sm shadow-sm">
+                            <i className="bi bi-file-earmark-pdf me-1" /> View
+                          </a>
+                        ) : <span className="text-muted">—</span>}
+                      </td>
+
+                      <td>
+                        {cv.payment?.invoiceDate ? (
+                          <span className="text-dark" style={{ fontSize: '0.85rem' }}>
+                            <i className="bi bi-calendar-check" /> {cv.payment.invoiceDate}
+                          </span>
+                        ) : <span className="text-muted">—</span>}
+                      </td>
+
+                      <td>{cv.clientId}</td>
+                      <td className="fw-medium text-capitalize">{cv.clientName}</td>
+
+                      {/* Refund Request */}
+                      <td>
+                        {cv.refundRequest?.requested ? (
+                          <div className="d-flex flex-column gap-1 align-items-center">
+                            {cv.refundRequest.status === 'pending' && (
+                              <button className="btn btn-warning btn-sm shadow-sm"
+                                onClick={() => handleOpenRefundModal(cv)}>
+                                <i className="bi bi-exclamation-circle me-1" /> View Request
+                              </button>
                             )}
-                          </td>
-
-                          {/* 📅 Invoice Date Column */}
-                          <td>
-                            {cv.payment?.invoiceDate ? (
-                              <span className="text-dark" style={{ fontSize: '0.85rem' }}>
-                                <i className="bi bi-calendar-check"></i> {cv.payment.invoiceDate}
-                              </span>
-                            ) : (
-                              <span className="text-muted">—</span>
+                            {cv.refundRequest.status === 'processing' && (
+                              <span className="badge bg-info text-white"><i className="bi bi-hourglass-split me-1" /> Processing</span>
                             )}
-                          </td>
+                            {cv.refundRequest.status === 'approved' && (
+                              <span className="badge bg-success"><i className="bi bi-check-circle-fill me-1" /> Approved</span>
+                            )}
+                            {cv.refundRequest.status === 'rejected' && (
+                              <span className="badge bg-danger"><i className="bi bi-x-circle-fill me-1" /> Rejected</span>
+                            )}
+                          </div>
+                        ) : <span className="text-muted">—</span>}
+                      </td>
 
-                          <td>{cv.clientId}</td>
-
-                          <td className="fw-medium text-capitalize">{cv.clientName}</td>
-
-                          {/* 🔥 Refund Request Column */}
-                          <td>
-                            {cv.refundRequest?.requested ? (
-                              <div className="d-flex flex-column gap-1 align-items-center">
-                                {cv.refundRequest.status === 'pending' && (
-                                  <button
-                                    className="btn btn-warning btn-sm shadow-sm"
-                                    onClick={() => handleOpenRefundModal(cv)}
-                                  >
-                                    <i className="bi bi-exclamation-circle me-1"></i>
-                                    View Request
+                      {/* ── Action Column ── */}
+                      {(canView || canAdd || canEdit || canDelete) && (
+                        <td>
+                          <div className="d-flex flex-column align-items-center gap-2">
+                            {canAdd && (
+                              cv.team ? (
+                                <span className="badge btn btn-outline-primary rounded-pill px-3 py-2 text-dark shadow-sm">
+                                  <i className="bi bi-check-circle-fill me-1" /> Created
+                                </span>
+                              ) : (
+                                <Link to={`/${slug}/make-team/${cv._id}`}>
+                                  <button className="btn btn-outline-secondary btn-sm rounded-pill shadow-sm">
+                                    <i className="fa-solid fa-user-plus me-1" /> Add
                                   </button>
-                                )}
-                                {cv.refundRequest.status === 'processing' && (
-                                  <span className="badge bg-info text-white">
-                                    <i className="bi bi-hourglass-split me-1"></i>
-                                    Processing
-                                  </span>
-                                )}
-                                {cv.refundRequest.status === 'approved' && (
-                                  <span className="badge bg-success">
-                                    <i className="bi bi-check-circle-fill me-1"></i>
-                                    Approved
-                                  </span>
-                                )}
-                                {cv.refundRequest.status === 'rejected' && (
-                                  <span className="badge bg-danger">
-                                    <i className="bi bi-x-circle-fill me-1"></i>
-                                    Rejected
-                                  </span>
-                                )}
-                              </div>
-                            ) : (
-                              <span className="text-muted">—</span>
+                                </Link>
+                              )
                             )}
-                          </td>
-
-                          <td>
-                            {cv.team ? (
-                              <span className="badge btn btn-outline-primary rounded-pill px-3 py-2 text-dark shadow-sm">
-                                <i className="bi bi-check-circle-fill me-1"></i> Created
-                              </span>
-                            ) : (
-                              <Link to={`/dashboard/make-team/${cv._id}`}>
-                                <button className="btn btn-outline-secondary btn-sm rounded-pill shadow-sm">
-                                  <i className="fa-solid fa-user-plus me-1"></i> Add
+                            {(canView || canEdit) && (
+                              <Link to={`/${slug}/project/${cv._id}`}>
+                                <button className="btn btn-outline-warning btn-sm rounded-pill shadow-sm">
+                                  <i className="fa-solid fa-eye" />
                                 </button>
                               </Link>
                             )}
-                          </td>
-
-                          <td>
-                            <Link to={`/dashboard/project/${cv._id}`}>
-                              <button className="btn btn-outline-warning btn-sm rounded-pill shadow-sm">
-                                <i className="fa-solid fa-eye"></i>
-                              </button>
-                            </Link>
-                          </td>
-                        </tr>
-                      )) : (
-                        <tr>
-                          <td colSpan="13" className="text-muted py-4">No projects found.</td>
-                        </tr>
+                          </div>
+                        </td>
                       )}
-                    </>
+                    </tr>
+                  )) : (
+                    <tr>
+                      <td colSpan="13" className="text-muted py-4">No projects found.</td>
+                    </tr>
                   )}
                 </tbody>
               </table>
             </div>
           </div>
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <div className="d-flex justify-content-between align-items-center mt-3">
-              <button
-                className="btn btn-outline-primary"
-                onClick={handlePrevPage}
-                disabled={page === 1}
-              >
-                Previous
-              </button>
+              <button className="btn btn-outline-primary" onClick={handlePrevPage} disabled={page === 1}>Previous</button>
               <span>Page {page} of {totalPages}</span>
-              <button
-                className="btn btn-outline-primary"
-                onClick={handleNextPage}
-                disabled={page === totalPages}
-              >
-                Next
-              </button>
+              <button className="btn btn-outline-primary" onClick={handleNextPage} disabled={page === totalPages}>Next</button>
             </div>
           )}
         </section>
       </Container>
 
-      {/* 🔥 Refund Request Modal */}
+      {/* Refund Modal */}
       {showRefundModal && selectedRefundProject && (
-        <div
-          className="modal fade show d-block"
-          style={{ backgroundColor: 'rgba(0,0,0,0.6)', zIndex: '9999' }}
-          tabIndex="-1"
-        >
+        <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.6)', zIndex: '9999' }} tabIndex="-1">
           <div className="modal-dialog modal-dialog-centered modal-lg">
             <div className="modal-content">
-              {/* Header */}
               <div className="modal-header bg-warning text-dark">
                 <h5 className="modal-title">
-                  <i className="bi bi-exclamation-triangle-fill me-2"></i>
-                  Refund Request Details
+                  <i className="bi bi-exclamation-triangle-fill me-2" /> Refund Request Details
                 </h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={handleCloseRefundModal}
-                />
+                <button type="button" className="btn-close" onClick={handleCloseRefundModal} />
               </div>
-
-              {/* Body */}
               <div className="modal-body">
                 <div className="row mb-3">
-                  <div className="col-md-6">
-                    <strong>Project ID:</strong>
-                    <p className="mb-0">{selectedRefundProject._id}</p>
-                  </div>
-                  <div className="col-md-6">
-                    <strong>Client Name:</strong>
-                    <p className="mb-0 text-capitalize">{selectedRefundProject.clientName}</p>
-                  </div>
+                  <div className="col-md-6"><strong>Project ID:</strong><p className="mb-0">{selectedRefundProject._id}</p></div>
+                  <div className="col-md-6"><strong>Client Name:</strong><p className="mb-0 text-capitalize">{selectedRefundProject.clientName}</p></div>
                 </div>
-
                 <div className="row mb-3">
-                  <div className="col-md-6">
-                    <strong>Project Type:</strong>
-                    <p className="mb-0 text-capitalize">{selectedRefundProject.projectType}</p>
-                  </div>
-                  <div className="col-md-6">
-                    <strong>Total Price:</strong>
-                    <p className="mb-0 text-success fw-bold">${selectedRefundProject.totalPrice}</p>
-                  </div>
+                  <div className="col-md-6"><strong>Project Type:</strong><p className="mb-0 text-capitalize">{selectedRefundProject.projectType}</p></div>
+                  <div className="col-md-6"><strong>Total Price:</strong><p className="mb-0 text-success fw-bold">${selectedRefundProject.totalPrice}</p></div>
                 </div>
-
                 <div className="mb-3">
                   <strong>Requested At:</strong>
-                  <p className="mb-0">
-                    {new Date(selectedRefundProject.refundRequest.requestedAt).toLocaleString()}
-                  </p>
+                  <p className="mb-0">{new Date(selectedRefundProject.refundRequest.requestedAt).toLocaleString()}</p>
                 </div>
-
                 <div className="mb-3">
                   <strong>Status:</strong>
                   <p className="mb-0">
                     <span className={`badge ${
                       selectedRefundProject.refundRequest.status === 'pending' ? 'bg-warning text-dark' :
                       selectedRefundProject.refundRequest.status === 'processing' ? 'bg-info text-white' :
-                      selectedRefundProject.refundRequest.status === 'approved' ? 'bg-success' :
-                      'bg-danger'
+                      selectedRefundProject.refundRequest.status === 'approved' ? 'bg-success' : 'bg-danger'
                     }`}>
                       {selectedRefundProject.refundRequest.status.toUpperCase()}
                     </span>
                   </p>
                 </div>
-
                 <div className="mb-3">
                   <strong>Reason for Refund:</strong>
                   <div className="alert alert-light mt-2">
-                    <i className="bi bi-chat-left-quote me-2"></i>
-                    {selectedRefundProject.refundRequest.reason}
+                    <i className="bi bi-chat-left-quote me-2" />{selectedRefundProject.refundRequest.reason}
                   </div>
                 </div>
-
-                {/* Payment Details */}
                 {selectedRefundProject.payment && (
                   <div className="border-top pt-3 mt-3">
                     <h6 className="mb-3">Payment Information</h6>
                     <div className="row">
-                      <div className="col-md-6 mb-2">
-                        <strong>Payment Status:</strong>
-                        <p className="mb-0 text-capitalize">{selectedRefundProject.payment.status}</p>
-                      </div>
-                      <div className="col-md-6 mb-2">
-                        <strong>Payment Provider:</strong>
-                        <p className="mb-0 text-capitalize">{selectedRefundProject.payment.provider || 'N/A'}</p>
-                      </div>
+                      <div className="col-md-6 mb-2"><strong>Payment Status:</strong><p className="mb-0 text-capitalize">{selectedRefundProject.payment.status}</p></div>
+                      <div className="col-md-6 mb-2"><strong>Payment Provider:</strong><p className="mb-0 text-capitalize">{selectedRefundProject.payment.provider || 'N/A'}</p></div>
                       {selectedRefundProject.payment.invoiceNumber && (
-                        <div className="col-md-6 mb-2">
-                          <strong>Invoice Number:</strong>
-                          <p className="mb-0">{selectedRefundProject.payment.invoiceNumber}</p>
-                        </div>
+                        <div className="col-md-6 mb-2"><strong>Invoice Number:</strong><p className="mb-0">{selectedRefundProject.payment.invoiceNumber}</p></div>
                       )}
                     </div>
                   </div>
                 )}
               </div>
-
-              {/* Footer */}
               <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={handleCloseRefundModal}
-                  disabled={refundActionLoading}
-                >
-                  Close
-                </button>
-
-                {selectedRefundProject.refundRequest.status === 'pending' && (
+                <button type="button" className="btn btn-secondary" onClick={handleCloseRefundModal} disabled={refundActionLoading}>Close</button>
+                {selectedRefundProject.refundRequest.status === 'pending' && canEdit && (
                   <>
-                    <button
-                      type="button"
-                      className="btn btn-danger d-flex align-items-center gap-2"
-                      onClick={() => handleRefundAction('rejected')}
-                      disabled={refundActionLoading}
-                    >
-                      <i className="bi bi-x-circle"></i>
-                      <span>Reject</span>
-                      {refundActionLoading && (
-                        <div className="spinner-border spinner-border-sm" role="status">
-                          <span className="visually-hidden">Loading...</span>
-                        </div>
-                      )}
+                    <button type="button" className="btn btn-danger d-flex align-items-center gap-2"
+                      onClick={() => handleRefundAction('rejected')} disabled={refundActionLoading}>
+                      <i className="bi bi-x-circle" /><span>Reject</span>
+                      {refundActionLoading && <div className="spinner-border spinner-border-sm" role="status" />}
                     </button>
-
-                    <button
-                      type="button"
-                      className="btn btn-success d-flex align-items-center gap-2"
-                      onClick={() => handleRefundAction('approved')}
-                      disabled={refundActionLoading}
-                    >
-                      <i className="bi bi-check-circle"></i>
-                      <span>Approve Refund</span>
-                      {refundActionLoading && (
-                        <div className="spinner-border spinner-border-sm" role="status">
-                          <span className="visually-hidden">Loading...</span>
-                        </div>
-                      )}
+                    <button type="button" className="btn btn-success d-flex align-items-center gap-2"
+                      onClick={() => handleRefundAction('approved')} disabled={refundActionLoading}>
+                      <i className="bi bi-check-circle" /><span>Approve Refund</span>
+                      {refundActionLoading && <div className="spinner-border spinner-border-sm" role="status" />}
                     </button>
                   </>
                 )}
@@ -2716,7 +3134,8 @@ const WithoutTeamProjectPage = () => {
         </div>
       )}
     </>
-  );
-};
+  )
+}
 
-export default WithoutTeamProjectPage;
+export default WithoutTeamProjectPage
+

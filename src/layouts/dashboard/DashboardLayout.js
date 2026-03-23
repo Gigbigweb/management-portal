@@ -71,7 +71,7 @@ export default function DashboardLayout() {
   const [open, setOpen] = useState(false);
 
   // ✅ management_token check karo, [] dependency array lagao
-  const auth = localStorage.getItem('management_token');
+  const auth = sessionStorage.getItem('management_token');
   
   useEffect(() => {
     if (!auth) {

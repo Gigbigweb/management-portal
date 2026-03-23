@@ -343,6 +343,399 @@
 
 
 
+// import React, { useEffect, useState } from 'react';
+// import { Helmet } from 'react-helmet-async';
+// import { Container } from '@mui/material';
+// import { Link } from 'react-router-dom';
+// import Swal from 'sweetalert2';
+// import axios from 'axios';
+// import { Url } from '../url/url';
+// import { ToastContainer, toast } from 'react-toastify';
+// import 'react-toastify/dist/ReactToastify.css';
+
+
+// const Package = () => {
+//   const [packages, setPackages] = useState([]);
+//   const [search, setSearch] = useState('');
+//   const [limit, setLimit] = useState(10);
+//   const [page, setPage] = useState(1);
+//   const [totalCount, setTotalCount] = useState(0);
+//   const [deleteLoading, setDeleteLoading] = useState(false);
+//   const [loading, setLoading] = useState(true);
+
+//   const fetchPackages = async () => {
+//     try {
+//       setLoading(true);
+//       const res = await axios.get(`${Url}/package/get-all-package?page=${page}&limit=${limit}&search=${search}`);
+//       setPackages(res.data.packages);
+//       setTotalCount(res.data.totalCount);
+//       setLoading(false);
+//     } catch (err) {
+//       setLoading(false);
+//       toast.error("Failed to fetch packages");
+//     }
+//   };
+
+//   useEffect(() => {
+//     fetchPackages();
+//   }, [search, page, limit]);
+
+//   const handleDelete = async (id) => {
+//     setDeleteLoading(true);
+//     Swal.fire({
+//       title: 'Are you sure?',
+//       text: "This will delete the package permanently!",
+//       icon: 'warning',
+//       showCancelButton: true,
+//       confirmButtonText: 'Yes, delete it!',
+//     }).then(async (result) => {
+//       if (result.isConfirmed) {
+//         try {
+//           await axios.delete(`${Url}/package/delete/${id}`);
+//           toast.success('Package deleted successfully');
+//           fetchPackages();
+//         } catch (err) {
+//           toast.error('Failed to delete package');
+//         }
+//       }
+//       setDeleteLoading(false);
+//     });
+//   };
+
+//   const totalPages = Math.ceil(totalCount / limit);
+
+//   return (
+//     <>
+//       <ToastContainer />
+//       <Helmet><title>Teamlans | Packages</title></Helmet>
+
+//       <Container className="my-4">
+//         <div className="d-flex justify-content-between align-items-center package-header mb-4">
+//           <h2 className="package-title">📦 Package List</h2>
+//           <Link className="btn btn-primary btn-lg rounded-pill" to="/dashboard/add-new-package">
+//             <i className="fa fa-plus me-2"></i> Add New Package
+//           </Link>
+//         </div>
+
+//         <div className="d-flex flex-wrap justify-content-between align-items-center package-filter p-3 rounded shadow-sm mb-4">
+//           <div className="d-flex align-items-center gap-2">
+//             <label className="form-label fw-semibold mb-0">Show</label>
+//             <select
+//               className="form-select"
+//               style={{ width: '80px' }}
+//               value={limit}
+//               onChange={(e) => setLimit(Number(e.target.value))}
+//             >
+//               {[1, 5, 10, 25].map(val => (
+//                 <option key={val} value={val}>{val}</option>
+//               ))}
+//             </select>
+//             <label className="form-label fw-semibold mb-0">entries</label>
+//           </div>
+//           <input
+//             type="text"
+//             className="form-control shadow-sm"
+//             style={{ maxWidth: '300px' }}
+//             placeholder="🔍 Search package"
+//             value={search}
+//             onChange={(e) => setSearch(e.target.value)}
+//           />
+//         </div>
+
+//         <div className="table-responsive package-table shadow-sm rounded">
+//           <table className="table table-hover align-middle text-center">
+//             <thead className="table-dark">
+//               <tr>
+//                 <th>#</th>
+//                 <th>Package Name</th>
+//                 <th>Price ($)</th>
+//                 <th>Discount ($)</th>
+//                 <th>Offer (%)</th>
+//                 <th>Total Services</th>
+//                 <th>Service Days</th>
+//                 <th>Action</th>
+//               </tr>
+//             </thead>
+//             <tbody>
+//               {loading ? (
+//                 <tr><td colSpan="8"><div className="spinner-border text-primary" /></td></tr>
+//               ) : packages.length === 0 ? (
+//                 <tr><td colSpan="8" className="text-muted">No packages found</td></tr>
+//               ) : (
+//                 packages.map((pkg, i) => (
+//                   <tr key={pkg._id}>
+//                     <td>{(page - 1) * limit + i + 1}</td>
+//                     <td>{pkg.packageName}</td>
+//                     <td>${pkg.price}</td>
+//                     <td>${pkg.discountPrice}</td>
+//                     <td>{pkg.offer}%</td>
+//                     <td>{pkg.totalService}</td>
+//                     <td>{pkg.days}</td>
+//                     <td>
+//                       <div className="d-flex justify-content-center gap-2">
+//                         <button className="btn btn-sm btn-danger" onClick={() => handleDelete(pkg._id)}>
+//                           <i className="fa fa-trash" />
+//                         </button>
+//                         <Link to={`/dashboard/update-package/${pkg._id}`} className="btn btn-sm btn-warning">
+//                           <i className="fa fa-pen" />
+//                         </Link>
+//                       </div>
+//                     </td>
+//                   </tr>
+//                 ))
+//               )}
+//             </tbody>
+//           </table>
+//         </div>
+
+//         {/* Pagination */}
+//         <div className="d-flex justify-content-between align-items-center mt-4">
+//           <p className="mb-0 text-muted">
+//             Showing {(page - 1) * limit + 1} of {totalCount} entries
+//           </p>
+//           <div className="btn-group">
+//             <button disabled={page === 1} className="btn btn-outline-secondary" onClick={() => setPage(page - 1)}>
+//               ◀ Prev
+//             </button>
+//             <button disabled={page === totalPages} className="btn btn-outline-secondary" onClick={() => setPage(page + 1)}>
+//               Next ▶
+//             </button>
+//           </div>
+//         </div>
+//       </Container>
+//     </>
+//   );
+// };
+
+// export default Package;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import React, { useEffect, useState } from 'react';
+// import { Helmet } from 'react-helmet-async';
+// import { Container } from '@mui/material';
+// import { Link } from 'react-router-dom';
+// import Swal from 'sweetalert2';
+// import axios from 'axios';
+// import { Url } from '../url/url';
+// import { ToastContainer, toast } from 'react-toastify';
+// import 'react-toastify/dist/ReactToastify.css';
+// import { permissions, staff_session } from 'src/utils/SessionfileData';
+
+// const Package = () => {
+//   const [packages, setPackages] = useState([]);
+//   const [search, setSearch] = useState('');
+//   const [limit, setLimit] = useState(10);
+//   const [page, setPage] = useState(1);
+//   const [totalCount, setTotalCount] = useState(0);
+//   const [deleteLoading, setDeleteLoading] = useState(false);
+//   const [loading, setLoading] = useState(true);
+
+//   // ── Permissions ─────────────────────────────────────────────
+//   // const permissions = JSON.parse(sessionStorage.getItem('management_permissions') || '{}')
+//   const perm      = permissions?.package || {}
+//   const enabled   = perm?.enable === true
+//   const canView   = perm?.view   === true
+//   const canAdd    = perm?.add    === true
+//   const canEdit   = perm?.edit   === true
+//   const canDelete = perm?.delete === true
+
+// const slug = staff_session?.slug || 'Management';
+//   const fetchPackages = async () => {
+//     try {
+//       setLoading(true);
+//       const res = await axios.get(`${Url}/package/get-all-package?page=${page}&limit=${limit}&search=${search}`);
+//       setPackages(res.data.packages);
+//       setTotalCount(res.data.totalCount);
+//     } catch (err) {
+//       toast.error("Failed to fetch packages");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   useEffect(() => { fetchPackages(); }, [search, page, limit]);
+
+//   const handleDelete = async (id) => {
+//     setDeleteLoading(true);
+//     Swal.fire({
+//       title: 'Are you sure?',
+//       text: "This will delete the package permanently!",
+//       icon: 'warning', showCancelButton: true,
+//       confirmButtonText: 'Yes, delete it!',
+//     }).then(async (result) => {
+//       if (result.isConfirmed) {
+//         try {
+//           await axios.delete(`${Url}/package/delete/${id}`);
+//           toast.success('Package deleted successfully');
+//           fetchPackages();
+//         } catch (err) {
+//           toast.error('Failed to delete package');
+//         }
+//       }
+//       setDeleteLoading(false);
+//     });
+//   };
+
+//   const totalPages = Math.ceil(totalCount / limit);
+
+//   // ── Access Denied ────────────────────────────────────────────
+//   if (!enabled) {
+//     return (
+//       <Container>
+//         <div style={{ textAlign: 'center', padding: '80px 0', color: '#94a3b8' }}>
+//           <div style={{ fontSize: 50 }}>🔒</div>
+//           <h4 style={{ marginTop: 16, color: '#1e293b' }}>Access Denied</h4>
+//           <p>Aapke paas is page ka access nahi hai.</p>
+//         </div>
+//       </Container>
+//     )
+//   }
+
+//   return (
+//     <>
+//       <ToastContainer />
+//       <Helmet><title>Teamlans | Packages</title></Helmet>
+
+//       <Container className="my-4">
+//         <div className="d-flex justify-content-between align-items-center package-header mb-4">
+//           <h2 className="package-title">📦 Package List</h2>
+//           {/* Add button — canAdd */}
+//           {canAdd && (
+//             <Link className="btn btn-primary btn-lg rounded-pill" to={`/${slug}/add-new-package`}>
+//               <i className="fa fa-plus me-2"></i> Add New Package
+//             </Link>
+//           )}
+//         </div>
+
+//         <div className="d-flex flex-wrap justify-content-between align-items-center package-filter p-3 rounded shadow-sm mb-4">
+//           <div className="d-flex align-items-center gap-2">
+//             <label className="form-label fw-semibold mb-0">Show</label>
+//             <select className="form-select" style={{ width: '80px' }} value={limit}
+//               onChange={(e) => setLimit(Number(e.target.value))}>
+//               {[1, 5, 10, 25].map(val => (
+//                 <option key={val} value={val}>{val}</option>
+//               ))}
+//             </select>
+//             <label className="form-label fw-semibold mb-0">entries</label>
+//           </div>
+//           <input type="text" className="form-control shadow-sm" style={{ maxWidth: '300px' }}
+//             placeholder="🔍 Search package" value={search}
+//             onChange={(e) => setSearch(e.target.value)} />
+//         </div>
+
+//         <div className="table-responsive package-table shadow-sm rounded">
+//           <table className="table table-hover align-middle text-center">
+//             <thead className="table-dark">
+//               <tr>
+//                 <th>#</th>
+//                 <th>Package Name</th>
+//                 <th>Price ($)</th>
+//                 <th>Discount ($)</th>
+//                 <th>Offer (%)</th>
+//                 <th>Total Services</th>
+//                 <th>Service Days</th>
+//                 {(canEdit || canDelete || canView) && <th>Action</th>}
+//               </tr>
+//             </thead>
+//             <tbody>
+//               {loading ? (
+//                 <tr><td colSpan="8"><div className="spinner-border text-primary" /></td></tr>
+//               ) : packages.length === 0 ? (
+//                 <tr><td colSpan="8" className="text-muted">No packages found</td></tr>
+//               ) : (
+//                 packages.map((pkg, i) => (
+//                   <tr key={pkg._id}>
+//                     <td>{(page - 1) * limit + i + 1}</td>
+//                     <td>{pkg.packageName}</td>
+//                     <td>${pkg.price}</td>
+//                     <td>${pkg.discountPrice}</td>
+//                     <td>{pkg.offer}%</td>
+//                     <td>{pkg.totalService}</td>
+//                     <td>{pkg.days}</td>
+//                     {(canEdit || canDelete || canView) && (
+//                       <td>
+//                         <div className="d-flex justify-content-center gap-2">
+//                           {/* View — canView */}
+//                           {canView && (
+//                             <Link to={`/${slug}/view-package/${pkg._id}`} className="btn btn-sm btn-info">
+//                               <i className="fa fa-eye" />
+//                             </Link>
+//                           )}
+//                           {/* Edit — canEdit */}
+//                           {canEdit && (
+//                             <Link to={`/${slug}/update-package/${pkg._id}`} className="btn btn-sm btn-warning">
+//                               <i className="fa fa-pen" />
+//                             </Link>
+//                           )}
+//                           {/* Delete — canDelete */}
+//                           {canDelete && (
+//                             <button className="btn btn-sm btn-danger"
+//                               onClick={() => handleDelete(pkg._id)}
+//                               disabled={deleteLoading}>
+//                               <i className="fa fa-trash" />
+//                             </button>
+//                           )}
+//                         </div>
+//                       </td>
+//                     )}
+//                   </tr>
+//                 ))
+//               )}
+//             </tbody>
+//           </table>
+//         </div>
+
+//         {/* Pagination */}
+//         <div className="d-flex justify-content-between align-items-center mt-4">
+//           <p className="mb-0 text-muted">
+//             Showing {(page - 1) * limit + 1} of {totalCount} entries
+//           </p>
+//           <div className="btn-group">
+//             <button disabled={page === 1} className="btn btn-outline-secondary"
+//               onClick={() => setPage(page - 1)}>◀ Prev</button>
+//             <button disabled={page === totalPages} className="btn btn-outline-secondary"
+//               onClick={() => setPage(page + 1)}>Next ▶</button>
+//           </div>
+//         </div>
+//       </Container>
+//     </>
+//   );
+// };
+
+// export default Package;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Container } from '@mui/material';
@@ -352,7 +745,7 @@ import axios from 'axios';
 import { Url } from '../url/url';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import { permissions, staff_session } from 'src/utils/SessionfileData';
 
 const Package = () => {
   const [packages, setPackages] = useState([]);
@@ -363,30 +756,35 @@ const Package = () => {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const perm      = permissions?.package || {}
+  const enabled   = perm?.enable === true
+  const canAdd    = perm?.add    === true
+  const canEdit   = perm?.edit   === true
+  const canDelete = perm?.delete === true
+
+  const slug = staff_session?.slug || 'Management';
+
   const fetchPackages = async () => {
     try {
       setLoading(true);
       const res = await axios.get(`${Url}/package/get-all-package?page=${page}&limit=${limit}&search=${search}`);
       setPackages(res.data.packages);
       setTotalCount(res.data.totalCount);
-      setLoading(false);
     } catch (err) {
-      setLoading(false);
       toast.error("Failed to fetch packages");
+    } finally {
+      setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchPackages();
-  }, [search, page, limit]);
+  useEffect(() => { fetchPackages(); }, [search, page, limit]);
 
   const handleDelete = async (id) => {
     setDeleteLoading(true);
     Swal.fire({
       title: 'Are you sure?',
       text: "This will delete the package permanently!",
-      icon: 'warning',
-      showCancelButton: true,
+      icon: 'warning', showCancelButton: true,
       confirmButtonText: 'Yes, delete it!',
     }).then(async (result) => {
       if (result.isConfirmed) {
@@ -404,6 +802,18 @@ const Package = () => {
 
   const totalPages = Math.ceil(totalCount / limit);
 
+  if (!enabled) {
+    return (
+      <Container>
+        <div style={{ textAlign: 'center', padding: '80px 0', color: '#94a3b8' }}>
+          <div style={{ fontSize: 50 }}>🔒</div>
+          <h4 style={{ marginTop: 16, color: '#1e293b' }}>Access Denied</h4>
+          <p>Aapke paas is page ka access nahi hai.</p>
+        </div>
+      </Container>
+    )
+  }
+
   return (
     <>
       <ToastContainer />
@@ -412,34 +822,27 @@ const Package = () => {
       <Container className="my-4">
         <div className="d-flex justify-content-between align-items-center package-header mb-4">
           <h2 className="package-title">📦 Package List</h2>
-          <Link className="btn btn-primary btn-lg rounded-pill" to="/dashboard/add-new-package">
-            <i className="fa fa-plus me-2"></i> Add New Package
-          </Link>
+          {canAdd && (
+            <Link className="btn btn-primary btn-lg rounded-pill" to={`/${slug}/add-new-package`}>
+              <i className="fa fa-plus me-2"></i> Add New Package
+            </Link>
+          )}
         </div>
 
         <div className="d-flex flex-wrap justify-content-between align-items-center package-filter p-3 rounded shadow-sm mb-4">
           <div className="d-flex align-items-center gap-2">
             <label className="form-label fw-semibold mb-0">Show</label>
-            <select
-              className="form-select"
-              style={{ width: '80px' }}
-              value={limit}
-              onChange={(e) => setLimit(Number(e.target.value))}
-            >
+            <select className="form-select" style={{ width: '80px' }} value={limit}
+              onChange={(e) => setLimit(Number(e.target.value))}>
               {[1, 5, 10, 25].map(val => (
                 <option key={val} value={val}>{val}</option>
               ))}
             </select>
             <label className="form-label fw-semibold mb-0">entries</label>
           </div>
-          <input
-            type="text"
-            className="form-control shadow-sm"
-            style={{ maxWidth: '300px' }}
-            placeholder="🔍 Search package"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+          <input type="text" className="form-control shadow-sm" style={{ maxWidth: '300px' }}
+            placeholder="🔍 Search package" value={search}
+            onChange={(e) => setSearch(e.target.value)} />
         </div>
 
         <div className="table-responsive package-table shadow-sm rounded">
@@ -453,7 +856,7 @@ const Package = () => {
                 <th>Offer (%)</th>
                 <th>Total Services</th>
                 <th>Service Days</th>
-                <th>Action</th>
+                {(canEdit || canDelete) && <th>Action</th>}
               </tr>
             </thead>
             <tbody>
@@ -471,16 +874,24 @@ const Package = () => {
                     <td>{pkg.offer}%</td>
                     <td>{pkg.totalService}</td>
                     <td>{pkg.days}</td>
-                    <td>
-                      <div className="d-flex justify-content-center gap-2">
-                        <button className="btn btn-sm btn-danger" onClick={() => handleDelete(pkg._id)}>
-                          <i className="fa fa-trash" />
-                        </button>
-                        <Link to={`/dashboard/update-package/${pkg._id}`} className="btn btn-sm btn-warning">
-                          <i className="fa fa-pen" />
-                        </Link>
-                      </div>
-                    </td>
+                    {(canEdit || canDelete) && (
+                      <td>
+                        <div className="d-flex justify-content-center gap-2">
+                          {canEdit && (
+                            <Link to={`/${slug}/update-package/${pkg._id}`} className="btn btn-sm btn-warning">
+                              <i className="fa fa-pen" />
+                            </Link>
+                          )}
+                          {canDelete && (
+                            <button className="btn btn-sm btn-danger"
+                              onClick={() => handleDelete(pkg._id)}
+                              disabled={deleteLoading}>
+                              <i className="fa fa-trash" />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))
               )}
@@ -488,18 +899,15 @@ const Package = () => {
           </table>
         </div>
 
-        {/* Pagination */}
         <div className="d-flex justify-content-between align-items-center mt-4">
           <p className="mb-0 text-muted">
             Showing {(page - 1) * limit + 1} of {totalCount} entries
           </p>
           <div className="btn-group">
-            <button disabled={page === 1} className="btn btn-outline-secondary" onClick={() => setPage(page - 1)}>
-              ◀ Prev
-            </button>
-            <button disabled={page === totalPages} className="btn btn-outline-secondary" onClick={() => setPage(page + 1)}>
-              Next ▶
-            </button>
+            <button disabled={page === 1} className="btn btn-outline-secondary"
+              onClick={() => setPage(page - 1)}>◀ Prev</button>
+            <button disabled={page === totalPages} className="btn btn-outline-secondary"
+              onClick={() => setPage(page + 1)}>Next ▶</button>
           </div>
         </div>
       </Container>
@@ -508,3 +916,4 @@ const Package = () => {
 };
 
 export default Package;
+
