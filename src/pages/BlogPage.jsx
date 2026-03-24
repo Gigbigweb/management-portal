@@ -325,7 +325,7 @@ const BlogPage = () => {
   const permissions = JSON.parse(sessionStorage.getItem('management_permissions') || '{}');
   const perm      = permissions?.blog || {};
   const enabled   = perm?.enable === true;
-  const canView   = perm?.view   === true;   // ✅ View permission
+  const canView   = perm?.view   === true;   
   const canAdd    = perm?.add    === true;
   const canDelete = perm?.delete === true;
   const canEdit   = perm?.edit   === true;
@@ -386,7 +386,7 @@ const BlogPage = () => {
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={3}>
           <Typography variant="h4" className="fw-bold text-dark">
-            📝 Blogs
+             Blogs
           </Typography>
           {/* ✅ Add button - sirf canAdd pe */}
           {canAdd && (
