@@ -1,21 +1,148 @@
+// "use client";
+// import React, { useState, useEffect } from "react";
+// import axios from "axios";
+// import { Url } from "src/url/url";
+
+// const IconsFormat = () => {
+//   const [icons, setIcons] = useState([]);
+//   const [file, setFile] = useState(null);
+//   const [name, setName] = useState("");
+
+//   const fetchIcons = async () => {
+//     const res = await axios.get(`${Url}/icons/all`);
+//     setIcons(res.data.data);
+//   };
+
+//   useEffect(() => {
+//     fetchIcons();
+//   }, []);
+
+//   const uploadIcon = async () => {
+//     if (!file) return alert("Please select a file.");
+//     if (!name.trim()) return alert("Please enter icon name.");
+
+//     const formData = new FormData();
+//     formData.append("iconFile", file);
+//     formData.append("name", name);
+
+//     try {
+//       await axios.post(`${Url}/icons/upload`, formData, {
+//         headers: { "Content-Type": "multipart/form-data" },
+//       });
+
+//       setFile(null);
+//       setName("");
+//       fetchIcons();
+//       alert("Icon uploaded successfully!");
+
+//     } catch (error) {
+//       console.log(error);
+//       alert("Upload failed!");
+//     }
+//   };
+
+//   const deleteIcon = async (id) => {
+//     await axios.delete(`${Url}/icons/${id}`);
+//     fetchIcons();
+//   };
+
+//   return (
+//     <div className="container p-4">
+
+//       <h3 className="mb-4 fw-bold">Icons Library</h3>
+
+//       {/* NAME INPUT */}
+//       <input
+//         type="text"
+//         className="form-control mb-3"
+//         placeholder="Enter icon name"
+//         value={name}
+//         onChange={(e) => setName(e.target.value)}
+//       />
+
+//       {/* FILE INPUT */}
+//       <input
+//         type="file"
+//         className="form-control mb-3"
+//         onChange={(e) => setFile(e.target.files[0])}
+//       />
+
+//       {/* UPLOAD BUTTON */}
+//       <button className="btn btn-primary mb-4" onClick={uploadIcon}>
+//         Upload Icon
+//       </button>
+
+//       {/* ICONS GRID */}
+//       <div className="row mt-4">
+//         {icons.length === 0 && (
+//           <p className="text-muted">No icons uploaded yet.</p>
+//         )}
+
+//         {icons.map((icon) => (
+//           <div className="col-3 col-sm-2 text-center mb-4" key={icon._id}>
+//             <img
+//               src={icon.iconUrl}
+//               style={{
+//                 width: "70px",
+//                 height: "70px",
+//                 objectFit: "contain",
+//                 border: "1px solid #ddd",
+//                 borderRadius: "6px",
+//                 padding: "5px"
+//               }}
+//             />
+//             <p className="small mt-2">{icon.name}</p>
+
+//             <button
+//               className="btn btn-danger btn-sm"
+//               onClick={() => deleteIcon(icon._id)}
+//             >
+//               Delete
+//             </button>
+//           </div>
+//         ))}
+//       </div>
+
+//     </div>
+//   );
+// };
+
+// export default IconsFormat;
+
+
+
+
+
+
+
+
+
+
+
 "use client";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Url } from "src/url/url";
+import { Container } from "@mui/material";
 
 const IconsFormat = () => {
+  // ✅ Permission setup - sessionStorage se directly read
+  const permissions = JSON.parse(sessionStorage.getItem('management_permissions') || '{}');
+  const perm      = permissions?.iconsFormat || {};
+  const enabled   = perm?.enable === true;
+  const canAdd    = perm?.add    === true;
+  const canDelete = perm?.delete === true;
+
   const [icons, setIcons] = useState([]);
-  const [file, setFile] = useState(null);
-  const [name, setName] = useState("");
+  const [file, setFile]   = useState(null);
+  const [name, setName]   = useState("");
 
   const fetchIcons = async () => {
     const res = await axios.get(`${Url}/icons/all`);
     setIcons(res.data.data);
   };
 
-  useEffect(() => {
-    fetchIcons();
-  }, []);
+  useEffect(() => { fetchIcons(); }, []);
 
   const uploadIcon = async () => {
     if (!file) return alert("Please select a file.");
@@ -29,12 +156,10 @@ const IconsFormat = () => {
       await axios.post(`${Url}/icons/upload`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-
       setFile(null);
       setName("");
       fetchIcons();
       alert("Icon uploaded successfully!");
-
     } catch (error) {
       console.log(error);
       alert("Upload failed!");
@@ -46,31 +171,43 @@ const IconsFormat = () => {
     fetchIcons();
   };
 
+  // ✅ ACCESS DENIED
+  if (!enabled) {
+    return (
+      <Container>
+        <div style={{ textAlign: 'center', padding: '80px 0', color: '#94a3b8' }}>
+          <div style={{ fontSize: 50 }}>🔒</div>
+          <h4 style={{ marginTop: 16, color: '#1e293b' }}>Access Denied</h4>
+          <p>Aapke paas is page ka access nahi hai.</p>
+        </div>
+      </Container>
+    );
+  }
+
   return (
     <div className="container p-4">
-
       <h3 className="mb-4 fw-bold">Icons Library</h3>
 
-      {/* NAME INPUT */}
-      <input
-        type="text"
-        className="form-control mb-3"
-        placeholder="Enter icon name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
-
-      {/* FILE INPUT */}
-      <input
-        type="file"
-        className="form-control mb-3"
-        onChange={(e) => setFile(e.target.files[0])}
-      />
-
-      {/* UPLOAD BUTTON */}
-      <button className="btn btn-primary mb-4" onClick={uploadIcon}>
-        Upload Icon
-      </button>
+      {/* ✅ Upload section - sirf canAdd pe dikhega */}
+      {canAdd && (
+        <>
+          <input
+            type="text"
+            className="form-control mb-3"
+            placeholder="Enter icon name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <input
+            type="file"
+            className="form-control mb-3"
+            onChange={(e) => setFile(e.target.files[0])}
+          />
+          <button className="btn btn-primary mb-4" onClick={uploadIcon}>
+            Upload Icon
+          </button>
+        </>
+      )}
 
       {/* ICONS GRID */}
       <div className="row mt-4">
@@ -82,27 +219,30 @@ const IconsFormat = () => {
           <div className="col-3 col-sm-2 text-center mb-4" key={icon._id}>
             <img
               src={icon.iconUrl}
+              alt={icon.name}
               style={{
                 width: "70px",
                 height: "70px",
                 objectFit: "contain",
                 border: "1px solid #ddd",
                 borderRadius: "6px",
-                padding: "5px"
+                padding: "5px",
               }}
             />
             <p className="small mt-2">{icon.name}</p>
 
-            <button
-              className="btn btn-danger btn-sm"
-              onClick={() => deleteIcon(icon._id)}
-            >
-              Delete
-            </button>
+            {/* ✅ Delete button - sirf canDelete pe dikhega */}
+            {canDelete && (
+              <button
+                className="btn btn-danger btn-sm"
+                onClick={() => deleteIcon(icon._id)}
+              >
+                Delete
+              </button>
+            )}
           </div>
         ))}
       </div>
-
     </div>
   );
 };
