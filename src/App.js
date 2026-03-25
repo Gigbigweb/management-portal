@@ -72,46 +72,146 @@
 
 
 
+// // App.js
+
+// import { BrowserRouter } from 'react-router-dom';
+// import { HelmetProvider } from 'react-helmet-async';
+// import { useEffect, useState } from 'react';
+// import { useDispatch } from 'react-redux';
+// import axios from 'axios';
+// import Router from './routes';
+// import ThemeProvider from './theme';
+// import { StyledChart } from './components/chart';
+// import ScrollToTop from './components/scroll-to-top';
+// import "./App.css";
+// import { clientdata } from './redux/slice/client';
+// import { packagedata } from './redux/slice/package';
+// import { categorydata } from './redux/slice/category';
+// import { roledata } from './redux/slice/role';
+// import { servicedata } from './redux/slice/service';
+// import { projectdata } from './redux/slice/project';
+// import { teamdata } from './redux/slice/team';
+// import './style.css';
+// import { ratingdata } from './redux/slice/rating';
+// import { blogdata } from './redux/slice/blog';
+// import { staffdata } from './redux/slice/staff';
+// import { Url } from './url/url';
+
+// export default function App() {
+//   const dispatch = useDispatch();
+//   // ✅ Permissions ko state mein rakho — update hone pe app re-render hoga
+//   const [permissionsReady, setPermissionsReady] = useState(false);
+
+//   // ✅ Refresh pe permissions fresh fetch karo
+//   useEffect(() => {
+//     const syncPermissions = async () => {
+//       const token  = sessionStorage.getItem('management_token');
+//       const staff  = JSON.parse(sessionStorage.getItem('management_staff') || '{}');
+//       const roleId = staff?.roleId;
+
+//       if (!token || !roleId) {
+//         // Logged out hai — permissions clear karo aur ready mark karo
+//         sessionStorage.removeItem('management_permissions');
+//         setPermissionsReady(true);
+//         return;
+//       }
+
+//       try {
+//         const permRes     = await axios.get(`${Url}/permissions/true/${roleId}`);
+//         const permissions = permRes.data?.data || {};
+//         // ✅ sessionStorage update + state trigger → app re-render
+//         sessionStorage.setItem('management_permissions', JSON.stringify(permissions));
+//       } catch (err) {
+//         console.warn('⚠️ Permission sync failed:', err);
+//       } finally {
+//         // API success ya fail dono cases mein app render hone do
+//         setPermissionsReady(true);
+//       }
+//     };
+
+//     syncPermissions();
+//   }, []);
+
+//   useEffect(() => {
+//     dispatch(clientdata());
+//     dispatch(packagedata());
+//     dispatch(staffdata());
+//     dispatch(categorydata());
+//     dispatch(roledata());
+//     dispatch(servicedata());
+//     dispatch(projectdata());
+//     dispatch(teamdata());
+//     dispatch(ratingdata());
+//     dispatch(blogdata());
+//   }, []);
+
+//   // ✅ Jab tak permissions fetch na ho, blank screen ya loader dikhao
+//   // Yeh ensure karta hai ki koi bhi page permissions ke bina render na ho
+//   if (!permissionsReady) {
+//     return (
+//       <div style={{ 
+//         display: 'flex', 
+//         justifyContent: 'center', 
+//         alignItems: 'center', 
+//         height: '100vh',
+//         fontSize: '18px',
+//         color: '#64748b'
+//       }}>
+//         Loading...
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <>
+//       <HelmetProvider>
+//         <BrowserRouter>
+//           <ThemeProvider>
+//             <ScrollToTop />
+//             <StyledChart />
+//             <Router />
+//           </ThemeProvider>
+//         </BrowserRouter>
+//       </HelmetProvider>
+//     </>
+//   );
+// }
+
+
+
 
 
 
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-
-// Routes & Theme
+import axios from 'axios';
 import Router from './routes';
 import ThemeProvider from './theme';
-
-// Components
 import { StyledChart } from './components/chart';
 import ScrollToTop from './components/scroll-to-top';
-
-// Redux slices
-import { clientdata }   from './redux/slice/client';
-import { packagedata }  from './redux/slice/package';
-import { staffdata }    from './redux/slice/staff';
+import "./App.css";
+import { clientdata } from './redux/slice/client';
+import { packagedata } from './redux/slice/package';
 import { categorydata } from './redux/slice/category';
-import { roledata }     from './redux/slice/role';
-import { servicedata }  from './redux/slice/service';
-import { projectdata }  from './redux/slice/project';
-import { teamdata }     from './redux/slice/team';
-import { ratingdata }   from './redux/slice/rating';
-import { blogdata }     from './redux/slice/blog';
-
-// Permission sync hook
-import usePermissionSync from '../src/hooks/Usepermissionsync.js';
-
-import './App.css';
+import { roledata } from './redux/slice/role';
+import { servicedata } from './redux/slice/service';
+import { projectdata } from './redux/slice/project';
+import { teamdata } from './redux/slice/team';
 import './style.css';
+import { ratingdata } from './redux/slice/rating';
+import { blogdata } from './redux/slice/blog';
+import { staffdata } from './redux/slice/staff';
+import { Url } from './url/url';
+import usePermissionSync from './hooks/usePermissionSync';
+//                                   
 
-// ─── Inner app (needs to be inside BrowserRouter for useLocation) ─────────────
-const AppContent = () => {
+
+
+export default function App() {
   const dispatch = useDispatch();
-
-  // Sync permissions on route change + every 5 minutes
-  usePermissionSync();
+  const permissionsReady = usePermissionSync(); // ✅ bas ek line
 
   useEffect(() => {
     dispatch(clientdata());
@@ -124,23 +224,18 @@ const AppContent = () => {
     dispatch(teamdata());
     dispatch(ratingdata());
     dispatch(blogdata());
-  }, [dispatch]);
+  }, []);
 
-  return (
-    <ThemeProvider>
-      <ScrollToTop />
-      <StyledChart />
-      <Router />
-    </ThemeProvider>
-  );
-};
+  if (!permissionsReady) return <div>Loading...</div>;
 
-// ─── Root App ─────────────────────────────────────────────────────────────────
-export default function App() {
   return (
     <HelmetProvider>
       <BrowserRouter>
-        <AppContent />
+        <ThemeProvider>
+          <ScrollToTop />
+          <StyledChart />
+          <Router />
+        </ThemeProvider>
       </BrowserRouter>
     </HelmetProvider>
   );

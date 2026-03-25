@@ -589,55 +589,109 @@ export default function LoginForm() {
     setFormValue((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleClick = async () => {
-    const { email, password } = formValue;
+  // const handleClick = async () => {
+  //   const { email, password } = formValue;
 
-    if (!email || !password) {
-      Swal.fire('Error', 'Email aur Password required hain!', 'error');
-      return;
-    }
+  //   if (!email || !password) {
+  //     Swal.fire('Error', 'Email aur Password required hain!', 'error');
+  //     return;
+  //   }
 
-    setLoading(true);
+  //   setLoading(true);
+  //   try {
+  //     // ✅ Step 1 — Login
+  //     const res = await axios.post(`${Url}/management-staff/login`, { email, password });
+
+  //     const staffData = res.data.data;
+  //     const slug = staffData?.slug || 'Management';
+
+  //     // ✅ Step 2 — Staff data save (sessionStorage)
+  //     sessionStorage.setItem('management_token', res.data.token);
+  //     sessionStorage.setItem('management_staff', JSON.stringify(staffData));
+
+  //     // ✅ Step 3 — Permissions fetch
+  //     const roleId = staffData.roleId;
+  //     try {
+  //       const permRes = await axios.get(`${Url}/permissions/true/${roleId}`);
+  //       const permissions = permRes.data?.data || {};
+  //       sessionStorage.setItem('management_permissions', JSON.stringify(permissions));
+  //     } catch (permErr) {
+  //       sessionStorage.setItem('management_permissions', JSON.stringify({}));
+  //       console.error('Permissions fetch error:', permErr);
+  //     }
+
+  //     Swal.fire({
+  //       position: 'top-end',
+  //       icon: 'success',
+  //       title: 'Login Successful!',
+  //       showConfirmButton: false,
+  //       timer: 1500,
+  //     });
+
+  //     // ✅ Slug wale route pe navigate karo
+  //     navigate(`/${slug}/DashBoard`);
+
+  //   } catch (error) {
+  //     const msg = error.response?.data?.message || 'Login failed!';
+  //     Swal.fire('Error', msg, 'error');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+
+
+
+const handleClick = async () => {
+  const { email, password } = formValue;
+
+  if (!email || !password) {
+    Swal.fire('Error', 'Email and password are required.', 'error');
+    return;
+  }
+
+  setLoading(true);
+  try {
+    // Step 1 — Login
+    const res       = await axios.post(`${Url}/management-staff/login`, { email, password });
+    const staffData = res.data.data;
+    const slug      = staffData?.slug || 'Management';
+
+    // Step 2 — Persist staff data
+    sessionStorage.setItem('management_token', res.data.token);
+    sessionStorage.setItem('management_staff', JSON.stringify(staffData));
+
+    // Step 3 — Fetch and persist permissions
+    // (usePermissionSync in App.js will keep these fresh on every route change)
     try {
-      // ✅ Step 1 — Login
-      const res = await axios.post(`${Url}/management-staff/login`, { email, password });
-
-      const staffData = res.data.data;
-      const slug = staffData?.slug || 'Management';
-
-      // ✅ Step 2 — Staff data save (sessionStorage)
-      sessionStorage.setItem('management_token', res.data.token);
-      sessionStorage.setItem('management_staff', JSON.stringify(staffData));
-
-      // ✅ Step 3 — Permissions fetch
-      const roleId = staffData.roleId;
-      try {
-        const permRes = await axios.get(`${Url}/permissions/true/${roleId}`);
-        const permissions = permRes.data?.data || {};
-        sessionStorage.setItem('management_permissions', JSON.stringify(permissions));
-      } catch (permErr) {
-        sessionStorage.setItem('management_permissions', JSON.stringify({}));
-        console.error('Permissions fetch error:', permErr);
-      }
-
-      Swal.fire({
-        position: 'top-end',
-        icon: 'success',
-        title: 'Login Successful!',
-        showConfirmButton: false,
-        timer: 1500,
-      });
-
-      // ✅ Slug wale route pe navigate karo
-      navigate(`/${slug}/DashBoard`);
-
-    } catch (error) {
-      const msg = error.response?.data?.message || 'Login failed!';
-      Swal.fire('Error', msg, 'error');
-    } finally {
-      setLoading(false);
+      const permRes   = await axios.get(`${Url}/permissions/true/${staffData.roleId}`);
+      const permissions = permRes.data?.data || {};
+      sessionStorage.setItem('management_permissions', JSON.stringify(permissions));
+    } catch (permErr) {
+      sessionStorage.setItem('management_permissions', JSON.stringify({}));
+      console.warn('Permissions fetch failed at login:', permErr);
     }
-  };
+
+    Swal.fire({
+      position: 'top-end',
+      icon: 'success',
+      title: 'Login successful!',
+      showConfirmButton: false,
+      timer: 1500,
+    });
+
+    navigate(`/${slug}/DashBoard`);
+  } catch (error) {
+    const msg = error.response?.data?.message || 'Login failed. Please try again.';
+    Swal.fire('Error', msg, 'error');
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
+
 
   const auth = sessionStorage.getItem('management_token');
 
