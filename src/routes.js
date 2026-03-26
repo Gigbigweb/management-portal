@@ -217,6 +217,7 @@ export default function Router() {
     {
       path: `/${slug}`,          // ✅ dynamic slug
       element: <DashboardLayout />,
+
       children: [
         { element: <Navigate to={`/${slug}/DashBoard`} />, index: true },
         { path: 'app',                    element: <DashboardAppPage /> },

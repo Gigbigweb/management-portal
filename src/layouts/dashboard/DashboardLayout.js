@@ -66,6 +66,8 @@ const Main = styled('div')(({ theme }) => ({
 
 
 
+
+
 export default function DashboardLayout() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -77,7 +79,7 @@ export default function DashboardLayout() {
     if (!auth) {
       navigate('/login', { replace: true });
     }
-  }, []); // ✅ sirf mount pe — infinite loop khatam
+  }, []); 
 
   return (
     <>

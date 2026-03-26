@@ -11,11 +11,13 @@ const usePermissionSync = () => {
       const staff  = JSON.parse(sessionStorage.getItem('management_staff') || '{}');
       const roleId = staff?.roleId;
 
+
       if (!token || !roleId) {
         sessionStorage.removeItem('management_permissions');
         setPermissionsReady(true);
         return;
       }
+      
 
       try {
         const res = await axios.get(`${Url}/permissions/true/${roleId}`);
