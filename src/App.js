@@ -210,7 +210,8 @@ import { ratingdata } from './redux/slice/rating';
 import { blogdata } from './redux/slice/blog';
 import { staffdata } from './redux/slice/staff';
 import { Url } from './url/url';
-import usePermissionSync from './hooks/usePermissionSync';
+import usePermissionSync from './hooks/use-permission-sync';
+
 //                                   
 
 
