@@ -215,6 +215,7 @@ import usePermissionSync from './hooks/usePermissionSync';
 
 
 
+
 export default function App() {
   const dispatch = useDispatch();
   const permissionsReady = usePermissionSync(); // ✅ bas ek line
