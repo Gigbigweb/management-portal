@@ -207,6 +207,7 @@ import BulkMailing from './pages/BulkMailing';
 import EmailBuilderImages from './pages/EmailBuilderImages';
 import Permissions from './pages/Permissions';
 import DashBoard from './pages/DashBoard';
+import StaffHelpSupport from './pages/Staffhelpsupport';
 
 export default function Router() {
   // ✅ localStorage se slug lo — default 'Management'
@@ -259,6 +260,7 @@ export default function Router() {
         { path: 'update-blog/:blogId',    element: <UpdateBlog /> },
         { path: 'blog-view',              element: <RatingPage /> },
         { path: 'Help-Support',           element: <HelpSupport /> },
+        { path: 'StaffHelpSupport',           element: <StaffHelpSupport/> },
         { path: 'Admin-Settings',         element: <AdminSettings /> },
         { path: 'BulkMailing',            element: <BulkMailing /> },
         { path: 'EmailBuilderImages',     element: <EmailBuilderImages /> },

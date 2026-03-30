@@ -681,6 +681,12 @@ const getNavConfig = (slug) => [
     permKey: 'helpSupport',
   },
   {
+    title: 'StaffHelpSupport',
+    path: `/${slug}/StaffHelpSupport`,
+    icon: <HeadsetMicIcon />,
+    permKey: 'StaffHelpSupport',
+  },
+  {
     title: 'Bulk-Mailing',
     path: `/${slug}/BulkMailing`,
     icon: <HeadsetMicIcon />,
