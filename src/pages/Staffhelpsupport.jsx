@@ -3847,8 +3847,8 @@ const StaffHelpSupport = ({ staffId: propStaffId, staffName: propStaffName, staf
         ) : activeTicketsList.length === 0 ? (
           <div style={{ textAlign: "center", padding: 60, color: "#94a3b8" }}>
             <div style={{ fontSize: 48, marginBottom: 10 }}>{tab === "escalated" ? "⬆️" : "🎉"}</div>
-            <p style={{ fontWeight: 600, fontSize: 15 }}>{tab === "all" ? "Koi ticket assigned nahi hai." : tab === "escalated" ? "Aapne abhi koi ticket escalate nahi kiya." : `Koi ${tab} ticket nahi.`}</p>
-            <p style={{ fontSize: 13 }}>{tab === "all" ? "Admin se assignment ka wait karein." : tab === "escalated" ? "Jab aap escalate karenge, yahan dikhega." : "Doosra tab check karein."}</p>
+            <p style={{ fontWeight: 600, fontSize: 15 }}>{tab === "all" ? "No ticket is assigned." : tab === "escalated" ? "You have not escalated any tickets yet." : `No ${tab} tickets.`}</p>
+            <p style={{ fontSize: 13 }}>{tab === "all" ? "Wait for assignment from the admin." : tab === "escalated" ? "When you escalate, it will appear here." : "Check the other tab."}</p>
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
