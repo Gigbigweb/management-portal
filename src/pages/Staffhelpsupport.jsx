@@ -3805,7 +3805,7 @@ const StaffHelpSupport = ({ staffId: propStaffId, staffName: propStaffName, staf
               </div>
             </div>
 
-            {!isActiveEscalated && activeTicket.status === "resolved" && <div style={{ padding: "10px 18px", background: "#e8f5e9", borderBottom: "1px solid #c8e6c9", fontSize: 13, color: "#2e7d32" }}>✅ Yeh ticket aapne resolve kar diya hai. Admin final close karega.</div>}
+            {!isActiveEscalated && activeTicket.status === "resolved" && <div style={{ padding: "10px 18px", background: "#e8f5e9", borderBottom: "1px solid #c8e6c9", fontSize: 13, color: "#2e7d32" }}>✅ You have resolved this ticket. The admin will close it finally.</div>}
             {isActiveEscalated && <EscalationLog log={activeTicket.escalationLog} />}
 
             {showEscalate && !isActiveEscalated && (
