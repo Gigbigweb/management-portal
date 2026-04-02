@@ -3593,7 +3593,7 @@ const TicketChat = ({ ticket, staffId, staffName, onUpdate, onMarkRead, readOnly
         <div ref={chatEnd} />
       </div>
       {readOnly ? (
-        <div style={{ padding: "12px 16px", textAlign: "center", fontSize: 12, color: "#8e24aa", borderTop: "1px solid #f0f0f0", background: "#fdf6ff" }}>⬆️ Yeh ticket escalate ho chuka hai. Sirf history dekh sakte hain.</div>
+        <div style={{ padding: "12px 16px", textAlign: "center", fontSize: 12, color: "#8e24aa", borderTop: "1px solid #f0f0f0", background: "#fdf6ff" }}>This ticket has already been escalated. You can only view its history.</div>
       ) : isClosed ? (
         <div style={{ padding: "12px 16px", textAlign: "center", fontSize: 12, color: "#94a3b8", borderTop: "1px solid #f0f0f0" }}>🔒 Ticket {ticket?.status} hai.</div>
       ) : (
@@ -3830,7 +3830,7 @@ const StaffHelpSupport = ({ staffId: propStaffId, staffName: propStaffName, staf
                   )}
                   <div style={{ flex: 1, minWidth: 200 }}>
                     <label style={{ fontSize: 11, fontWeight: 600, display: "block", marginBottom: 4 }}>Reason *</label>
-                    <input type="text" placeholder="Escalation ka reason likhein..." value={escalateForm.reason} onChange={e => setEscalateForm({ ...escalateForm, reason: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: "1.5px solid #e2e8f0", fontSize: 13, boxSizing: "border-box", outline: "none", background: "#fff" }} />
+                    <input type="text" placeholder="Enter the reason for escalation..." value={escalateForm.reason} onChange={e => setEscalateForm({ ...escalateForm, reason: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: "1.5px solid #e2e8f0", fontSize: 13, boxSizing: "border-box", outline: "none", background: "#fff" }} />
                   </div>
                   <button onClick={handleEscalate} disabled={escalating || !escalateForm.reason.trim()} style={{ padding: "9px 18px", borderRadius: 8, border: "none", background: escalating ? "#ffa726" : "#f57c00", color: "#fff", fontWeight: 700, fontSize: 13, cursor: escalating ? "wait" : "pointer" }}>{escalating ? "Escalating..." : "⬆️ Confirm"}</button>
                   <button onClick={() => setShowEscalate(false)} style={{ padding: "9px 14px", borderRadius: 8, border: "1.5px solid #e2e8f0", background: "#fff", cursor: "pointer", fontSize: 13 }}>Cancel</button>
