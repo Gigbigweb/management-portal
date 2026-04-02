@@ -3782,7 +3782,7 @@ const StaffHelpSupport = ({ staffId: propStaffId, staffName: propStaffName, staf
 
         {tab === "escalated" && !activeTicket && (
           <div style={{ background: "#fdf6ff", border: "1px solid #e1bee7", borderRadius: 10, padding: "10px 16px", marginBottom: 16, fontSize: 13, color: "#6a1b9a", display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ fontSize: 18 }}>⬆️</span><span>Yeh woh tickets hain jo aapne escalate kiye hain. Sirf history dekhne ke liye hain.</span>
+            <span style={{ fontSize: 18 }}>⬆️</span><span>These are the tickets that you have escalated. They are for viewing history only.</span>
           </div>
         )}
 
