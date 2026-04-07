@@ -7500,6 +7500,799 @@
 
 
 
+
+
+
+
+
+
+
+// sound working code but sound is also run in this code own chatbox there is some bugs here 
+
+
+// "use client";
+
+// import React, { useState, useEffect, useRef, useCallback } from "react";
+// import Swal from "sweetalert2";
+// import { io as socketIo } from "socket.io-client";
+// import { Url } from "src/url/url";
+
+// const playNotifSound = () => {
+//   try { const a = new Audio("/assets/notification.mp3"); a.volume = 0.6; a.play().catch(() => {}); } catch {}
+// };
+
+// const GLOBAL_CSS = `
+//   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap');
+//   .shs-root *, .shs-root *::before, .shs-root *::after { box-sizing: border-box; font-family: 'DM Sans', system-ui, sans-serif; }
+//   .shs-root {
+//     --blue:#2563EB; --blue-bg:#EFF6FF; --blue-border:#BFDBFE;
+//     --green:#16A34A; --green-bg:#F0FDF4; --green-border:#BBF7D0;
+//     --amber:#D97706; --amber-bg:#FFFBEB; --amber-border:#FDE68A;
+//     --red:#DC2626; --red-bg:#FEF2F2; --red-border:#FECACA;
+//     --violet:#7C3AED; --violet-bg:#F5F3FF; --violet-border:#DDD6FE;
+//     --border:#E5E7EB; --border-light:#F1F5F9; --surface:#F8FAFC;
+//     --bg-subtle:#F9FAFB; --text:#111827; --text-2:#374151;
+//     --text-3:#6B7280; --text-4:#9CA3AF; --text-5:#C4CAD4;
+//   }
+//   .shs-card { transition: box-shadow 0.18s ease, transform 0.12s ease; }
+//   .shs-card:hover { box-shadow: 0 6px 28px rgba(0,0,0,0.1) !important; transform: translateY(-1px); }
+//   .shs-btn { transition: opacity 0.14s, transform 0.1s; cursor: pointer; }
+//   .shs-btn:hover:not(:disabled) { opacity: 0.85; }
+//   .shs-btn:active:not(:disabled) { transform: scale(0.97); }
+//   .shs-tab { transition: all 0.15s ease; }
+//   .shs-tab:hover { background: rgba(255,255,255,0.7) !important; }
+//   .shs-input:focus { border-color: var(--blue) !important; outline: none; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+//   .shs-msg { animation: msgSlide 0.18s ease; }
+//   @keyframes msgSlide { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:none; } }
+//   .shs-pulse { animation: pulse 2s ease infinite; }
+//   @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.6; } }
+//   @keyframes spin { to { transform: rotate(360deg); } }
+//   .shs-related-item { transition: all 0.15s ease; cursor: pointer; }
+//   .shs-related-item:hover { background: #FEF9C3 !important; border-color: #FDE047 !important; transform: translateX(2px); }
+//   .shs-root ::-webkit-scrollbar { width: 4px; }
+//   .shs-root ::-webkit-scrollbar-track { background: transparent; }
+//   .shs-root ::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 99px; }
+// `;
+
+// const STATUS_MAP = {
+//   open:          { dot:"#F59E0B", text:"#B45309", bg:"#FFFBEB", border:"#FDE68A" },
+//   "in-progress": { dot:"#3B82F6", text:"#1D4ED8", bg:"#EFF6FF", border:"#BFDBFE" },
+//   resolved:      { dot:"#22C55E", text:"#15803D", bg:"#F0FDF4", border:"#BBF7D0" },
+//   closed:        { dot:"#9CA3AF", text:"#4B5563", bg:"#F9FAFB", border:"#E5E7EB" },
+//   escalated:     { dot:"#8B5CF6", text:"#6D28D9", bg:"#F5F3FF", border:"#DDD6FE" },
+// };
+// const PRIORITY_MAP = {
+//   high:   { dot:"#EF4444", text:"#991B1B", bg:"#FEF2F2", border:"#FECACA" },
+//   medium: { dot:"#F59E0B", text:"#92400E", bg:"#FFFBEB", border:"#FDE68A" },
+//   low:    { dot:"#22C55E", text:"#14532D", bg:"#F0FDF4", border:"#BBF7D0" },
+// };
+
+// const Badge = ({ label, map }) => {
+//   const c = map?.[label] || { dot:"#9CA3AF", text:"#4B5563", bg:"#F9FAFB", border:"#E5E7EB" };
+//   return (
+//     <span style={{ display:"inline-flex", alignItems:"center", gap:5, padding:"3px 10px", borderRadius:99, fontSize:11, fontWeight:600, letterSpacing:0.1, whiteSpace:"nowrap", background:c.bg, color:c.text, border:`1px solid ${c.border}` }}>
+//       <span style={{ width:5, height:5, borderRadius:"50%", background:c.dot, flexShrink:0 }} />
+//       {label}
+//     </span>
+//   );
+// };
+
+// const UnreadPill = ({ count, size = 17 }) => {
+//   if (!count || count <= 0) return null;
+//   return (
+//     <span className="shs-pulse" style={{ background:"#EF4444", color:"#fff", borderRadius:99, minWidth:size, height:size, padding:"0 4px", fontSize:9.5, fontWeight:700, display:"inline-flex", alignItems:"center", justifyContent:"center" }}>
+//       {count > 99 ? "99+" : count}
+//     </span>
+//   );
+// };
+
+// const Avatar = ({ name="?", color="#2563EB", size=30 }) => (
+//   <div style={{ width:size, height:size, borderRadius:"50%", flexShrink:0, background:`${color}18`, border:`1.5px solid ${color}30`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:size * 0.37, fontWeight:700, color }}>
+//     {name.charAt(0).toUpperCase()}
+//   </div>
+// );
+
+// const Icon = {
+//   back:    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>,
+//   check:   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8"><polyline points="20 6 9 17 4 12"/></svg>,
+//   send:    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>,
+//   refresh: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>,
+//   chat:    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>,
+//   info:    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>,
+//   up:      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><polyline points="18 15 12 9 6 15"/></svg>,
+//   lock:    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>,
+//   spin:    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{animation:"spin 1s linear infinite"}}><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>,
+//   empty:   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>,
+//   warning: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>,
+//   arrow:   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>,
+// };
+
+// const getStaff = () => {
+//   try { const r = sessionStorage.getItem("management_staff"); return r ? JSON.parse(r) : null; } catch { return null; }
+// };
+// const getToken = () =>
+//   sessionStorage.getItem("management_token") ||
+//   localStorage.getItem("management_token") ||
+//   localStorage.getItem("staffToken") || "";
+
+// const dt = {
+//   time: d => new Date(d).toLocaleTimeString("en-IN", { hour:"2-digit", minute:"2-digit" }),
+//   date: d => new Date(d).toLocaleDateString("en-IN", { day:"numeric", month:"short" }),
+//   full: d => new Date(d).toLocaleString("en-IN", { dateStyle:"medium", timeStyle:"short" }),
+// };
+
+// const EscalationLog = ({ log }) => {
+//   if (!log?.length) return null;
+//   return (
+//     <div style={{ padding:"16px 20px", borderBottom:"1px solid #EDE9FE", background:"#FDFCFF" }}>
+//       <p style={{ margin:"0 0 10px", fontSize:10.5, fontWeight:700, color:"#7C3AED", textTransform:"uppercase", letterSpacing:0.9 }}>Escalation History</p>
+//       <div style={{ display:"flex", flexDirection:"column", gap:7 }}>
+//         {log.map((e, i) => (
+//           <div key={i} style={{ background:"#fff", border:"1px solid #EDE9FE", borderRadius:9, padding:"9px 13px", fontSize:12 }}>
+//             <div style={{ display:"flex", justifyContent:"space-between", flexWrap:"wrap", gap:6, alignItems:"center" }}>
+//               <span style={{ display:"flex", alignItems:"center", gap:6 }}>
+//                 <span style={{ fontWeight:600, color:"#6D28D9" }}>{e.fromName || e.from}</span>
+//                 <span style={{ color:"#CBD5E1", fontSize:12 }}>→</span>
+//                 <span style={{ fontWeight:600, color:"#2563EB" }}>{e.toName || e.to}</span>
+//               </span>
+//               <span style={{ fontSize:10.5, color:"#9CA3AF" }}>{dt.full(e.escalatedAt)}</span>
+//             </div>
+//             {e.reason && <p style={{ margin:"5px 0 0", color:"#6B7280", fontSize:11 }}>Reason: {e.reason}</p>}
+//           </div>
+//         ))}
+//       </div>
+//     </div>
+//   );
+// };
+
+// const RelatedTicketsBanner = ({ tickets, onSelect }) => {
+//   const [collapsed, setCollapsed] = useState(false);
+//   if (!tickets || tickets.length === 0) return null;
+//   return (
+//     <div style={{ padding:"12px 20px", background:"linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)", borderBottom:"1px solid #FDE68A" }}>
+//       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom: collapsed ? 0 : 10, cursor:"pointer" }} onClick={() => setCollapsed(v => !v)}>
+//         <div style={{ display:"flex", alignItems:"center", gap:7 }}>
+//           {Icon.warning}
+//           <span style={{ fontSize:12, fontWeight:700, color:"#92400E" }}>
+//             Is project pe {tickets.length} aur active ticket{tickets.length > 1 ? "s" : ""} hain (same subject)
+//           </span>
+//         </div>
+//         <span style={{ fontSize:11, color:"#B45309", fontWeight:600, display:"flex", alignItems:"center", gap:4 }}>
+//           {collapsed ? "Show" : "Hide"}
+//           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: collapsed ? "rotate(180deg)" : "rotate(0deg)", transition:"transform 0.2s" }}>
+//             <polyline points="18 15 12 9 6 15"/>
+//           </svg>
+//         </span>
+//       </div>
+//       {!collapsed && (
+//         <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+//           {tickets.map((t) => (
+//             <div key={t._id} className="shs-related-item" onClick={() => onSelect(t)}
+//               style={{ display:"flex", alignItems:"center", justifyContent:"space-between", background:"#fff", border:"1px solid #FDE68A", borderRadius:8, padding:"8px 12px", fontSize:12 }}>
+//               <div style={{ display:"flex", alignItems:"center", gap:8, flex:1, minWidth:0 }}>
+//                 <span style={{ fontWeight:700, color:"#2563EB", whiteSpace:"nowrap" }}>#{t.ticketId}</span>
+//                 <span style={{ color:"#6B7280", whiteSpace:"nowrap" }}>{t.clientName}</span>
+//                 <span style={{ color:"#D1D5DB", fontSize:11 }}>·</span>
+//                 <span style={{ color:"#9CA3AF", fontSize:11, whiteSpace:"nowrap" }}>{t.messages?.length || 0} msg(s)</span>
+//               </div>
+//               <div style={{ display:"flex", alignItems:"center", gap:7, flexShrink:0 }}>
+//                 <Badge label={t.status} map={STATUS_MAP} />
+//                 <span style={{ fontSize:10.5, color:"#9CA3AF", whiteSpace:"nowrap" }}>{dt.date(t.createdAt)}</span>
+//                 <span style={{ color:"#D97706" }}>{Icon.arrow}</span>
+//               </div>
+//             </div>
+//           ))}
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// const TicketChat = ({ ticket, staffId, staffName, onUpdate, onMarkRead, readOnly }) => {
+//   const [text, setText] = useState("");
+//   const [sending, setSending] = useState(false);
+//   const endRef = useRef(null);
+//   const msgs = ticket?.messages || [];
+
+//   useEffect(() => { setTimeout(() => endRef.current?.scrollIntoView({ behavior:"smooth" }), 80); }, [msgs.length]);
+//   useEffect(() => { if (ticket?._id && (ticket?.unreadByStaff || 0) > 0) onMarkRead?.(ticket._id); }, [ticket?._id]);
+
+//   const send = async () => {
+//     if (!text.trim() || sending) return;
+//     setSending(true);
+//     try {
+//       const res = await fetch(`${Url}/api/support/tickets/${ticket._id}/reply`, {
+//         method:"POST", headers:{"Content-Type":"application/json"},
+//         body: JSON.stringify({ sender:"staff", senderId:staffId, senderName:staffName, message:text.trim() }),
+//       });
+//       const data = await res.json();
+//       if (res.ok) { setText(""); onUpdate(data.ticket); }
+//       else Swal.fire({ icon:"error", title:"Error", text: data.message || "Failed." });
+//     } catch { Swal.fire({ icon:"error", title:"Error", text:"Network error." }); }
+//     finally { setSending(false); }
+//   };
+
+//   const closed = ["closed","resolved"].includes(ticket?.status);
+
+//   return (
+//     <div style={{ display:"flex", flexDirection:"column" }}>
+//       <div style={{ overflowY:"auto", padding:"20px 24px", display:"flex", flexDirection:"column", gap:4, background:"#F8FAFC", minHeight:320, maxHeight:440 }}>
+//         {!msgs.length && (
+//           <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:8, paddingTop:64, color:"#C4CAD4" }}>
+//             {Icon.empty}
+//             <span style={{ fontSize:13 }}>No messages yet</span>
+//           </div>
+//         )}
+//         {msgs.map((msg, i) => {
+//           const isMe     = msg.senderId === staffId;
+//           const isSystem = msg.senderName === "System";
+//           const isClient = msg.sender === "client";
+//           const prevDate = i > 0 ? dt.date(msgs[i-1].createdAt) : null;
+//           const thisDate = dt.date(msg.createdAt);
+//           return (
+//             <React.Fragment key={i}>
+//               {thisDate !== prevDate && (
+//                 <div style={{ display:"flex", alignItems:"center", gap:10, margin:"12px 0 6px" }}>
+//                   <div style={{ flex:1, height:1, background:"#E5E7EB" }} />
+//                   <span style={{ fontSize:10.5, color:"#9CA3AF", fontWeight:500 }}>{thisDate}</span>
+//                   <div style={{ flex:1, height:1, background:"#E5E7EB" }} />
+//                 </div>
+//               )}
+//               {isSystem ? (
+//                 <div style={{ textAlign:"center", margin:"4px 0" }}>
+//                   <span style={{ fontSize:11, color:"#9CA3AF", background:"#F1F5F9", padding:"3px 14px", borderRadius:20 }}>{msg.message}</span>
+//                 </div>
+//               ) : (
+//                 <div className="shs-msg" style={{ display:"flex", justifyContent:isMe?"flex-end":"flex-start", gap:8, alignItems:"flex-end", marginBottom:2 }}>
+//                   {!isMe && <Avatar name={msg.senderName} size={28} color={isClient?"#2563EB":"#7C3AED"} />}
+//                   <div style={{ maxWidth:"65%", display:"flex", flexDirection:"column", alignItems:isMe?"flex-end":"flex-start" }}>
+//                     {!isMe && <span style={{ fontSize:10.5, color:"#9CA3AF", marginBottom:3, paddingLeft:2 }}>{msg.senderName} · {isClient ? "Client" : "Staff"}</span>}
+//                     <div style={{ padding:"9px 13px", fontSize:13, lineHeight:1.55, borderRadius: isMe ? "14px 14px 3px 14px" : "14px 14px 14px 3px", background: isMe ? "#2563EB" : "#fff", color: isMe ? "#fff" : "#111827", border: isMe ? "none" : "1px solid #E5E7EB", boxShadow: isMe ? "0 2px 10px rgba(37,99,235,0.2)" : "0 1px 3px rgba(0,0,0,0.05)" }}>
+//                       {msg.message}
+//                     </div>
+//                     <span style={{ fontSize:10, color:"#CBD5E1", marginTop:3, paddingRight:2, paddingLeft:2 }}>{dt.time(msg.createdAt)}</span>
+//                   </div>
+//                   {isMe && <Avatar name={staffName} size={28} color="#2563EB" />}
+//                 </div>
+//               )}
+//             </React.Fragment>
+//           );
+//         })}
+//         <div ref={endRef} />
+//       </div>
+
+//       {readOnly ? (
+//         <div style={{ padding:"12px 20px", textAlign:"center", fontSize:12.5, color:"#7C3AED", background:"#FDFCFF", borderTop:"1px solid #EDE9FE" }}>
+//           This ticket has been escalated — view only.
+//         </div>
+//       ) : closed ? (
+//         <div style={{ padding:"12px 20px", textAlign:"center", fontSize:12.5, color:"#9CA3AF", borderTop:"1px solid #F1F5F9" }}>
+//           Ticket is {ticket?.status}.
+//         </div>
+//       ) : (
+//         <div style={{ display:"flex", gap:10, padding:"12px 20px", borderTop:"1px solid #F1F5F9", background:"#fff", alignItems:"center" }}>
+//           <Avatar name={staffName} size={32} color="#2563EB" />
+//           <input className="shs-input" type="text" placeholder="Write a reply…" value={text}
+//             onChange={e => setText(e.target.value)} onKeyDown={e => e.key === "Enter" && send()}
+//             style={{ flex:1, padding:"9px 16px", borderRadius:24, border:"1.5px solid #E5E7EB", fontSize:13, background:"#F9FAFB", fontFamily:"inherit", color:"#111827", transition:"border-color 0.15s, box-shadow 0.15s" }}
+//           />
+//           <button onClick={send} disabled={!text.trim() || sending} className="shs-btn"
+//             style={{ width:38, height:38, borderRadius:"50%", border:"none", background: text.trim() ? "#2563EB" : "#E5E7EB", color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+//             {sending ? <span style={{ fontSize:16 }}>…</span> : Icon.send}
+//           </button>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// const EscalatePanel = ({ staffRole, adminList, form, setForm, onConfirm, onCancel, loading }) => (
+//   <div style={{ padding:"16px 20px", background:"#FFFBEB", borderTop:"1px solid #FDE68A", borderBottom:"1px solid #FDE68A" }}>
+//     <p style={{ margin:"0 0 12px", fontWeight:700, fontSize:12.5, color:"#92400E" }}>Escalate this ticket</p>
+//     <div style={{ display:"flex", gap:10, flexWrap:"wrap", alignItems:"flex-end" }}>
+//       <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
+//         <label style={{ fontSize:11, fontWeight:600, color:"#6B7280" }}>To</label>
+//         <select value={form.toRole} onChange={e => setForm({...form, toRole:e.target.value, toId:"", toName:""})}
+//           style={{ padding:"8px 12px", borderRadius:8, border:"1px solid #E5E7EB", fontSize:12.5, background:"#fff", fontFamily:"inherit", color:"#111827" }}>
+//           {staffRole === "staff" && adminList.length > 0 && <option value="admin-assistant">Admin Assistant</option>}
+//           <option value="admin">Admin</option>
+//         </select>
+//       </div>
+//       {form.toRole === "admin-assistant" && adminList.length > 0 && (
+//         <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
+//           <label style={{ fontSize:11, fontWeight:600, color:"#6B7280" }}>Select assistant</label>
+//           <select value={form.toId} onChange={e => { const a=adminList.find(x=>x._id===e.target.value); setForm({...form, toId:e.target.value, toName:a?.name||""}); }}
+//             style={{ padding:"8px 12px", borderRadius:8, border:"1px solid #E5E7EB", fontSize:12.5, background:"#fff", fontFamily:"inherit", color:"#111827" }}>
+//             <option value="">— Select —</option>
+//             {adminList.map(a => <option key={a._id} value={a._id}>{a.name}</option>)}
+//           </select>
+//         </div>
+//       )}
+//       <div style={{ flex:1, minWidth:200, display:"flex", flexDirection:"column", gap:4 }}>
+//         <label style={{ fontSize:11, fontWeight:600, color:"#6B7280" }}>Reason <span style={{ color:"#EF4444" }}>*</span></label>
+//         <input className="shs-input" type="text" placeholder="Enter reason…" value={form.reason}
+//           onChange={e => setForm({...form, reason:e.target.value})}
+//           style={{ padding:"8px 12px", borderRadius:8, border:"1.5px solid #E5E7EB", fontSize:12.5, background:"#fff", fontFamily:"inherit", color:"#111827", transition:"border-color 0.15s, box-shadow 0.15s" }} />
+//       </div>
+//       <button onClick={onConfirm} disabled={loading||!form.reason.trim()} className="shs-btn"
+//         style={{ padding:"8px 16px", borderRadius:8, border:"none", background:loading?"#FCD34D":"#D97706", color:"#fff", fontWeight:600, fontSize:12.5, fontFamily:"inherit", height:36, display:"flex", alignItems:"center", gap:5 }}>
+//         {Icon.up} {loading?"Escalating…":"Confirm Escalation"}
+//       </button>
+//       <button onClick={onCancel} className="shs-btn"
+//         style={{ padding:"8px 14px", borderRadius:8, border:"1px solid #E5E7EB", background:"#fff", fontSize:12.5, fontFamily:"inherit", color:"#374151", height:36 }}>
+//         Cancel
+//       </button>
+//     </div>
+//   </div>
+// );
+
+// const TicketCard = ({ ticket, isEsc, staffId, onOpen }) => {
+//   const unread   = !isEsc && (ticket.unreadByStaff || 0);
+//   const lastMsg  = ticket.messages?.[ticket.messages.length - 1];
+//   const escEntry = isEsc ? [...(ticket.escalationLog||[])].reverse().find(e=>e.from===staffId) : null;
+
+//   return (
+//     <div className="shs-card" style={{ border:`1px solid ${unread?"#BFDBFE":isEsc?"#EDE9FE":"#E5E7EB"}`, borderRadius:12, background:unread?"#F0F7FF":"#fff", boxShadow:"0 1px 4px rgba(0,0,0,0.04)", overflow:"hidden" }}>
+//       <div style={{ padding:"14px 16px" }}>
+//         <div style={{ display:"flex", justifyContent:"space-between", flexWrap:"wrap", gap:8, alignItems:"flex-start" }}>
+//           <div>
+//             <div style={{ display:"flex", alignItems:"center", gap:7 }}>
+//               <span style={{ fontWeight:700, fontSize:13, color:"#111827" }}>#{ticket.ticketId} — {ticket.subject==="Other" ? ticket.customSubject : ticket.subject}</span>
+//               <UnreadPill count={ticket.unreadByStaff} />
+//             </div>
+//             <p style={{ margin:"4px 0 0", fontSize:11.5, color:"#9CA3AF" }}>{ticket.clientName} · {ticket.projectName||ticket.projectId} · {dt.full(ticket.createdAt)}</p>
+//           </div>
+//           <div style={{ display:"flex", gap:5, flexWrap:"wrap", alignItems:"center" }}>
+//             <Badge label={ticket.status} map={STATUS_MAP} />
+//             <Badge label={ticket.priority} map={PRIORITY_MAP} />
+//             {isEsc && ticket.assignedTo && (
+//               <span style={{ padding:"3px 9px", borderRadius:99, fontSize:11, fontWeight:600, background:"#EFF6FF", color:"#1D4ED8", border:"1px solid #BFDBFE" }}>
+//                 With: {ticket.assignedTo.name||ticket.assignedTo.role}
+//               </span>
+//             )}
+//           </div>
+//         </div>
+//         {escEntry && (
+//           <div style={{ marginTop:9, padding:"7px 11px", background:"#F5F3FF", borderRadius:8, fontSize:11.5, color:"#6D28D9", border:"1px solid #EDE9FE" }}>
+//             Reason: <strong>{escEntry.reason}</strong>
+//             <span style={{ color:"#9CA3AF", marginLeft:8 }}>→ {escEntry.toName}</span>
+//           </div>
+//         )}
+//         {!isEsc && lastMsg && (
+//           <p style={{ margin:"8px 0 0", fontSize:12, color:"#6B7280", display:"-webkit-box", WebkitLineClamp:1, WebkitBoxOrient:"vertical", overflow:"hidden", lineHeight:1.5 }}>
+//             {lastMsg.message}
+//           </p>
+//         )}
+//       </div>
+//       <div style={{ borderTop:"1px solid #F1F5F9", padding:"9px 16px", background:"#FAFBFC", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+//         <span style={{ fontSize:11.5, color:"#9CA3AF", display:"flex", alignItems:"center", gap:5 }}>
+//           {Icon.chat} {ticket.messages?.length||0} messages
+//         </span>
+//         <button onClick={onOpen} className="shs-btn" style={{ padding:"6px 14px", borderRadius:8, border:"none", background:isEsc?"#7C3AED":"#2563EB", color:"#fff", fontWeight:600, fontSize:12, display:"flex", alignItems:"center", gap:6, fontFamily:"inherit" }}>
+//           {isEsc ? "View History" : "Open Chat"}
+//           <UnreadPill count={ticket.unreadByStaff} />
+//         </button>
+//       </div>
+//     </div>
+//   );
+// };
+
+// /* ═══════════════════════════════════════════════════════
+//    MAIN COMPONENT
+// ═══════════════════════════════════════════════════════ */
+// const StaffHelpSupport = ({ staffId:pId, staffName:pName, staffRole:pRole, adminAssistantList:pAdmins }) => {
+//   const [staffId,   setStaffId]   = useState(pId   || "");
+//   const [staffName, setStaffName] = useState(pName || "");
+//   const [staffRole, setStaffRole] = useState(pRole || "staff");
+//   const [adminList, setAdminList] = useState(pAdmins || []);
+
+//   const [tickets,     setTickets]     = useState([]);
+//   const [escalated,   setEscalated]   = useState([]);
+//   const [active,      setActive]      = useState(null);
+//   const [isEscActive, setIsEscActive] = useState(false);
+//   const [loading,     setLoading]     = useState(false);
+//   const [loadEsc,     setLoadEsc]     = useState(false);
+//   const [error,       setError]       = useState("");
+//   const [tab,         setTab]         = useState("all");
+//   const [showEsc,     setShowEsc]     = useState(false);
+//   const [escForm,     setEscForm]     = useState({ toRole:"admin", toId:"", toName:"", reason:"" });
+//   const [escalating,  setEscalating]  = useState(false);
+//   const [resolving,   setResolving]   = useState(false);
+//   const [relatedTickets, setRelatedTickets] = useState([]);
+
+//   const sockRef   = useRef(null);
+//   const activeRef = useRef(null);
+//   useEffect(() => { activeRef.current = active; }, [active]);
+//   useEffect(() => { setEscForm(f => ({...f, toRole: staffRole==="staff" ? "admin-assistant" : "admin"})); }, [staffRole]);
+
+//   useEffect(() => {
+//     if (pId) return;
+//     const d = getStaff();
+//     if (d) {
+//       setStaffId(d._id||d.id||"");
+//       setStaffName(d.name||d.firstName||"");
+//       const slug = (d.slug||d.roleName||"").toLowerCase();
+//       setStaffRole(slug.includes("admin-assistant")||slug.includes("admin assistant") ? "admin-assistant" : "staff");
+//     }
+//   }, [pId]);
+
+//   useEffect(() => {
+//     if (pAdmins?.length) return;
+//     fetch(`${Url}/management-staff`).then(r=>r.json()).then(data=>{
+//       const list = Array.isArray(data)?data:(data.staff||data.data||[]);
+//       setAdminList(list.filter(s=>{const sl=(s.slug||s.roleName||"").toLowerCase();return sl.includes("admin-assistant")||sl.includes("admin assistant");}));
+//     }).catch(()=>{});
+//   }, [pAdmins]);
+
+//   const fetchTickets = useCallback(async () => {
+//     if (!staffId) return;
+//     setLoading(true); setError("");
+//     try {
+//       const r = await fetch(`${Url}/api/support/tickets/assigned/${staffId}`);
+//       const d = await r.json();
+//       if (r.ok) setTickets(d.tickets||[]); else setError(d.message||"Failed.");
+//     } catch { setError("Network error."); } finally { setLoading(false); }
+//   }, [staffId]);
+
+//   const fetchEscalated = useCallback(async () => {
+//     if (!staffId) return;
+//     setLoadEsc(true);
+//     try {
+//       const r = await fetch(`${Url}/api/support/tickets/escalated-by/${staffId}`);
+//       const d = await r.json();
+//       setEscalated(r.ok?(d.tickets||[]):[]);
+//     } catch { setEscalated([]); } finally { setLoadEsc(false); }
+//   }, [staffId]);
+
+//   const fetchOne = useCallback(async id => {
+//     try {
+//       const r = await fetch(`${Url}/api/support/tickets/${id}`);
+//       const d = await r.json();
+//       if (!r.ok||!d.ticket) return;
+//       setTickets(prev => prev.map(t => t._id===d.ticket._id ? d.ticket : t));
+//       if (activeRef.current?._id === d.ticket._id) setActive(d.ticket);
+//     } catch {}
+//   }, []);
+
+//   const fetchRelated = useCallback(async (ticket) => {
+//     if (!ticket?.projectId || !ticket?.subject) { setRelatedTickets([]); return; }
+//     try {
+//       const r = await fetch(`${Url}/api/support/tickets/related/${ticket.projectId}/${encodeURIComponent(ticket.subject)}?excludeId=${ticket._id}`);
+//       const d = await r.json();
+//       setRelatedTickets(r.ok ? (d.tickets || []) : []);
+//     } catch { setRelatedTickets([]); }
+//   }, []);
+
+//   const markRead = useCallback(async id => {
+//     try {
+//       await fetch(`${Url}/api/support/tickets/${id}/mark-read`,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({role:"staff"})});
+//       setTickets(prev => prev.map(t => t._id===id ? {...t, unreadByStaff:0} : t));
+//       setActive(prev => prev?._id===id ? {...prev, unreadByStaff:0} : prev);
+//     } catch {}
+//   }, []);
+
+//   useEffect(() => { if (staffId) { fetchTickets(); fetchEscalated(); } }, [staffId]);
+//   useEffect(() => { if (tab==="escalated" && staffId) fetchEscalated(); }, [tab, staffId]);
+//   useEffect(() => {
+//     if (active && !isEscActive) fetchRelated(active);
+//     else setRelatedTickets([]);
+//   }, [active, isEscActive, fetchRelated]);
+
+//   /* ── ✅ FIXED Socket — join with BOTH token AND staffId ── */
+//   useEffect(() => {
+//     if (!staffId) return;
+//     const s = socketIo(Url, {
+//       transports:           ["websocket"],
+//       reconnectionAttempts: 10,
+//       reconnectionDelay:    1000,
+//     });
+//     sockRef.current = s;
+
+//     // ✅ KEY FIX: emit both 'join' (token) AND 'joinStaff' (staffId)
+//     // Server must handle 'joinStaff' to add socket to room: user_<staffId>
+//     const joinRoom = () => {
+//       const token = getToken();
+//       if (token) s.emit("join", token);
+//       s.emit("joinStaff", staffId); // ✅ explicit room join
+//     };
+//     s.on("connect",   joinRoom);
+//     s.on("reconnect", joinRoom);
+
+//     /* ── New ticket assigned ── */
+//     s.on("support:assigned_to_you", d => {
+//       playNotifSound();
+//       Swal.fire({ toast:true, position:"top-end", icon:"info", showConfirmButton:false, timer:4500, title:`New: #${d.ticketCode}`, text:d.subject });
+//       setTickets(prev => {
+//         if (prev.some(t => t._id === d._id)) return prev;
+//         return [d, ...prev];
+//       });
+//     });
+
+//     /* ── Ticket updated ── */
+//     s.on("support:ticket_updated", u => {
+//       if (u.assignedTo?.id !== staffId) {
+//         setTickets(prev => prev.filter(t => t._id !== u._id));
+//         if (activeRef.current?._id === u._id) setActive(null);
+//         fetchEscalated();
+//         return;
+//       }
+//       playNotifSound();
+//       setTickets(prev => {
+//         const exists = prev.some(t => t._id === u._id);
+//         return exists ? prev.map(t => t._id === u._id ? u : t) : [u, ...prev];
+//       });
+//       if (activeRef.current?._id === u._id) setActive(u);
+//     });
+
+//     /* ── ✅ New message — increment count OR fetch if chat is open ── */
+//     s.on("support:new_message", (d) => {
+//       // d = { ticketId, ticketCode, message: { sender, senderName, message, ... } }
+//       const tid    = d.ticketId
+//       const sender = d.message?.sender || ""
+
+//       const isActiveTicket = activeRef.current?._id === tid;
+
+//       if (isActiveTicket) {
+//         // Chat is open — fetch fresh to render new message
+//         fetchOne(tid);
+//       } else {
+//         // Not viewing — only increment if message is from client
+//         if (sender === "staff") return; // our own message, ignore
+//         playNotifSound();
+//         setTickets(prev => prev.map(t => {
+//           if (t._id !== tid) return t;
+//           const newMsg = {
+//             message:    d.message?.message    || "",
+//             senderName: d.message?.senderName || "",
+//             sender,
+//             createdAt:  new Date().toISOString(),
+//           };
+//           return {
+//             ...t,
+//             unreadByStaff: (t.unreadByStaff || 0) + 1,
+//             messages:      [...(t.messages || []), newMsg],
+//           };
+//         }));
+//       }
+//     });
+
+//     /* ── ✅ Server unread sync — direct authoritative count ── */
+//     s.on("support:unread_update", ({ ticketId: tid, unreadByStaff }) => {
+//       if (unreadByStaff === undefined || activeRef.current?._id === tid) return;
+//       setTickets(prev => prev.map(t =>
+//         t._id === tid ? { ...t, unreadByStaff } : t
+//       ));
+//     });
+
+//     return () => {
+//       s.off("connect",   joinRoom);
+//       s.off("reconnect", joinRoom);
+//       s.disconnect();
+//       sockRef.current = null;
+//     };
+//   }, [staffId, fetchOne, fetchEscalated]);
+
+//   const handleResolve = async () => {
+//     if (!active || resolving) return;
+//     const ok = await Swal.fire({ title:"Mark as Resolved?", icon:"question", showCancelButton:true, confirmButtonText:"Yes, resolve", confirmButtonColor:"#16A34A" });
+//     if (!ok.isConfirmed) return;
+//     setResolving(true);
+//     try {
+//       const r = await fetch(`${Url}/api/support/tickets/${active._id}/status`,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({status:"resolved"})});
+//       const d = await r.json();
+//       if (r.ok) {
+//         Swal.fire({ icon:"success", title:"Resolved!", timer:2000, showConfirmButton:false });
+//         setActive(d.ticket);
+//         setTickets(prev => prev.map(t => t._id===d.ticket._id ? d.ticket : t));
+//         setShowEsc(false);
+//       } else Swal.fire({ icon:"error", title:"Error", text:d.message });
+//     } catch { Swal.fire({ icon:"error", title:"Error", text:"Network error." }); }
+//     finally { setResolving(false); }
+//   };
+
+//   const handleEscalate = async () => {
+//     if (!active || !escForm.reason.trim()) { Swal.fire({ icon:"warning", title:"Reason required" }); return; }
+//     if (escForm.toRole==="admin-assistant" && !escForm.toId) {
+//       if (!adminList.length) { setEscForm(f=>({...f, toRole:"admin", toId:"", toName:"Admin"})); return; }
+//       Swal.fire({ icon:"warning", title:"Select an assistant" }); return;
+//     }
+//     setEscalating(true);
+//     try {
+//       const r = await fetch(`${Url}/api/support/tickets/${active._id}/escalate`,{method:"PATCH",headers:{"Content-Type":"application/json"},
+//         body:JSON.stringify({fromId:staffId,fromName:staffName,toRole:escForm.toRole,toId:escForm.toRole==="admin"?null:escForm.toId,toName:escForm.toRole==="admin"?"Admin":escForm.toName,reason:escForm.reason})});
+//       const d = await r.json();
+//       if (r.ok) {
+//         Swal.fire({ icon:"success", title:"Escalated!", timer:2000, showConfirmButton:false });
+//         setTickets(prev => prev.filter(t => t._id !== active._id));
+//         setEscalated(prev => [d.ticket, ...prev.filter(t => t._id !== d.ticket._id)]);
+//         setActive(null); setShowEsc(false); setRelatedTickets([]);
+//         setEscForm({ toRole:staffRole==="staff"?"admin-assistant":"admin", toId:"", toName:"", reason:"" });
+//         fetchEscalated();
+//       } else Swal.fire({ icon:"error", title:"Error", text:d.message });
+//     } catch { Swal.fire({ icon:"error", title:"Error", text:"Escalation failed." }); }
+//     finally { setEscalating(false); }
+//   };
+
+//   const openTicket = (ticket, isEsc = false) => {
+//     setActive(ticket);
+//     setIsEscActive(isEsc);
+//     setShowEsc(false);
+//     if (!isEsc) markRead(ticket._id);
+//   };
+
+//   const list        = tab==="all" ? tickets : tab==="escalated" ? escalated : tickets.filter(t => t.status===tab);
+//   const actionable  = active && !["closed","resolved"].includes(active.status) && !isEscActive;
+//   const totalUnread = tickets.reduce((s, t) => s + (t.unreadByStaff || 0), 0);
+
+//   const TABS = [
+//     { key:"all",         label:"All",         cnt:tickets.length },
+//     { key:"open",        label:"Open",        cnt:tickets.filter(t=>t.status==="open").length },
+//     { key:"in-progress", label:"In Progress", cnt:tickets.filter(t=>t.status==="in-progress").length },
+//     { key:"resolved",    label:"Resolved",    cnt:tickets.filter(t=>t.status==="resolved").length },
+//     { key:"escalated",   label:"Escalated",   cnt:escalated.length },
+//   ];
+
+//   if (!staffId) return (
+//     <div className="shs-root" style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:10, padding:80, color:"#9CA3AF" }}>
+//       {Icon.lock}
+//       <p style={{ fontWeight:600, fontSize:15, color:"#374151", margin:0 }}>Staff identity not found</p>
+//       <p style={{ fontSize:13, margin:0 }}>Please login or refresh the page.</p>
+//     </div>
+//   );
+
+//   return (
+//     <>
+//       <style>{GLOBAL_CSS}</style>
+//       <div className="shs-root" style={{ padding:"28px 24px", maxWidth:1080, margin:"0 auto" }}>
+
+//         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", flexWrap:"wrap", gap:12, marginBottom:26 }}>
+//           <div>
+//             <h2 style={{ margin:0, fontSize:20, fontWeight:700, color:"#111827", letterSpacing:-0.3, display:"flex", alignItems:"center", gap:10 }}>
+//               Support Tickets
+//               {totalUnread > 0 && (
+//                 <span style={{ background:"#EF4444", color:"#fff", borderRadius:99, padding:"2px 10px", fontSize:11, fontWeight:700 }}>
+//                   {totalUnread} unread
+//                 </span>
+//               )}
+//             </h2>
+//             <p style={{ margin:"5px 0 0", fontSize:12.5, color:"#9CA3AF" }}>
+//               Assigned to <strong style={{ color:"#374151" }}>{staffName}</strong>
+//               <span style={{ margin:"0 6px", color:"#E5E7EB" }}>·</span>
+//               {staffRole}
+//               {adminList.length > 0 && (<><span style={{ margin:"0 6px", color:"#E5E7EB" }}>·</span><span style={{ color:"#7C3AED" }}>{adminList.length} assistant(s)</span></>)}
+//             </p>
+//           </div>
+//           <button onClick={()=>{fetchTickets();fetchEscalated();}} className="shs-btn"
+//             style={{ padding:"7px 14px", borderRadius:8, border:"1px solid #E5E7EB", background:"#fff", fontSize:12.5, color:"#374151", fontWeight:500, display:"flex", alignItems:"center", gap:6, fontFamily:"inherit" }}>
+//             {Icon.refresh} Refresh
+//           </button>
+//         </div>
+
+//         {error && <div style={{ background:"#FEF2F2", border:"1px solid #FECACA", borderRadius:10, padding:"10px 16px", marginBottom:18, fontSize:13, color:"#991B1B" }}>{error}</div>}
+
+//         <div style={{ display:"flex", gap:2, marginBottom:20, background:"#F3F4F6", borderRadius:11, padding:3, flexWrap:"wrap" }}>
+//           {TABS.map(t => {
+//             const on = tab === t.key;
+//             const ac = t.key==="escalated"?"#7C3AED":t.key==="resolved"?"#16A34A":"#2563EB";
+//             return (
+//               <button key={t.key} className="shs-tab"
+//                 onClick={()=>{ setTab(t.key); setActive(null); setIsEscActive(false); setShowEsc(false); setRelatedTickets([]); }}
+//                 style={{ flex:1, minWidth:80, padding:"7px 10px", borderRadius:8, border:"none", background:on?"#fff":"transparent", boxShadow:on?"0 1px 4px rgba(0,0,0,0.09)":"none", fontWeight:on?600:500, color:on?ac:"#6B7280", cursor:"pointer", fontSize:12.5, fontFamily:"inherit", display:"flex", alignItems:"center", justifyContent:"center", gap:5 }}>
+//                 {t.label}
+//                 {t.cnt > 0 && <span style={{ background:on?ac:"#D1D5DB", color:on?"#fff":"#6B7280", borderRadius:99, minWidth:18, height:18, display:"inline-flex", alignItems:"center", justifyContent:"center", fontSize:10, padding:"0 4px", fontWeight:700 }}>{t.cnt}</span>}
+//               </button>
+//             );
+//           })}
+//         </div>
+
+//         {tab==="escalated" && !active && (
+//           <div style={{ background:"#F5F3FF", border:"1px solid #EDE9FE", borderRadius:10, padding:"10px 16px", marginBottom:16, fontSize:12.5, color:"#6D28D9", display:"flex", alignItems:"center", gap:8 }}>
+//             {Icon.info} Tickets you've escalated — view only.
+//           </div>
+//         )}
+
+//         {active ? (
+//           <div style={{ border:"1px solid #E5E7EB", borderRadius:16, overflow:"hidden", background:"#fff", boxShadow:"0 4px 24px rgba(0,0,0,0.07)" }}>
+//             <div style={{ padding:"14px 20px", borderBottom:`1px solid ${isEscActive?"#EDE9FE":"#F1F5F9"}`, background:isEscActive?"#FDFCFF":"#FAFBFC", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:10 }}>
+//               <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+//                 <button onClick={()=>{ setActive(null); setIsEscActive(false); setShowEsc(false); setRelatedTickets([]); }} className="shs-btn"
+//                   style={{ width:32, height:32, borderRadius:8, border:"1px solid #E5E7EB", background:"#F3F4F6", color:"#374151", display:"flex", alignItems:"center", justifyContent:"center", padding:0 }}>
+//                   {Icon.back}
+//                 </button>
+//                 <div>
+//                   <p style={{ margin:0, fontWeight:700, fontSize:13.5, color:"#111827" }}>
+//                     #{active.ticketId} — {active.subject==="Other" ? active.customSubject : active.subject}
+//                   </p>
+//                   <p style={{ margin:"3px 0 0", fontSize:11.5, color:"#9CA3AF" }}>{active.clientName} · {active.projectName||active.projectId}</p>
+//                 </div>
+//               </div>
+//               <div style={{ display:"flex", gap:7, alignItems:"center", flexWrap:"wrap" }}>
+//                 <Badge label={active.status} map={STATUS_MAP} />
+//                 <Badge label={active.priority} map={PRIORITY_MAP} />
+//                 {actionable && (
+//                   <button onClick={handleResolve} disabled={resolving} className="shs-btn"
+//                     style={{ padding:"6px 14px", borderRadius:8, border:"none", background:resolving?"#BBF7D0":"#16A34A", color:"#fff", fontWeight:600, fontSize:12, fontFamily:"inherit", display:"flex", alignItems:"center", gap:5 }}>
+//                     {Icon.check} {resolving?"Resolving…":"Resolve"}
+//                   </button>
+//                 )}
+//                 {actionable && (
+//                   <button onClick={()=>setShowEsc(v=>!v)} className="shs-btn"
+//                     style={{ padding:"6px 14px", borderRadius:8, border:`1px solid ${showEsc?"#FDE68A":"#E5E7EB"}`, background:showEsc?"#FFFBEB":"#fff", color:showEsc?"#92400E":"#374151", fontWeight:600, fontSize:12, fontFamily:"inherit", display:"flex", alignItems:"center", gap:5 }}>
+//                     {Icon.up} Escalate
+//                   </button>
+//                 )}
+//                 {isEscActive && (
+//                   <span style={{ padding:"4px 11px", borderRadius:99, background:"#F5F3FF", color:"#6D28D9", fontSize:11, fontWeight:600, border:"1px solid #EDE9FE" }}>Escalated by you</span>
+//                 )}
+//               </div>
+//             </div>
+
+//             {!isEscActive && active.status==="resolved" && (
+//               <div style={{ padding:"10px 20px", background:"#F0FDF4", borderBottom:"1px solid #BBF7D0", fontSize:12.5, color:"#15803D", display:"flex", alignItems:"center", gap:6 }}>
+//                 {Icon.check} You've resolved this ticket. Admin will close it.
+//               </div>
+//             )}
+
+//             {!isEscActive && <RelatedTicketsBanner tickets={relatedTickets} onSelect={(t) => openTicket(t, false)} />}
+//             {isEscActive && <EscalationLog log={active.escalationLog} />}
+//             {showEsc && !isEscActive && (
+//               <EscalatePanel staffRole={staffRole} adminList={adminList} form={escForm} setForm={setEscForm}
+//                 onConfirm={handleEscalate} onCancel={()=>setShowEsc(false)} loading={escalating} />
+//             )}
+
+//             <TicketChat ticket={active} staffId={staffId} staffName={staffName} readOnly={isEscActive} onMarkRead={markRead}
+//               onUpdate={u => { setActive(u); setTickets(prev => prev.map(t => t._id===u._id ? u : t)); }} />
+//           </div>
+
+//         ) : (loading && tab!=="escalated") || (loadEsc && tab==="escalated") ? (
+//           <div style={{ textAlign:"center", padding:80, color:"#C4CAD4" }}>
+//             {Icon.spin}
+//             <p style={{ fontSize:13, marginTop:12, color:"#9CA3AF" }}>Loading tickets…</p>
+//           </div>
+
+//         ) : list.length === 0 ? (
+//           <div style={{ textAlign:"center", padding:"64px 40px", border:"1px dashed #E5E7EB", borderRadius:14, background:"#FAFBFC" }}>
+//             <div style={{ width:52, height:52, borderRadius:"50%", background:"#F3F4F6", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 14px" }}>{Icon.empty}</div>
+//             <p style={{ fontWeight:600, fontSize:14.5, color:"#374151", margin:"0 0 6px" }}>
+//               {tab==="all"?"No tickets assigned":tab==="escalated"?"No escalated tickets":`No ${tab} tickets`}
+//             </p>
+//             <p style={{ fontSize:12.5, color:"#9CA3AF", margin:0 }}>
+//               {tab==="all"?"Tickets assigned to you will appear here.":tab==="escalated"?"Tickets you escalate will appear here.":"Check another tab."}
+//             </p>
+//           </div>
+
+//         ) : (
+//           <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+//             {list.map(ticket => (
+//               <TicketCard key={ticket._id} ticket={ticket} isEsc={tab==="escalated"} staffId={staffId}
+//                 onOpen={()=>openTicket(ticket, tab==="escalated")} />
+//             ))}
+//           </div>
+//         )}
+//       </div>
+//     </>
+//   );
+// };
+
+// export default StaffHelpSupport;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
@@ -7507,10 +8300,16 @@ import Swal from "sweetalert2";
 import { io as socketIo } from "socket.io-client";
 import { Url } from "src/url/url";
 
+// ─── Sound ────────────────────────────────────────────────────────────────────
 const playNotifSound = () => {
-  try { const a = new Audio("/assets/notification.mp3"); a.volume = 0.6; a.play().catch(() => {}); } catch {}
+  try {
+    const a = new Audio("/assets/notification.mp3");
+    a.volume = 0.6;
+    a.play().catch(() => {});
+  } catch {}
 };
 
+// ─── Styles ───────────────────────────────────────────────────────────────────
 const GLOBAL_CSS = `
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap');
   .shs-root *, .shs-root *::before, .shs-root *::after { box-sizing: border-box; font-family: 'DM Sans', system-ui, sans-serif; }
@@ -7544,24 +8343,46 @@ const GLOBAL_CSS = `
   .shs-root ::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 99px; }
 `;
 
+// ─── Constants ────────────────────────────────────────────────────────────────
 const STATUS_MAP = {
-  open:          { dot:"#F59E0B", text:"#B45309", bg:"#FFFBEB", border:"#FDE68A" },
-  "in-progress": { dot:"#3B82F6", text:"#1D4ED8", bg:"#EFF6FF", border:"#BFDBFE" },
-  resolved:      { dot:"#22C55E", text:"#15803D", bg:"#F0FDF4", border:"#BBF7D0" },
-  closed:        { dot:"#9CA3AF", text:"#4B5563", bg:"#F9FAFB", border:"#E5E7EB" },
-  escalated:     { dot:"#8B5CF6", text:"#6D28D9", bg:"#F5F3FF", border:"#DDD6FE" },
-};
-const PRIORITY_MAP = {
-  high:   { dot:"#EF4444", text:"#991B1B", bg:"#FEF2F2", border:"#FECACA" },
-  medium: { dot:"#F59E0B", text:"#92400E", bg:"#FFFBEB", border:"#FDE68A" },
-  low:    { dot:"#22C55E", text:"#14532D", bg:"#F0FDF4", border:"#BBF7D0" },
+  open:          { dot: "#F59E0B", text: "#B45309",  bg: "#FFFBEB", border: "#FDE68A" },
+  "in-progress": { dot: "#3B82F6", text: "#1D4ED8",  bg: "#EFF6FF", border: "#BFDBFE" },
+  resolved:      { dot: "#22C55E", text: "#15803D",  bg: "#F0FDF4", border: "#BBF7D0" },
+  closed:        { dot: "#9CA3AF", text: "#4B5563",  bg: "#F9FAFB", border: "#E5E7EB" },
+  escalated:     { dot: "#8B5CF6", text: "#6D28D9",  bg: "#F5F3FF", border: "#DDD6FE" },
 };
 
+const PRIORITY_MAP = {
+  high:   { dot: "#EF4444", text: "#991B1B", bg: "#FEF2F2", border: "#FECACA" },
+  medium: { dot: "#F59E0B", text: "#92400E", bg: "#FFFBEB", border: "#FDE68A" },
+  low:    { dot: "#22C55E", text: "#14532D", bg: "#F0FDF4", border: "#BBF7D0" },
+};
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+const getStaff = () => {
+  try {
+    const r = sessionStorage.getItem("management_staff");
+    return r ? JSON.parse(r) : null;
+  } catch { return null; }
+};
+
+const getToken = () =>
+  sessionStorage.getItem("management_token") ||
+  localStorage.getItem("management_token") ||
+  localStorage.getItem("staffToken") || "";
+
+const dt = {
+  time: d => new Date(d).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }),
+  date: d => new Date(d).toLocaleDateString("en-IN", { day: "numeric", month: "short" }),
+  full: d => new Date(d).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" }),
+};
+
+// ─── Small Components ─────────────────────────────────────────────────────────
 const Badge = ({ label, map }) => {
-  const c = map?.[label] || { dot:"#9CA3AF", text:"#4B5563", bg:"#F9FAFB", border:"#E5E7EB" };
+  const c = map?.[label] || { dot: "#9CA3AF", text: "#4B5563", bg: "#F9FAFB", border: "#E5E7EB" };
   return (
-    <span style={{ display:"inline-flex", alignItems:"center", gap:5, padding:"3px 10px", borderRadius:99, fontSize:11, fontWeight:600, letterSpacing:0.1, whiteSpace:"nowrap", background:c.bg, color:c.text, border:`1px solid ${c.border}` }}>
-      <span style={{ width:5, height:5, borderRadius:"50%", background:c.dot, flexShrink:0 }} />
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "3px 10px", borderRadius: 99, fontSize: 11, fontWeight: 600, letterSpacing: 0.1, whiteSpace: "nowrap", background: c.bg, color: c.text, border: `1px solid ${c.border}` }}>
+      <span style={{ width: 5, height: 5, borderRadius: "50%", background: c.dot, flexShrink: 0 }} />
       {label}
     </span>
   );
@@ -7570,14 +8391,14 @@ const Badge = ({ label, map }) => {
 const UnreadPill = ({ count, size = 17 }) => {
   if (!count || count <= 0) return null;
   return (
-    <span className="shs-pulse" style={{ background:"#EF4444", color:"#fff", borderRadius:99, minWidth:size, height:size, padding:"0 4px", fontSize:9.5, fontWeight:700, display:"inline-flex", alignItems:"center", justifyContent:"center" }}>
+    <span className="shs-pulse" style={{ background: "#EF4444", color: "#fff", borderRadius: 99, minWidth: size, height: size, padding: "0 4px", fontSize: 9.5, fontWeight: 700, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
       {count > 99 ? "99+" : count}
     </span>
   );
 };
 
-const Avatar = ({ name="?", color="#2563EB", size=30 }) => (
-  <div style={{ width:size, height:size, borderRadius:"50%", flexShrink:0, background:`${color}18`, border:`1.5px solid ${color}30`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:size * 0.37, fontWeight:700, color }}>
+const Avatar = ({ name = "?", color = "#2563EB", size = 30 }) => (
+  <div style={{ width: size, height: size, borderRadius: "50%", flexShrink: 0, background: `${color}18`, border: `1.5px solid ${color}30`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: size * 0.37, fontWeight: 700, color }}>
     {name.charAt(0).toUpperCase()}
   </div>
 );
@@ -7591,43 +8412,30 @@ const Icon = {
   info:    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>,
   up:      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><polyline points="18 15 12 9 6 15"/></svg>,
   lock:    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>,
-  spin:    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{animation:"spin 1s linear infinite"}}><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>,
+  spin:    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ animation: "spin 1s linear infinite" }}><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>,
   empty:   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>,
   warning: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>,
   arrow:   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>,
 };
 
-const getStaff = () => {
-  try { const r = sessionStorage.getItem("management_staff"); return r ? JSON.parse(r) : null; } catch { return null; }
-};
-const getToken = () =>
-  sessionStorage.getItem("management_token") ||
-  localStorage.getItem("management_token") ||
-  localStorage.getItem("staffToken") || "";
-
-const dt = {
-  time: d => new Date(d).toLocaleTimeString("en-IN", { hour:"2-digit", minute:"2-digit" }),
-  date: d => new Date(d).toLocaleDateString("en-IN", { day:"numeric", month:"short" }),
-  full: d => new Date(d).toLocaleString("en-IN", { dateStyle:"medium", timeStyle:"short" }),
-};
-
+// ─── EscalationLog ────────────────────────────────────────────────────────────
 const EscalationLog = ({ log }) => {
   if (!log?.length) return null;
   return (
-    <div style={{ padding:"16px 20px", borderBottom:"1px solid #EDE9FE", background:"#FDFCFF" }}>
-      <p style={{ margin:"0 0 10px", fontSize:10.5, fontWeight:700, color:"#7C3AED", textTransform:"uppercase", letterSpacing:0.9 }}>Escalation History</p>
-      <div style={{ display:"flex", flexDirection:"column", gap:7 }}>
+    <div style={{ padding: "16px 20px", borderBottom: "1px solid #EDE9FE", background: "#FDFCFF" }}>
+      <p style={{ margin: "0 0 10px", fontSize: 10.5, fontWeight: 700, color: "#7C3AED", textTransform: "uppercase", letterSpacing: 0.9 }}>Escalation History</p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
         {log.map((e, i) => (
-          <div key={i} style={{ background:"#fff", border:"1px solid #EDE9FE", borderRadius:9, padding:"9px 13px", fontSize:12 }}>
-            <div style={{ display:"flex", justifyContent:"space-between", flexWrap:"wrap", gap:6, alignItems:"center" }}>
-              <span style={{ display:"flex", alignItems:"center", gap:6 }}>
-                <span style={{ fontWeight:600, color:"#6D28D9" }}>{e.fromName || e.from}</span>
-                <span style={{ color:"#CBD5E1", fontSize:12 }}>→</span>
-                <span style={{ fontWeight:600, color:"#2563EB" }}>{e.toName || e.to}</span>
+          <div key={i} style={{ background: "#fff", border: "1px solid #EDE9FE", borderRadius: 9, padding: "9px 13px", fontSize: 12 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 6, alignItems: "center" }}>
+              <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ fontWeight: 600, color: "#6D28D9" }}>{e.fromName || e.from}</span>
+                <span style={{ color: "#CBD5E1", fontSize: 12 }}>→</span>
+                <span style={{ fontWeight: 600, color: "#2563EB" }}>{e.toName || e.to}</span>
               </span>
-              <span style={{ fontSize:10.5, color:"#9CA3AF" }}>{dt.full(e.escalatedAt)}</span>
+              <span style={{ fontSize: 10.5, color: "#9CA3AF" }}>{dt.full(e.escalatedAt)}</span>
             </div>
-            {e.reason && <p style={{ margin:"5px 0 0", color:"#6B7280", fontSize:11 }}>Reason: {e.reason}</p>}
+            {e.reason && <p style={{ margin: "5px 0 0", color: "#6B7280", fontSize: 11 }}>Reason: {e.reason}</p>}
           </div>
         ))}
       </div>
@@ -7635,40 +8443,41 @@ const EscalationLog = ({ log }) => {
   );
 };
 
+// ─── RelatedTicketsBanner ─────────────────────────────────────────────────────
 const RelatedTicketsBanner = ({ tickets, onSelect }) => {
   const [collapsed, setCollapsed] = useState(false);
   if (!tickets || tickets.length === 0) return null;
   return (
-    <div style={{ padding:"12px 20px", background:"linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)", borderBottom:"1px solid #FDE68A" }}>
-      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom: collapsed ? 0 : 10, cursor:"pointer" }} onClick={() => setCollapsed(v => !v)}>
-        <div style={{ display:"flex", alignItems:"center", gap:7 }}>
+    <div style={{ padding: "12px 20px", background: "linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)", borderBottom: "1px solid #FDE68A" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: collapsed ? 0 : 10, cursor: "pointer" }} onClick={() => setCollapsed(v => !v)}>
+        <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
           {Icon.warning}
-          <span style={{ fontSize:12, fontWeight:700, color:"#92400E" }}>
+          <span style={{ fontSize: 12, fontWeight: 700, color: "#92400E" }}>
             Is project pe {tickets.length} aur active ticket{tickets.length > 1 ? "s" : ""} hain (same subject)
           </span>
         </div>
-        <span style={{ fontSize:11, color:"#B45309", fontWeight:600, display:"flex", alignItems:"center", gap:4 }}>
+        <span style={{ fontSize: 11, color: "#B45309", fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
           {collapsed ? "Show" : "Hide"}
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: collapsed ? "rotate(180deg)" : "rotate(0deg)", transition:"transform 0.2s" }}>
-            <polyline points="18 15 12 9 6 15"/>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: collapsed ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>
+            <polyline points="18 15 12 9 6 15" />
           </svg>
         </span>
       </div>
       {!collapsed && (
-        <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
           {tickets.map((t) => (
             <div key={t._id} className="shs-related-item" onClick={() => onSelect(t)}
-              style={{ display:"flex", alignItems:"center", justifyContent:"space-between", background:"#fff", border:"1px solid #FDE68A", borderRadius:8, padding:"8px 12px", fontSize:12 }}>
-              <div style={{ display:"flex", alignItems:"center", gap:8, flex:1, minWidth:0 }}>
-                <span style={{ fontWeight:700, color:"#2563EB", whiteSpace:"nowrap" }}>#{t.ticketId}</span>
-                <span style={{ color:"#6B7280", whiteSpace:"nowrap" }}>{t.clientName}</span>
-                <span style={{ color:"#D1D5DB", fontSize:11 }}>·</span>
-                <span style={{ color:"#9CA3AF", fontSize:11, whiteSpace:"nowrap" }}>{t.messages?.length || 0} msg(s)</span>
+              style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "#fff", border: "1px solid #FDE68A", borderRadius: 8, padding: "8px 12px", fontSize: 12 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, flex: 1, minWidth: 0 }}>
+                <span style={{ fontWeight: 700, color: "#2563EB", whiteSpace: "nowrap" }}>#{t.ticketId}</span>
+                <span style={{ color: "#6B7280", whiteSpace: "nowrap" }}>{t.clientName}</span>
+                <span style={{ color: "#D1D5DB", fontSize: 11 }}>·</span>
+                <span style={{ color: "#9CA3AF", fontSize: 11, whiteSpace: "nowrap" }}>{t.messages?.length || 0} msg(s)</span>
               </div>
-              <div style={{ display:"flex", alignItems:"center", gap:7, flexShrink:0 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 7, flexShrink: 0 }}>
                 <Badge label={t.status} map={STATUS_MAP} />
-                <span style={{ fontSize:10.5, color:"#9CA3AF", whiteSpace:"nowrap" }}>{dt.date(t.createdAt)}</span>
-                <span style={{ color:"#D97706" }}>{Icon.arrow}</span>
+                <span style={{ fontSize: 10.5, color: "#9CA3AF", whiteSpace: "nowrap" }}>{dt.date(t.createdAt)}</span>
+                <span style={{ color: "#D97706" }}>{Icon.arrow}</span>
               </div>
             </div>
           ))}
@@ -7678,69 +8487,88 @@ const RelatedTicketsBanner = ({ tickets, onSelect }) => {
   );
 };
 
+// ─── TicketChat ───────────────────────────────────────────────────────────────
 const TicketChat = ({ ticket, staffId, staffName, onUpdate, onMarkRead, readOnly }) => {
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
   const endRef = useRef(null);
   const msgs = ticket?.messages || [];
 
-  useEffect(() => { setTimeout(() => endRef.current?.scrollIntoView({ behavior:"smooth" }), 80); }, [msgs.length]);
-  useEffect(() => { if (ticket?._id && (ticket?.unreadByStaff || 0) > 0) onMarkRead?.(ticket._id); }, [ticket?._id]);
+  useEffect(() => {
+    setTimeout(() => endRef.current?.scrollIntoView({ behavior: "smooth" }), 80);
+  }, [msgs.length]);
+
+  useEffect(() => {
+    if (ticket?._id && (ticket?.unreadByStaff || 0) > 0) onMarkRead?.(ticket._id);
+  }, [ticket?._id]);
 
   const send = async () => {
     if (!text.trim() || sending) return;
     setSending(true);
     try {
       const res = await fetch(`${Url}/api/support/tickets/${ticket._id}/reply`, {
-        method:"POST", headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({ sender:"staff", senderId:staffId, senderName:staffName, message:text.trim() }),
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sender: "staff",
+          senderId: staffId,
+          senderName: staffName,
+          message: text.trim(),
+        }),
       });
       const data = await res.json();
-      if (res.ok) { setText(""); onUpdate(data.ticket); }
-      else Swal.fire({ icon:"error", title:"Error", text: data.message || "Failed." });
-    } catch { Swal.fire({ icon:"error", title:"Error", text:"Network error." }); }
-    finally { setSending(false); }
+      if (res.ok) {
+        setText("");
+        onUpdate(data.ticket);
+      } else {
+        Swal.fire({ icon: "error", title: "Error", text: data.message || "Failed." });
+      }
+    } catch {
+      Swal.fire({ icon: "error", title: "Error", text: "Network error." });
+    } finally {
+      setSending(false);
+    }
   };
 
-  const closed = ["closed","resolved"].includes(ticket?.status);
+  const closed = ["closed", "resolved"].includes(ticket?.status);
 
   return (
-    <div style={{ display:"flex", flexDirection:"column" }}>
-      <div style={{ overflowY:"auto", padding:"20px 24px", display:"flex", flexDirection:"column", gap:4, background:"#F8FAFC", minHeight:320, maxHeight:440 }}>
+    <div style={{ display: "flex", flexDirection: "column" }}>
+      <div style={{ overflowY: "auto", padding: "20px 24px", display: "flex", flexDirection: "column", gap: 4, background: "#F8FAFC", minHeight: 320, maxHeight: 440 }}>
         {!msgs.length && (
-          <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:8, paddingTop:64, color:"#C4CAD4" }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, paddingTop: 64, color: "#C4CAD4" }}>
             {Icon.empty}
-            <span style={{ fontSize:13 }}>No messages yet</span>
+            <span style={{ fontSize: 13 }}>No messages yet</span>
           </div>
         )}
         {msgs.map((msg, i) => {
           const isMe     = msg.senderId === staffId;
           const isSystem = msg.senderName === "System";
           const isClient = msg.sender === "client";
-          const prevDate = i > 0 ? dt.date(msgs[i-1].createdAt) : null;
+          const prevDate = i > 0 ? dt.date(msgs[i - 1].createdAt) : null;
           const thisDate = dt.date(msg.createdAt);
           return (
             <React.Fragment key={i}>
               {thisDate !== prevDate && (
-                <div style={{ display:"flex", alignItems:"center", gap:10, margin:"12px 0 6px" }}>
-                  <div style={{ flex:1, height:1, background:"#E5E7EB" }} />
-                  <span style={{ fontSize:10.5, color:"#9CA3AF", fontWeight:500 }}>{thisDate}</span>
-                  <div style={{ flex:1, height:1, background:"#E5E7EB" }} />
+                <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "12px 0 6px" }}>
+                  <div style={{ flex: 1, height: 1, background: "#E5E7EB" }} />
+                  <span style={{ fontSize: 10.5, color: "#9CA3AF", fontWeight: 500 }}>{thisDate}</span>
+                  <div style={{ flex: 1, height: 1, background: "#E5E7EB" }} />
                 </div>
               )}
               {isSystem ? (
-                <div style={{ textAlign:"center", margin:"4px 0" }}>
-                  <span style={{ fontSize:11, color:"#9CA3AF", background:"#F1F5F9", padding:"3px 14px", borderRadius:20 }}>{msg.message}</span>
+                <div style={{ textAlign: "center", margin: "4px 0" }}>
+                  <span style={{ fontSize: 11, color: "#9CA3AF", background: "#F1F5F9", padding: "3px 14px", borderRadius: 20 }}>{msg.message}</span>
                 </div>
               ) : (
-                <div className="shs-msg" style={{ display:"flex", justifyContent:isMe?"flex-end":"flex-start", gap:8, alignItems:"flex-end", marginBottom:2 }}>
-                  {!isMe && <Avatar name={msg.senderName} size={28} color={isClient?"#2563EB":"#7C3AED"} />}
-                  <div style={{ maxWidth:"65%", display:"flex", flexDirection:"column", alignItems:isMe?"flex-end":"flex-start" }}>
-                    {!isMe && <span style={{ fontSize:10.5, color:"#9CA3AF", marginBottom:3, paddingLeft:2 }}>{msg.senderName} · {isClient ? "Client" : "Staff"}</span>}
-                    <div style={{ padding:"9px 13px", fontSize:13, lineHeight:1.55, borderRadius: isMe ? "14px 14px 3px 14px" : "14px 14px 14px 3px", background: isMe ? "#2563EB" : "#fff", color: isMe ? "#fff" : "#111827", border: isMe ? "none" : "1px solid #E5E7EB", boxShadow: isMe ? "0 2px 10px rgba(37,99,235,0.2)" : "0 1px 3px rgba(0,0,0,0.05)" }}>
+                <div className="shs-msg" style={{ display: "flex", justifyContent: isMe ? "flex-end" : "flex-start", gap: 8, alignItems: "flex-end", marginBottom: 2 }}>
+                  {!isMe && <Avatar name={msg.senderName} size={28} color={isClient ? "#2563EB" : "#7C3AED"} />}
+                  <div style={{ maxWidth: "65%", display: "flex", flexDirection: "column", alignItems: isMe ? "flex-end" : "flex-start" }}>
+                    {!isMe && <span style={{ fontSize: 10.5, color: "#9CA3AF", marginBottom: 3, paddingLeft: 2 }}>{msg.senderName} · {isClient ? "Client" : "Staff"}</span>}
+                    <div style={{ padding: "9px 13px", fontSize: 13, lineHeight: 1.55, borderRadius: isMe ? "14px 14px 3px 14px" : "14px 14px 14px 3px", background: isMe ? "#2563EB" : "#fff", color: isMe ? "#fff" : "#111827", border: isMe ? "none" : "1px solid #E5E7EB", boxShadow: isMe ? "0 2px 10px rgba(37,99,235,0.2)" : "0 1px 3px rgba(0,0,0,0.05)" }}>
                       {msg.message}
                     </div>
-                    <span style={{ fontSize:10, color:"#CBD5E1", marginTop:3, paddingRight:2, paddingLeft:2 }}>{dt.time(msg.createdAt)}</span>
+                    <span style={{ fontSize: 10, color: "#CBD5E1", marginTop: 3, paddingRight: 2, paddingLeft: 2 }}>{dt.time(msg.createdAt)}</span>
                   </div>
                   {isMe && <Avatar name={staffName} size={28} color="#2563EB" />}
                 </div>
@@ -7752,23 +8580,28 @@ const TicketChat = ({ ticket, staffId, staffName, onUpdate, onMarkRead, readOnly
       </div>
 
       {readOnly ? (
-        <div style={{ padding:"12px 20px", textAlign:"center", fontSize:12.5, color:"#7C3AED", background:"#FDFCFF", borderTop:"1px solid #EDE9FE" }}>
+        <div style={{ padding: "12px 20px", textAlign: "center", fontSize: 12.5, color: "#7C3AED", background: "#FDFCFF", borderTop: "1px solid #EDE9FE" }}>
           This ticket has been escalated — view only.
         </div>
       ) : closed ? (
-        <div style={{ padding:"12px 20px", textAlign:"center", fontSize:12.5, color:"#9CA3AF", borderTop:"1px solid #F1F5F9" }}>
+        <div style={{ padding: "12px 20px", textAlign: "center", fontSize: 12.5, color: "#9CA3AF", borderTop: "1px solid #F1F5F9" }}>
           Ticket is {ticket?.status}.
         </div>
       ) : (
-        <div style={{ display:"flex", gap:10, padding:"12px 20px", borderTop:"1px solid #F1F5F9", background:"#fff", alignItems:"center" }}>
+        <div style={{ display: "flex", gap: 10, padding: "12px 20px", borderTop: "1px solid #F1F5F9", background: "#fff", alignItems: "center" }}>
           <Avatar name={staffName} size={32} color="#2563EB" />
-          <input className="shs-input" type="text" placeholder="Write a reply…" value={text}
-            onChange={e => setText(e.target.value)} onKeyDown={e => e.key === "Enter" && send()}
-            style={{ flex:1, padding:"9px 16px", borderRadius:24, border:"1.5px solid #E5E7EB", fontSize:13, background:"#F9FAFB", fontFamily:"inherit", color:"#111827", transition:"border-color 0.15s, box-shadow 0.15s" }}
+          <input
+            className="shs-input"
+            type="text"
+            placeholder="Write a reply…"
+            value={text}
+            onChange={e => setText(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && send()}
+            style={{ flex: 1, padding: "9px 16px", borderRadius: 24, border: "1.5px solid #E5E7EB", fontSize: 13, background: "#F9FAFB", fontFamily: "inherit", color: "#111827", transition: "border-color 0.15s, box-shadow 0.15s" }}
           />
           <button onClick={send} disabled={!text.trim() || sending} className="shs-btn"
-            style={{ width:38, height:38, borderRadius:"50%", border:"none", background: text.trim() ? "#2563EB" : "#E5E7EB", color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-            {sending ? <span style={{ fontSize:16 }}>…</span> : Icon.send}
+            style={{ width: 38, height: 38, borderRadius: "50%", border: "none", background: text.trim() ? "#2563EB" : "#E5E7EB", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            {sending ? <span style={{ fontSize: 16 }}>…</span> : Icon.send}
           </button>
         </div>
       )}
@@ -7776,89 +8609,92 @@ const TicketChat = ({ ticket, staffId, staffName, onUpdate, onMarkRead, readOnly
   );
 };
 
+// ─── EscalatePanel ────────────────────────────────────────────────────────────
 const EscalatePanel = ({ staffRole, adminList, form, setForm, onConfirm, onCancel, loading }) => (
-  <div style={{ padding:"16px 20px", background:"#FFFBEB", borderTop:"1px solid #FDE68A", borderBottom:"1px solid #FDE68A" }}>
-    <p style={{ margin:"0 0 12px", fontWeight:700, fontSize:12.5, color:"#92400E" }}>Escalate this ticket</p>
-    <div style={{ display:"flex", gap:10, flexWrap:"wrap", alignItems:"flex-end" }}>
-      <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
-        <label style={{ fontSize:11, fontWeight:600, color:"#6B7280" }}>To</label>
-        <select value={form.toRole} onChange={e => setForm({...form, toRole:e.target.value, toId:"", toName:""})}
-          style={{ padding:"8px 12px", borderRadius:8, border:"1px solid #E5E7EB", fontSize:12.5, background:"#fff", fontFamily:"inherit", color:"#111827" }}>
+  <div style={{ padding: "16px 20px", background: "#FFFBEB", borderTop: "1px solid #FDE68A", borderBottom: "1px solid #FDE68A" }}>
+    <p style={{ margin: "0 0 12px", fontWeight: 700, fontSize: 12.5, color: "#92400E" }}>Escalate this ticket</p>
+    <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "flex-end" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+        <label style={{ fontSize: 11, fontWeight: 600, color: "#6B7280" }}>To</label>
+        <select value={form.toRole} onChange={e => setForm({ ...form, toRole: e.target.value, toId: "", toName: "" })}
+          style={{ padding: "8px 12px", borderRadius: 8, border: "1px solid #E5E7EB", fontSize: 12.5, background: "#fff", fontFamily: "inherit", color: "#111827" }}>
           {staffRole === "staff" && adminList.length > 0 && <option value="admin-assistant">Admin Assistant</option>}
           <option value="admin">Admin</option>
         </select>
       </div>
       {form.toRole === "admin-assistant" && adminList.length > 0 && (
-        <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
-          <label style={{ fontSize:11, fontWeight:600, color:"#6B7280" }}>Select assistant</label>
-          <select value={form.toId} onChange={e => { const a=adminList.find(x=>x._id===e.target.value); setForm({...form, toId:e.target.value, toName:a?.name||""}); }}
-            style={{ padding:"8px 12px", borderRadius:8, border:"1px solid #E5E7EB", fontSize:12.5, background:"#fff", fontFamily:"inherit", color:"#111827" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+          <label style={{ fontSize: 11, fontWeight: 600, color: "#6B7280" }}>Select assistant</label>
+          <select value={form.toId} onChange={e => { const a = adminList.find(x => x._id === e.target.value); setForm({ ...form, toId: e.target.value, toName: a?.name || "" }); }}
+            style={{ padding: "8px 12px", borderRadius: 8, border: "1px solid #E5E7EB", fontSize: 12.5, background: "#fff", fontFamily: "inherit", color: "#111827" }}>
             <option value="">— Select —</option>
             {adminList.map(a => <option key={a._id} value={a._id}>{a.name}</option>)}
           </select>
         </div>
       )}
-      <div style={{ flex:1, minWidth:200, display:"flex", flexDirection:"column", gap:4 }}>
-        <label style={{ fontSize:11, fontWeight:600, color:"#6B7280" }}>Reason <span style={{ color:"#EF4444" }}>*</span></label>
+      <div style={{ flex: 1, minWidth: 200, display: "flex", flexDirection: "column", gap: 4 }}>
+        <label style={{ fontSize: 11, fontWeight: 600, color: "#6B7280" }}>Reason <span style={{ color: "#EF4444" }}>*</span></label>
         <input className="shs-input" type="text" placeholder="Enter reason…" value={form.reason}
-          onChange={e => setForm({...form, reason:e.target.value})}
-          style={{ padding:"8px 12px", borderRadius:8, border:"1.5px solid #E5E7EB", fontSize:12.5, background:"#fff", fontFamily:"inherit", color:"#111827", transition:"border-color 0.15s, box-shadow 0.15s" }} />
+          onChange={e => setForm({ ...form, reason: e.target.value })}
+          style={{ padding: "8px 12px", borderRadius: 8, border: "1.5px solid #E5E7EB", fontSize: 12.5, background: "#fff", fontFamily: "inherit", color: "#111827", transition: "border-color 0.15s, box-shadow 0.15s" }} />
       </div>
-      <button onClick={onConfirm} disabled={loading||!form.reason.trim()} className="shs-btn"
-        style={{ padding:"8px 16px", borderRadius:8, border:"none", background:loading?"#FCD34D":"#D97706", color:"#fff", fontWeight:600, fontSize:12.5, fontFamily:"inherit", height:36, display:"flex", alignItems:"center", gap:5 }}>
-        {Icon.up} {loading?"Escalating…":"Confirm Escalation"}
+      <button onClick={onConfirm} disabled={loading || !form.reason.trim()} className="shs-btn"
+        style={{ padding: "8px 16px", borderRadius: 8, border: "none", background: loading ? "#FCD34D" : "#D97706", color: "#fff", fontWeight: 600, fontSize: 12.5, fontFamily: "inherit", height: 36, display: "flex", alignItems: "center", gap: 5 }}>
+        {Icon.up} {loading ? "Escalating…" : "Confirm Escalation"}
       </button>
       <button onClick={onCancel} className="shs-btn"
-        style={{ padding:"8px 14px", borderRadius:8, border:"1px solid #E5E7EB", background:"#fff", fontSize:12.5, fontFamily:"inherit", color:"#374151", height:36 }}>
+        style={{ padding: "8px 14px", borderRadius: 8, border: "1px solid #E5E7EB", background: "#fff", fontSize: 12.5, fontFamily: "inherit", color: "#374151", height: 36 }}>
         Cancel
       </button>
     </div>
   </div>
 );
 
+// ─── TicketCard ───────────────────────────────────────────────────────────────
 const TicketCard = ({ ticket, isEsc, staffId, onOpen }) => {
   const unread   = !isEsc && (ticket.unreadByStaff || 0);
   const lastMsg  = ticket.messages?.[ticket.messages.length - 1];
-  const escEntry = isEsc ? [...(ticket.escalationLog||[])].reverse().find(e=>e.from===staffId) : null;
+  const escEntry = isEsc ? [...(ticket.escalationLog || [])].reverse().find(e => e.from === staffId) : null;
 
   return (
-    <div className="shs-card" style={{ border:`1px solid ${unread?"#BFDBFE":isEsc?"#EDE9FE":"#E5E7EB"}`, borderRadius:12, background:unread?"#F0F7FF":"#fff", boxShadow:"0 1px 4px rgba(0,0,0,0.04)", overflow:"hidden" }}>
-      <div style={{ padding:"14px 16px" }}>
-        <div style={{ display:"flex", justifyContent:"space-between", flexWrap:"wrap", gap:8, alignItems:"flex-start" }}>
+    <div className="shs-card" style={{ border: `1px solid ${unread ? "#BFDBFE" : isEsc ? "#EDE9FE" : "#E5E7EB"}`, borderRadius: 12, background: unread ? "#F0F7FF" : "#fff", boxShadow: "0 1px 4px rgba(0,0,0,0.04)", overflow: "hidden" }}>
+      <div style={{ padding: "14px 16px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8, alignItems: "flex-start" }}>
           <div>
-            <div style={{ display:"flex", alignItems:"center", gap:7 }}>
-              <span style={{ fontWeight:700, fontSize:13, color:"#111827" }}>#{ticket.ticketId} — {ticket.subject==="Other" ? ticket.customSubject : ticket.subject}</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+              <span style={{ fontWeight: 700, fontSize: 13, color: "#111827" }}>#{ticket.ticketId} — {ticket.subject === "Other" ? ticket.customSubject : ticket.subject}</span>
               <UnreadPill count={ticket.unreadByStaff} />
             </div>
-            <p style={{ margin:"4px 0 0", fontSize:11.5, color:"#9CA3AF" }}>{ticket.clientName} · {ticket.projectName||ticket.projectId} · {dt.full(ticket.createdAt)}</p>
+            <p style={{ margin: "4px 0 0", fontSize: 11.5, color: "#9CA3AF" }}>{ticket.clientName} · {ticket.projectName || ticket.projectId} · {dt.full(ticket.createdAt)}</p>
           </div>
-          <div style={{ display:"flex", gap:5, flexWrap:"wrap", alignItems:"center" }}>
+          <div style={{ display: "flex", gap: 5, flexWrap: "wrap", alignItems: "center" }}>
             <Badge label={ticket.status} map={STATUS_MAP} />
             <Badge label={ticket.priority} map={PRIORITY_MAP} />
             {isEsc && ticket.assignedTo && (
-              <span style={{ padding:"3px 9px", borderRadius:99, fontSize:11, fontWeight:600, background:"#EFF6FF", color:"#1D4ED8", border:"1px solid #BFDBFE" }}>
-                With: {ticket.assignedTo.name||ticket.assignedTo.role}
+              <span style={{ padding: "3px 9px", borderRadius: 99, fontSize: 11, fontWeight: 600, background: "#EFF6FF", color: "#1D4ED8", border: "1px solid #BFDBFE" }}>
+                With: {ticket.assignedTo.name || ticket.assignedTo.role}
               </span>
             )}
           </div>
         </div>
         {escEntry && (
-          <div style={{ marginTop:9, padding:"7px 11px", background:"#F5F3FF", borderRadius:8, fontSize:11.5, color:"#6D28D9", border:"1px solid #EDE9FE" }}>
+          <div style={{ marginTop: 9, padding: "7px 11px", background: "#F5F3FF", borderRadius: 8, fontSize: 11.5, color: "#6D28D9", border: "1px solid #EDE9FE" }}>
             Reason: <strong>{escEntry.reason}</strong>
-            <span style={{ color:"#9CA3AF", marginLeft:8 }}>→ {escEntry.toName}</span>
+            <span style={{ color: "#9CA3AF", marginLeft: 8 }}>→ {escEntry.toName}</span>
           </div>
         )}
         {!isEsc && lastMsg && (
-          <p style={{ margin:"8px 0 0", fontSize:12, color:"#6B7280", display:"-webkit-box", WebkitLineClamp:1, WebkitBoxOrient:"vertical", overflow:"hidden", lineHeight:1.5 }}>
+          <p style={{ margin: "8px 0 0", fontSize: 12, color: "#6B7280", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden", lineHeight: 1.5 }}>
             {lastMsg.message}
           </p>
         )}
       </div>
-      <div style={{ borderTop:"1px solid #F1F5F9", padding:"9px 16px", background:"#FAFBFC", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-        <span style={{ fontSize:11.5, color:"#9CA3AF", display:"flex", alignItems:"center", gap:5 }}>
-          {Icon.chat} {ticket.messages?.length||0} messages
+      <div style={{ borderTop: "1px solid #F1F5F9", padding: "9px 16px", background: "#FAFBFC", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <span style={{ fontSize: 11.5, color: "#9CA3AF", display: "flex", alignItems: "center", gap: 5 }}>
+          {Icon.chat} {ticket.messages?.length || 0} messages
         </span>
-        <button onClick={onOpen} className="shs-btn" style={{ padding:"6px 14px", borderRadius:8, border:"none", background:isEsc?"#7C3AED":"#2563EB", color:"#fff", fontWeight:600, fontSize:12, display:"flex", alignItems:"center", gap:6, fontFamily:"inherit" }}>
+        <button onClick={onOpen} className="shs-btn"
+          style={{ padding: "6px 14px", borderRadius: 8, border: "none", background: isEsc ? "#7C3AED" : "#2563EB", color: "#fff", fontWeight: 600, fontSize: 12, display: "flex", alignItems: "center", gap: 6, fontFamily: "inherit" }}>
           {isEsc ? "View History" : "Open Chat"}
           <UnreadPill count={ticket.unreadByStaff} />
         </button>
@@ -7870,58 +8706,69 @@ const TicketCard = ({ ticket, isEsc, staffId, onOpen }) => {
 /* ═══════════════════════════════════════════════════════
    MAIN COMPONENT
 ═══════════════════════════════════════════════════════ */
-const StaffHelpSupport = ({ staffId:pId, staffName:pName, staffRole:pRole, adminAssistantList:pAdmins }) => {
+const StaffHelpSupport = ({ staffId: pId, staffName: pName, staffRole: pRole, adminAssistantList: pAdmins }) => {
   const [staffId,   setStaffId]   = useState(pId   || "");
   const [staffName, setStaffName] = useState(pName || "");
   const [staffRole, setStaffRole] = useState(pRole || "staff");
   const [adminList, setAdminList] = useState(pAdmins || []);
 
-  const [tickets,     setTickets]     = useState([]);
-  const [escalated,   setEscalated]   = useState([]);
-  const [active,      setActive]      = useState(null);
-  const [isEscActive, setIsEscActive] = useState(false);
-  const [loading,     setLoading]     = useState(false);
-  const [loadEsc,     setLoadEsc]     = useState(false);
-  const [error,       setError]       = useState("");
-  const [tab,         setTab]         = useState("all");
-  const [showEsc,     setShowEsc]     = useState(false);
-  const [escForm,     setEscForm]     = useState({ toRole:"admin", toId:"", toName:"", reason:"" });
-  const [escalating,  setEscalating]  = useState(false);
-  const [resolving,   setResolving]   = useState(false);
+  const [tickets,       setTickets]       = useState([]);
+  const [escalated,     setEscalated]     = useState([]);
+  const [active,        setActive]        = useState(null);
+  const [isEscActive,   setIsEscActive]   = useState(false);
+  const [loading,       setLoading]       = useState(false);
+  const [loadEsc,       setLoadEsc]       = useState(false);
+  const [error,         setError]         = useState("");
+  const [tab,           setTab]           = useState("all");
+  const [showEsc,       setShowEsc]       = useState(false);
+  const [escForm,       setEscForm]       = useState({ toRole: "admin", toId: "", toName: "", reason: "" });
+  const [escalating,    setEscalating]    = useState(false);
+  const [resolving,     setResolving]     = useState(false);
   const [relatedTickets, setRelatedTickets] = useState([]);
 
   const sockRef   = useRef(null);
   const activeRef = useRef(null);
   useEffect(() => { activeRef.current = active; }, [active]);
-  useEffect(() => { setEscForm(f => ({...f, toRole: staffRole==="staff" ? "admin-assistant" : "admin"})); }, [staffRole]);
+  useEffect(() => { setEscForm(f => ({ ...f, toRole: staffRole === "staff" ? "admin-assistant" : "admin" })); }, [staffRole]);
 
+  // ─── Staff identity from session ─────────────────────────────────────────
   useEffect(() => {
     if (pId) return;
     const d = getStaff();
     if (d) {
-      setStaffId(d._id||d.id||"");
-      setStaffName(d.name||d.firstName||"");
-      const slug = (d.slug||d.roleName||"").toLowerCase();
-      setStaffRole(slug.includes("admin-assistant")||slug.includes("admin assistant") ? "admin-assistant" : "staff");
+      setStaffId(d._id || d.id || "");
+      setStaffName(d.name || d.firstName || "");
+      const slug = (d.slug || d.roleName || "").toLowerCase();
+      setStaffRole(slug.includes("admin-assistant") || slug.includes("admin assistant") ? "admin-assistant" : "staff");
     }
   }, [pId]);
 
+  // ─── Admin assistant list ─────────────────────────────────────────────────
   useEffect(() => {
     if (pAdmins?.length) return;
-    fetch(`${Url}/management-staff`).then(r=>r.json()).then(data=>{
-      const list = Array.isArray(data)?data:(data.staff||data.data||[]);
-      setAdminList(list.filter(s=>{const sl=(s.slug||s.roleName||"").toLowerCase();return sl.includes("admin-assistant")||sl.includes("admin assistant");}));
-    }).catch(()=>{});
+    fetch(`${Url}/management-staff`)
+      .then(r => r.json())
+      .then(data => {
+        const list = Array.isArray(data) ? data : (data.staff || data.data || []);
+        setAdminList(list.filter(s => {
+          const sl = (s.slug || s.roleName || "").toLowerCase();
+          return sl.includes("admin-assistant") || sl.includes("admin assistant");
+        }));
+      })
+      .catch(() => {});
   }, [pAdmins]);
 
+  // ─── Fetch helpers ────────────────────────────────────────────────────────
   const fetchTickets = useCallback(async () => {
     if (!staffId) return;
     setLoading(true); setError("");
     try {
       const r = await fetch(`${Url}/api/support/tickets/assigned/${staffId}`);
       const d = await r.json();
-      if (r.ok) setTickets(d.tickets||[]); else setError(d.message||"Failed.");
-    } catch { setError("Network error."); } finally { setLoading(false); }
+      if (r.ok) setTickets(d.tickets || []);
+      else setError(d.message || "Failed.");
+    } catch { setError("Network error."); }
+    finally { setLoading(false); }
   }, [staffId]);
 
   const fetchEscalated = useCallback(async () => {
@@ -7930,16 +8777,17 @@ const StaffHelpSupport = ({ staffId:pId, staffName:pName, staffRole:pRole, admin
     try {
       const r = await fetch(`${Url}/api/support/tickets/escalated-by/${staffId}`);
       const d = await r.json();
-      setEscalated(r.ok?(d.tickets||[]):[]);
-    } catch { setEscalated([]); } finally { setLoadEsc(false); }
+      setEscalated(r.ok ? (d.tickets || []) : []);
+    } catch { setEscalated([]); }
+    finally { setLoadEsc(false); }
   }, [staffId]);
 
-  const fetchOne = useCallback(async id => {
+  const fetchOne = useCallback(async (id) => {
     try {
       const r = await fetch(`${Url}/api/support/tickets/${id}`);
       const d = await r.json();
-      if (!r.ok||!d.ticket) return;
-      setTickets(prev => prev.map(t => t._id===d.ticket._id ? d.ticket : t));
+      if (!r.ok || !d.ticket) return;
+      setTickets(prev => prev.map(t => t._id === d.ticket._id ? d.ticket : t));
       if (activeRef.current?._id === d.ticket._id) setActive(d.ticket);
     } catch {}
   }, []);
@@ -7953,53 +8801,54 @@ const StaffHelpSupport = ({ staffId:pId, staffName:pName, staffRole:pRole, admin
     } catch { setRelatedTickets([]); }
   }, []);
 
-  const markRead = useCallback(async id => {
+  const markRead = useCallback(async (id) => {
     try {
-      await fetch(`${Url}/api/support/tickets/${id}/mark-read`,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({role:"staff"})});
-      setTickets(prev => prev.map(t => t._id===id ? {...t, unreadByStaff:0} : t));
-      setActive(prev => prev?._id===id ? {...prev, unreadByStaff:0} : prev);
+      await fetch(`${Url}/api/support/tickets/${id}/mark-read`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ role: "staff" }),
+      });
+      setTickets(prev => prev.map(t => t._id === id ? { ...t, unreadByStaff: 0 } : t));
+      setActive(prev => prev?._id === id ? { ...prev, unreadByStaff: 0 } : prev);
     } catch {}
   }, []);
 
+  // ─── Initial load ─────────────────────────────────────────────────────────
   useEffect(() => { if (staffId) { fetchTickets(); fetchEscalated(); } }, [staffId]);
-  useEffect(() => { if (tab==="escalated" && staffId) fetchEscalated(); }, [tab, staffId]);
+  useEffect(() => { if (tab === "escalated" && staffId) fetchEscalated(); }, [tab, staffId]);
   useEffect(() => {
     if (active && !isEscActive) fetchRelated(active);
     else setRelatedTickets([]);
   }, [active, isEscActive, fetchRelated]);
 
-  /* ── ✅ FIXED Socket — join with BOTH token AND staffId ── */
+  // ─── Socket ───────────────────────────────────────────────────────────────
   useEffect(() => {
     if (!staffId) return;
+
     const s = socketIo(Url, {
-      transports:           ["websocket"],
+      transports: ["websocket"],
       reconnectionAttempts: 10,
-      reconnectionDelay:    1000,
+      reconnectionDelay: 1000,
     });
     sockRef.current = s;
 
-    // ✅ KEY FIX: emit both 'join' (token) AND 'joinStaff' (staffId)
-    // Server must handle 'joinStaff' to add socket to room: user_<staffId>
     const joinRoom = () => {
       const token = getToken();
       if (token) s.emit("join", token);
-      s.emit("joinStaff", staffId); // ✅ explicit room join
+      s.emit("joinStaff", staffId);
     };
     s.on("connect",   joinRoom);
     s.on("reconnect", joinRoom);
 
-    /* ── New ticket assigned ── */
-    s.on("support:assigned_to_you", d => {
+    // ── New ticket assigned ──────────────────────────────────────────────
+    s.on("support:assigned_to_you", (d) => {
       playNotifSound();
-      Swal.fire({ toast:true, position:"top-end", icon:"info", showConfirmButton:false, timer:4500, title:`New: #${d.ticketCode}`, text:d.subject });
-      setTickets(prev => {
-        if (prev.some(t => t._id === d._id)) return prev;
-        return [d, ...prev];
-      });
+      Swal.fire({ toast: true, position: "top-end", icon: "info", showConfirmButton: false, timer: 4500, title: `New: #${d.ticketCode}`, text: d.subject });
+      setTickets(prev => prev.some(t => t._id === d._id) ? prev : [d, ...prev]);
     });
 
-    /* ── Ticket updated ── */
-    s.on("support:ticket_updated", u => {
+    // ── Ticket updated ───────────────────────────────────────────────────
+    s.on("support:ticket_updated", (u) => {
       if (u.assignedTo?.id !== staffId) {
         setTickets(prev => prev.filter(t => t._id !== u._id));
         if (activeRef.current?._id === u._id) setActive(null);
@@ -8014,20 +8863,24 @@ const StaffHelpSupport = ({ staffId:pId, staffName:pName, staffRole:pRole, admin
       if (activeRef.current?._id === u._id) setActive(u);
     });
 
-    /* ── ✅ New message — increment count OR fetch if chat is open ── */
+    // ── ✅ FIX: New message — sound sirf tab baje jab message apna na ho ──
     s.on("support:new_message", (d) => {
-      // d = { ticketId, ticketCode, message: { sender, senderName, message, ... } }
-      const tid    = d.ticketId
-      const sender = d.message?.sender || ""
+      const tid      = d.ticketId;
+      const sender   = d.message?.sender   || "";
+      const senderId = d.message?.senderId || "";
+
+      // ✅ Apna message ignore karo (sound mat bajao, UI already update ho chuka hai)
+      if (sender === "staff" && senderId === staffId) return;
 
       const isActiveTicket = activeRef.current?._id === tid;
 
       if (isActiveTicket) {
-        // Chat is open — fetch fresh to render new message
+        // Chat open hai — fresh data fetch karo
         fetchOne(tid);
       } else {
-        // Not viewing — only increment if message is from client
-        if (sender === "staff") return; // our own message, ignore
+        // ✅ Doosre staff ka message bhi sound nahi bajayega — sirf client ka bajega
+        if (sender === "staff") return;
+
         playNotifSound();
         setTickets(prev => prev.map(t => {
           if (t._id !== tid) return t;
@@ -8046,12 +8899,10 @@ const StaffHelpSupport = ({ staffId:pId, staffName:pName, staffRole:pRole, admin
       }
     });
 
-    /* ── ✅ Server unread sync — direct authoritative count ── */
+    // ── Server unread sync ───────────────────────────────────────────────
     s.on("support:unread_update", ({ ticketId: tid, unreadByStaff }) => {
       if (unreadByStaff === undefined || activeRef.current?._id === tid) return;
-      setTickets(prev => prev.map(t =>
-        t._id === tid ? { ...t, unreadByStaff } : t
-      ));
+      setTickets(prev => prev.map(t => t._id === tid ? { ...t, unreadByStaff } : t));
     });
 
     return () => {
@@ -8062,44 +8913,62 @@ const StaffHelpSupport = ({ staffId:pId, staffName:pName, staffRole:pRole, admin
     };
   }, [staffId, fetchOne, fetchEscalated]);
 
+  // ─── Actions ──────────────────────────────────────────────────────────────
   const handleResolve = async () => {
     if (!active || resolving) return;
-    const ok = await Swal.fire({ title:"Mark as Resolved?", icon:"question", showCancelButton:true, confirmButtonText:"Yes, resolve", confirmButtonColor:"#16A34A" });
+    const ok = await Swal.fire({ title: "Mark as Resolved?", icon: "question", showCancelButton: true, confirmButtonText: "Yes, resolve", confirmButtonColor: "#16A34A" });
     if (!ok.isConfirmed) return;
     setResolving(true);
     try {
-      const r = await fetch(`${Url}/api/support/tickets/${active._id}/status`,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({status:"resolved"})});
+      const r = await fetch(`${Url}/api/support/tickets/${active._id}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "resolved" }),
+      });
       const d = await r.json();
       if (r.ok) {
-        Swal.fire({ icon:"success", title:"Resolved!", timer:2000, showConfirmButton:false });
+        Swal.fire({ icon: "success", title: "Resolved!", timer: 2000, showConfirmButton: false });
         setActive(d.ticket);
-        setTickets(prev => prev.map(t => t._id===d.ticket._id ? d.ticket : t));
+        setTickets(prev => prev.map(t => t._id === d.ticket._id ? d.ticket : t));
         setShowEsc(false);
-      } else Swal.fire({ icon:"error", title:"Error", text:d.message });
-    } catch { Swal.fire({ icon:"error", title:"Error", text:"Network error." }); }
+      } else {
+        Swal.fire({ icon: "error", title: "Error", text: d.message });
+      }
+    } catch { Swal.fire({ icon: "error", title: "Error", text: "Network error." }); }
     finally { setResolving(false); }
   };
 
   const handleEscalate = async () => {
-    if (!active || !escForm.reason.trim()) { Swal.fire({ icon:"warning", title:"Reason required" }); return; }
-    if (escForm.toRole==="admin-assistant" && !escForm.toId) {
-      if (!adminList.length) { setEscForm(f=>({...f, toRole:"admin", toId:"", toName:"Admin"})); return; }
-      Swal.fire({ icon:"warning", title:"Select an assistant" }); return;
+    if (!active || !escForm.reason.trim()) { Swal.fire({ icon: "warning", title: "Reason required" }); return; }
+    if (escForm.toRole === "admin-assistant" && !escForm.toId) {
+      if (!adminList.length) { setEscForm(f => ({ ...f, toRole: "admin", toId: "", toName: "Admin" })); return; }
+      Swal.fire({ icon: "warning", title: "Select an assistant" }); return;
     }
     setEscalating(true);
     try {
-      const r = await fetch(`${Url}/api/support/tickets/${active._id}/escalate`,{method:"PATCH",headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({fromId:staffId,fromName:staffName,toRole:escForm.toRole,toId:escForm.toRole==="admin"?null:escForm.toId,toName:escForm.toRole==="admin"?"Admin":escForm.toName,reason:escForm.reason})});
+      const r = await fetch(`${Url}/api/support/tickets/${active._id}/escalate`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fromId: staffId, fromName: staffName,
+          toRole: escForm.toRole,
+          toId: escForm.toRole === "admin" ? null : escForm.toId,
+          toName: escForm.toRole === "admin" ? "Admin" : escForm.toName,
+          reason: escForm.reason,
+        }),
+      });
       const d = await r.json();
       if (r.ok) {
-        Swal.fire({ icon:"success", title:"Escalated!", timer:2000, showConfirmButton:false });
+        Swal.fire({ icon: "success", title: "Escalated!", timer: 2000, showConfirmButton: false });
         setTickets(prev => prev.filter(t => t._id !== active._id));
         setEscalated(prev => [d.ticket, ...prev.filter(t => t._id !== d.ticket._id)]);
         setActive(null); setShowEsc(false); setRelatedTickets([]);
-        setEscForm({ toRole:staffRole==="staff"?"admin-assistant":"admin", toId:"", toName:"", reason:"" });
+        setEscForm({ toRole: staffRole === "staff" ? "admin-assistant" : "admin", toId: "", toName: "", reason: "" });
         fetchEscalated();
-      } else Swal.fire({ icon:"error", title:"Error", text:d.message });
-    } catch { Swal.fire({ icon:"error", title:"Error", text:"Escalation failed." }); }
+      } else {
+        Swal.fire({ icon: "error", title: "Error", text: d.message });
+      }
+    } catch { Swal.fire({ icon: "error", title: "Error", text: "Escalation failed." }); }
     finally { setEscalating(false); }
   };
 
@@ -8110,115 +8979,126 @@ const StaffHelpSupport = ({ staffId:pId, staffName:pName, staffRole:pRole, admin
     if (!isEsc) markRead(ticket._id);
   };
 
-  const list        = tab==="all" ? tickets : tab==="escalated" ? escalated : tickets.filter(t => t.status===tab);
-  const actionable  = active && !["closed","resolved"].includes(active.status) && !isEscActive;
+  // ─── Derived ──────────────────────────────────────────────────────────────
+  const list       = tab === "all" ? tickets : tab === "escalated" ? escalated : tickets.filter(t => t.status === tab);
+  const actionable = active && !["closed", "resolved"].includes(active.status) && !isEscActive;
   const totalUnread = tickets.reduce((s, t) => s + (t.unreadByStaff || 0), 0);
 
   const TABS = [
-    { key:"all",         label:"All",         cnt:tickets.length },
-    { key:"open",        label:"Open",        cnt:tickets.filter(t=>t.status==="open").length },
-    { key:"in-progress", label:"In Progress", cnt:tickets.filter(t=>t.status==="in-progress").length },
-    { key:"resolved",    label:"Resolved",    cnt:tickets.filter(t=>t.status==="resolved").length },
-    { key:"escalated",   label:"Escalated",   cnt:escalated.length },
+    { key: "all",         label: "All",         cnt: tickets.length },
+    { key: "open",        label: "Open",        cnt: tickets.filter(t => t.status === "open").length },
+    { key: "in-progress", label: "In Progress", cnt: tickets.filter(t => t.status === "in-progress").length },
+    { key: "resolved",    label: "Resolved",    cnt: tickets.filter(t => t.status === "resolved").length },
+    { key: "escalated",   label: "Escalated",   cnt: escalated.length },
   ];
 
   if (!staffId) return (
-    <div className="shs-root" style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:10, padding:80, color:"#9CA3AF" }}>
+    <div className="shs-root" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, padding: 80, color: "#9CA3AF" }}>
       {Icon.lock}
-      <p style={{ fontWeight:600, fontSize:15, color:"#374151", margin:0 }}>Staff identity not found</p>
-      <p style={{ fontSize:13, margin:0 }}>Please login or refresh the page.</p>
+      <p style={{ fontWeight: 600, fontSize: 15, color: "#374151", margin: 0 }}>Staff identity not found</p>
+      <p style={{ fontSize: 13, margin: 0 }}>Please login or refresh the page.</p>
     </div>
   );
 
+  // ─── Render ───────────────────────────────────────────────────────────────
   return (
     <>
       <style>{GLOBAL_CSS}</style>
-      <div className="shs-root" style={{ padding:"28px 24px", maxWidth:1080, margin:"0 auto" }}>
+      <div className="shs-root" style={{ padding: "28px 24px", maxWidth: 1080, margin: "0 auto" }}>
 
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", flexWrap:"wrap", gap:12, marginBottom:26 }}>
+        {/* Header */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12, marginBottom: 26 }}>
           <div>
-            <h2 style={{ margin:0, fontSize:20, fontWeight:700, color:"#111827", letterSpacing:-0.3, display:"flex", alignItems:"center", gap:10 }}>
+            <h2 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: "#111827", letterSpacing: -0.3, display: "flex", alignItems: "center", gap: 10 }}>
               Support Tickets
               {totalUnread > 0 && (
-                <span style={{ background:"#EF4444", color:"#fff", borderRadius:99, padding:"2px 10px", fontSize:11, fontWeight:700 }}>
+                <span style={{ background: "#EF4444", color: "#fff", borderRadius: 99, padding: "2px 10px", fontSize: 11, fontWeight: 700 }}>
                   {totalUnread} unread
                 </span>
               )}
             </h2>
-            <p style={{ margin:"5px 0 0", fontSize:12.5, color:"#9CA3AF" }}>
-              Assigned to <strong style={{ color:"#374151" }}>{staffName}</strong>
-              <span style={{ margin:"0 6px", color:"#E5E7EB" }}>·</span>
+            <p style={{ margin: "5px 0 0", fontSize: 12.5, color: "#9CA3AF" }}>
+              Assigned to <strong style={{ color: "#374151" }}>{staffName}</strong>
+              <span style={{ margin: "0 6px", color: "#E5E7EB" }}>·</span>
               {staffRole}
-              {adminList.length > 0 && (<><span style={{ margin:"0 6px", color:"#E5E7EB" }}>·</span><span style={{ color:"#7C3AED" }}>{adminList.length} assistant(s)</span></>)}
+              {adminList.length > 0 && (<><span style={{ margin: "0 6px", color: "#E5E7EB" }}>·</span><span style={{ color: "#7C3AED" }}>{adminList.length} assistant(s)</span></>)}
             </p>
           </div>
-          <button onClick={()=>{fetchTickets();fetchEscalated();}} className="shs-btn"
-            style={{ padding:"7px 14px", borderRadius:8, border:"1px solid #E5E7EB", background:"#fff", fontSize:12.5, color:"#374151", fontWeight:500, display:"flex", alignItems:"center", gap:6, fontFamily:"inherit" }}>
+          <button onClick={() => { fetchTickets(); fetchEscalated(); }} className="shs-btn"
+            style={{ padding: "7px 14px", borderRadius: 8, border: "1px solid #E5E7EB", background: "#fff", fontSize: 12.5, color: "#374151", fontWeight: 500, display: "flex", alignItems: "center", gap: 6, fontFamily: "inherit" }}>
             {Icon.refresh} Refresh
           </button>
         </div>
 
-        {error && <div style={{ background:"#FEF2F2", border:"1px solid #FECACA", borderRadius:10, padding:"10px 16px", marginBottom:18, fontSize:13, color:"#991B1B" }}>{error}</div>}
+        {/* Error */}
+        {error && (
+          <div style={{ background: "#FEF2F2", border: "1px solid #FECACA", borderRadius: 10, padding: "10px 16px", marginBottom: 18, fontSize: 13, color: "#991B1B" }}>
+            {error}
+          </div>
+        )}
 
-        <div style={{ display:"flex", gap:2, marginBottom:20, background:"#F3F4F6", borderRadius:11, padding:3, flexWrap:"wrap" }}>
+        {/* Tabs */}
+        <div style={{ display: "flex", gap: 2, marginBottom: 20, background: "#F3F4F6", borderRadius: 11, padding: 3, flexWrap: "wrap" }}>
           {TABS.map(t => {
             const on = tab === t.key;
-            const ac = t.key==="escalated"?"#7C3AED":t.key==="resolved"?"#16A34A":"#2563EB";
+            const ac = t.key === "escalated" ? "#7C3AED" : t.key === "resolved" ? "#16A34A" : "#2563EB";
             return (
               <button key={t.key} className="shs-tab"
-                onClick={()=>{ setTab(t.key); setActive(null); setIsEscActive(false); setShowEsc(false); setRelatedTickets([]); }}
-                style={{ flex:1, minWidth:80, padding:"7px 10px", borderRadius:8, border:"none", background:on?"#fff":"transparent", boxShadow:on?"0 1px 4px rgba(0,0,0,0.09)":"none", fontWeight:on?600:500, color:on?ac:"#6B7280", cursor:"pointer", fontSize:12.5, fontFamily:"inherit", display:"flex", alignItems:"center", justifyContent:"center", gap:5 }}>
+                onClick={() => { setTab(t.key); setActive(null); setIsEscActive(false); setShowEsc(false); setRelatedTickets([]); }}
+                style={{ flex: 1, minWidth: 80, padding: "7px 10px", borderRadius: 8, border: "none", background: on ? "#fff" : "transparent", boxShadow: on ? "0 1px 4px rgba(0,0,0,0.09)" : "none", fontWeight: on ? 600 : 500, color: on ? ac : "#6B7280", cursor: "pointer", fontSize: 12.5, fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}>
                 {t.label}
-                {t.cnt > 0 && <span style={{ background:on?ac:"#D1D5DB", color:on?"#fff":"#6B7280", borderRadius:99, minWidth:18, height:18, display:"inline-flex", alignItems:"center", justifyContent:"center", fontSize:10, padding:"0 4px", fontWeight:700 }}>{t.cnt}</span>}
+                {t.cnt > 0 && <span style={{ background: on ? ac : "#D1D5DB", color: on ? "#fff" : "#6B7280", borderRadius: 99, minWidth: 18, height: 18, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 10, padding: "0 4px", fontWeight: 700 }}>{t.cnt}</span>}
               </button>
             );
           })}
         </div>
 
-        {tab==="escalated" && !active && (
-          <div style={{ background:"#F5F3FF", border:"1px solid #EDE9FE", borderRadius:10, padding:"10px 16px", marginBottom:16, fontSize:12.5, color:"#6D28D9", display:"flex", alignItems:"center", gap:8 }}>
+        {tab === "escalated" && !active && (
+          <div style={{ background: "#F5F3FF", border: "1px solid #EDE9FE", borderRadius: 10, padding: "10px 16px", marginBottom: 16, fontSize: 12.5, color: "#6D28D9", display: "flex", alignItems: "center", gap: 8 }}>
             {Icon.info} Tickets you've escalated — view only.
           </div>
         )}
 
+        {/* Active Ticket View */}
         {active ? (
-          <div style={{ border:"1px solid #E5E7EB", borderRadius:16, overflow:"hidden", background:"#fff", boxShadow:"0 4px 24px rgba(0,0,0,0.07)" }}>
-            <div style={{ padding:"14px 20px", borderBottom:`1px solid ${isEscActive?"#EDE9FE":"#F1F5F9"}`, background:isEscActive?"#FDFCFF":"#FAFBFC", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:10 }}>
-              <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-                <button onClick={()=>{ setActive(null); setIsEscActive(false); setShowEsc(false); setRelatedTickets([]); }} className="shs-btn"
-                  style={{ width:32, height:32, borderRadius:8, border:"1px solid #E5E7EB", background:"#F3F4F6", color:"#374151", display:"flex", alignItems:"center", justifyContent:"center", padding:0 }}>
+          <div style={{ border: "1px solid #E5E7EB", borderRadius: 16, overflow: "hidden", background: "#fff", boxShadow: "0 4px 24px rgba(0,0,0,0.07)" }}>
+            {/* Ticket Header */}
+            <div style={{ padding: "14px 20px", borderBottom: `1px solid ${isEscActive ? "#EDE9FE" : "#F1F5F9"}`, background: isEscActive ? "#FDFCFF" : "#FAFBFC", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <button onClick={() => { setActive(null); setIsEscActive(false); setShowEsc(false); setRelatedTickets([]); }} className="shs-btn"
+                  style={{ width: 32, height: 32, borderRadius: 8, border: "1px solid #E5E7EB", background: "#F3F4F6", color: "#374151", display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}>
                   {Icon.back}
                 </button>
                 <div>
-                  <p style={{ margin:0, fontWeight:700, fontSize:13.5, color:"#111827" }}>
-                    #{active.ticketId} — {active.subject==="Other" ? active.customSubject : active.subject}
+                  <p style={{ margin: 0, fontWeight: 700, fontSize: 13.5, color: "#111827" }}>
+                    #{active.ticketId} — {active.subject === "Other" ? active.customSubject : active.subject}
                   </p>
-                  <p style={{ margin:"3px 0 0", fontSize:11.5, color:"#9CA3AF" }}>{active.clientName} · {active.projectName||active.projectId}</p>
+                  <p style={{ margin: "3px 0 0", fontSize: 11.5, color: "#9CA3AF" }}>{active.clientName} · {active.projectName || active.projectId}</p>
                 </div>
               </div>
-              <div style={{ display:"flex", gap:7, alignItems:"center", flexWrap:"wrap" }}>
+              <div style={{ display: "flex", gap: 7, alignItems: "center", flexWrap: "wrap" }}>
                 <Badge label={active.status} map={STATUS_MAP} />
                 <Badge label={active.priority} map={PRIORITY_MAP} />
                 {actionable && (
                   <button onClick={handleResolve} disabled={resolving} className="shs-btn"
-                    style={{ padding:"6px 14px", borderRadius:8, border:"none", background:resolving?"#BBF7D0":"#16A34A", color:"#fff", fontWeight:600, fontSize:12, fontFamily:"inherit", display:"flex", alignItems:"center", gap:5 }}>
-                    {Icon.check} {resolving?"Resolving…":"Resolve"}
+                    style={{ padding: "6px 14px", borderRadius: 8, border: "none", background: resolving ? "#BBF7D0" : "#16A34A", color: "#fff", fontWeight: 600, fontSize: 12, fontFamily: "inherit", display: "flex", alignItems: "center", gap: 5 }}>
+                    {Icon.check} {resolving ? "Resolving…" : "Resolve"}
                   </button>
                 )}
                 {actionable && (
-                  <button onClick={()=>setShowEsc(v=>!v)} className="shs-btn"
-                    style={{ padding:"6px 14px", borderRadius:8, border:`1px solid ${showEsc?"#FDE68A":"#E5E7EB"}`, background:showEsc?"#FFFBEB":"#fff", color:showEsc?"#92400E":"#374151", fontWeight:600, fontSize:12, fontFamily:"inherit", display:"flex", alignItems:"center", gap:5 }}>
+                  <button onClick={() => setShowEsc(v => !v)} className="shs-btn"
+                    style={{ padding: "6px 14px", borderRadius: 8, border: `1px solid ${showEsc ? "#FDE68A" : "#E5E7EB"}`, background: showEsc ? "#FFFBEB" : "#fff", color: showEsc ? "#92400E" : "#374151", fontWeight: 600, fontSize: 12, fontFamily: "inherit", display: "flex", alignItems: "center", gap: 5 }}>
                     {Icon.up} Escalate
                   </button>
                 )}
                 {isEscActive && (
-                  <span style={{ padding:"4px 11px", borderRadius:99, background:"#F5F3FF", color:"#6D28D9", fontSize:11, fontWeight:600, border:"1px solid #EDE9FE" }}>Escalated by you</span>
+                  <span style={{ padding: "4px 11px", borderRadius: 99, background: "#F5F3FF", color: "#6D28D9", fontSize: 11, fontWeight: 600, border: "1px solid #EDE9FE" }}>Escalated by you</span>
                 )}
               </div>
             </div>
 
-            {!isEscActive && active.status==="resolved" && (
-              <div style={{ padding:"10px 20px", background:"#F0FDF4", borderBottom:"1px solid #BBF7D0", fontSize:12.5, color:"#15803D", display:"flex", alignItems:"center", gap:6 }}>
+            {!isEscActive && active.status === "resolved" && (
+              <div style={{ padding: "10px 20px", background: "#F0FDF4", borderBottom: "1px solid #BBF7D0", fontSize: 12.5, color: "#15803D", display: "flex", alignItems: "center", gap: 6 }}>
                 {Icon.check} You've resolved this ticket. Admin will close it.
               </div>
             )}
@@ -8227,35 +9107,35 @@ const StaffHelpSupport = ({ staffId:pId, staffName:pName, staffRole:pRole, admin
             {isEscActive && <EscalationLog log={active.escalationLog} />}
             {showEsc && !isEscActive && (
               <EscalatePanel staffRole={staffRole} adminList={adminList} form={escForm} setForm={setEscForm}
-                onConfirm={handleEscalate} onCancel={()=>setShowEsc(false)} loading={escalating} />
+                onConfirm={handleEscalate} onCancel={() => setShowEsc(false)} loading={escalating} />
             )}
 
             <TicketChat ticket={active} staffId={staffId} staffName={staffName} readOnly={isEscActive} onMarkRead={markRead}
-              onUpdate={u => { setActive(u); setTickets(prev => prev.map(t => t._id===u._id ? u : t)); }} />
+              onUpdate={u => { setActive(u); setTickets(prev => prev.map(t => t._id === u._id ? u : t)); }} />
           </div>
 
-        ) : (loading && tab!=="escalated") || (loadEsc && tab==="escalated") ? (
-          <div style={{ textAlign:"center", padding:80, color:"#C4CAD4" }}>
+        ) : (loading && tab !== "escalated") || (loadEsc && tab === "escalated") ? (
+          <div style={{ textAlign: "center", padding: 80, color: "#C4CAD4" }}>
             {Icon.spin}
-            <p style={{ fontSize:13, marginTop:12, color:"#9CA3AF" }}>Loading tickets…</p>
+            <p style={{ fontSize: 13, marginTop: 12, color: "#9CA3AF" }}>Loading tickets…</p>
           </div>
 
         ) : list.length === 0 ? (
-          <div style={{ textAlign:"center", padding:"64px 40px", border:"1px dashed #E5E7EB", borderRadius:14, background:"#FAFBFC" }}>
-            <div style={{ width:52, height:52, borderRadius:"50%", background:"#F3F4F6", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 14px" }}>{Icon.empty}</div>
-            <p style={{ fontWeight:600, fontSize:14.5, color:"#374151", margin:"0 0 6px" }}>
-              {tab==="all"?"No tickets assigned":tab==="escalated"?"No escalated tickets":`No ${tab} tickets`}
+          <div style={{ textAlign: "center", padding: "64px 40px", border: "1px dashed #E5E7EB", borderRadius: 14, background: "#FAFBFC" }}>
+            <div style={{ width: 52, height: 52, borderRadius: "50%", background: "#F3F4F6", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px" }}>{Icon.empty}</div>
+            <p style={{ fontWeight: 600, fontSize: 14.5, color: "#374151", margin: "0 0 6px" }}>
+              {tab === "all" ? "No tickets assigned" : tab === "escalated" ? "No escalated tickets" : `No ${tab} tickets`}
             </p>
-            <p style={{ fontSize:12.5, color:"#9CA3AF", margin:0 }}>
-              {tab==="all"?"Tickets assigned to you will appear here.":tab==="escalated"?"Tickets you escalate will appear here.":"Check another tab."}
+            <p style={{ fontSize: 12.5, color: "#9CA3AF", margin: 0 }}>
+              {tab === "all" ? "Tickets assigned to you will appear here." : tab === "escalated" ? "Tickets you escalate will appear here." : "Check another tab."}
             </p>
           </div>
 
         ) : (
-          <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {list.map(ticket => (
-              <TicketCard key={ticket._id} ticket={ticket} isEsc={tab==="escalated"} staffId={staffId}
-                onOpen={()=>openTicket(ticket, tab==="escalated")} />
+              <TicketCard key={ticket._id} ticket={ticket} isEsc={tab === "escalated"} staffId={staffId}
+                onOpen={() => openTicket(ticket, tab === "escalated")} />
             ))}
           </div>
         )}
