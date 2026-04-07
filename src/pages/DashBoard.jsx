@@ -1457,15 +1457,14 @@
 
 
 
+
 // import React, { useState, useEffect, useRef, useCallback } from 'react'
 // import { useNavigate } from 'react-router-dom'
 // import { permissions } from 'src/utils/SessionfileData'
 // import { io as socketIo } from 'socket.io-client'
 // import { Url } from 'src/url/url'
 
-// /* ─────────────────────────────────────────────────────────────────
-//    HELPERS
-// ───────────────────────────────────────────────────────────────── */
+// // ─── Helpers ──────────────────────────────────────────────────────────────────
 // const getToken = () =>
 //   sessionStorage.getItem('management_token') ||
 //   localStorage.getItem('management_token') ||
@@ -1479,6 +1478,7 @@
 //   } catch {}
 // }
 
+// // ─── Constants ────────────────────────────────────────────────────────────────
 // const STATUS_COLORS = {
 //   open:          { bg: '#FFFBEB', color: '#B45309', dot: '#F59E0B', border: '#FDE68A' },
 //   'in-progress': { bg: '#EFF6FF', color: '#1D4ED8', dot: '#3B82F6', border: '#BFDBFE' },
@@ -1506,15 +1506,15 @@
 //   return `${Math.floor(h / 24)}d ago`
 // }
 
-// /* ─────────────────────────────────────────────────────────────────
-//    NOTIFICATION BELL DROPDOWN
-// ───────────────────────────────────────────────────────────────── */
+// // ─── NotifPanel (Bell Dropdown) ───────────────────────────────────────────────
 // const NotifPanel = ({ notifs, onClearAll, onNavigate, unreadCount }) => {
 //   const [open, setOpen] = useState(false)
 //   const ref = useRef(null)
 
 //   useEffect(() => {
-//     const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false) }
+//     const handler = (e) => {
+//       if (ref.current && !ref.current.contains(e.target)) setOpen(false)
+//     }
 //     document.addEventListener('mousedown', handler)
 //     return () => document.removeEventListener('mousedown', handler)
 //   }, [])
@@ -1535,8 +1535,8 @@
 //       >
 //         <svg width="17" height="17" viewBox="0 0 24 24" fill="none"
 //           stroke={open ? '#2563EB' : '#64748B'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-//           <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-//           <path d="M13.73 21a2 2 0 01-3.46 0"/>
+//           <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
+//           <path d="M13.73 21a2 2 0 01-3.46 0" />
 //         </svg>
 //         {unreadCount > 0 && (
 //           <span style={{
@@ -1616,7 +1616,7 @@
 //                     </div>
 //                     <p style={{
 //                       margin: '2px 0 4px', fontSize: 11.5, color: '#374151', lineHeight: 1.4,
-//                       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+//                       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
 //                     }}>
 //                       {n.text}
 //                     </p>
@@ -1652,12 +1652,14 @@
 
 //           {notifs.length > 0 && (
 //             <div style={{ padding: '10px 14px', borderTop: '1px solid #F1F5F9', background: '#FAFBFC' }}>
-//               <button onClick={() => { onNavigate(null); setOpen(false) }}
+//               <button
+//                 onClick={() => { onNavigate(null); setOpen(false) }}
 //                 style={{
 //                   width: '100%', padding: '8px', borderRadius: 8, border: 'none',
 //                   background: '#2563EB', color: '#fff', fontWeight: 600, fontSize: 12.5,
 //                   cursor: 'pointer', fontFamily: 'inherit',
-//                 }}>
+//                 }}
+//               >
 //                 View All Tickets →
 //               </button>
 //             </div>
@@ -1668,9 +1670,7 @@
 //   )
 // }
 
-// /* ─────────────────────────────────────────────────────────────────
-//    SUPPORT TICKETS STRIP
-// ───────────────────────────────────────────────────────────────── */
+// // ─── NotifStrip (Support Tickets Strip) ──────────────────────────────────────
 // const NotifStrip = ({ notifs, onNavigate, loading }) => {
 //   const totalUnread = notifs.filter(n => n.unread).length
 //   const recent = notifs.slice(0, 6)
@@ -1697,11 +1697,13 @@
 //             <span style={{ fontSize: 11, color: '#9CA3AF' }}>({notifs.length} assigned)</span>
 //           )}
 //         </div>
-//         <button onClick={() => onNavigate(null)} style={{
-//           padding: '5px 12px', borderRadius: 7, border: '1px solid #BFDBFE',
-//           background: '#EFF6FF', color: '#2563EB', fontSize: 11.5, fontWeight: 600,
-//           cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s',
-//         }}
+//         <button
+//           onClick={() => onNavigate(null)}
+//           style={{
+//             padding: '5px 12px', borderRadius: 7, border: '1px solid #BFDBFE',
+//             background: '#EFF6FF', color: '#2563EB', fontSize: 11.5, fontWeight: 600,
+//             cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s',
+//           }}
 //           onMouseEnter={e => { e.currentTarget.style.background = '#2563EB'; e.currentTarget.style.color = '#fff' }}
 //           onMouseLeave={e => { e.currentTarget.style.background = '#EFF6FF'; e.currentTarget.style.color = '#2563EB' }}
 //         >
@@ -1713,10 +1715,10 @@
 //         <div style={{ padding: '28px 20px', textAlign: 'center', color: '#9CA3AF' }}>
 //           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" strokeWidth="1.5"
 //             style={{ animation: 'spin 1s linear infinite', display: 'inline-block', marginBottom: 8 }}>
-//             <line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/>
-//             <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/>
-//             <line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/>
-//             <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/>
+//             <line x1="12" y1="2" x2="12" y2="6" /><line x1="12" y1="18" x2="12" y2="22" />
+//             <line x1="4.93" y1="4.93" x2="7.76" y2="7.76" /><line x1="16.24" y1="16.24" x2="19.07" y2="19.07" />
+//             <line x1="2" y1="12" x2="6" y2="12" /><line x1="18" y1="12" x2="22" y2="12" />
+//             <line x1="4.93" y1="19.07" x2="7.76" y2="16.24" /><line x1="16.24" y1="7.76" x2="19.07" y2="4.93" />
 //           </svg>
 //           <p style={{ margin: 0, fontSize: 13 }}>Loading tickets…</p>
 //         </div>
@@ -1793,9 +1795,7 @@
 //   )
 // }
 
-// /* ─────────────────────────────────────────────────────────────────
-//    MAIN DASHBOARD
-// ───────────────────────────────────────────────────────────────── */
+// // ─── Main Dashboard ───────────────────────────────────────────────────────────
 // const DashBoard = () => {
 //   const navigate = useNavigate()
 
@@ -1803,11 +1803,12 @@
 //   const slug    = staff?.slug || 'Management'
 //   const staffId = staff?._id || staff?.id || ''
 
-//   const [notifs,        setNotifs]        = useState([])
+//   const [notifs,         setNotifs]         = useState([])
 //   const [ticketsLoading, setTicketsLoading] = useState(false)
 
 //   const unreadCount = notifs.filter(n => n.unread).length
 
+//   // ─── ticket → notif object ────────────────────────────────────────────────
 //   const ticketToNotif = useCallback((t, type = 'existing') => ({
 //     id:         t._id,
 //     type,
@@ -1815,13 +1816,14 @@
 //     text:       t.subject === 'Other' ? (t.customSubject || 'Support ticket') : (t.subject || 'Support ticket'),
 //     status:     t.status,
 //     project:    t.projectName || t.projectId || '',
-//     client:     t.clientName || '',
+//     client:     t.clientName  || '',
 //     unreadMsgs: t.unreadByStaff || 0,
 //     unread:     (t.unreadByStaff || 0) > 0,
 //     ts:         t.updatedAt || t.createdAt || Date.now(),
 //     ticketId:   t._id,
 //   }), [])
 
+//   // ─── Upsert notif ─────────────────────────────────────────────────────────
 //   const upsertNotif = useCallback((newN) => {
 //     setNotifs(prev => {
 //       const idx = prev.findIndex(n => n.ticketId === newN.ticketId)
@@ -1839,14 +1841,14 @@
 //     })
 //   }, [])
 
-//   /* ── Initial fetch ── */
+//   // ─── Initial ticket fetch ─────────────────────────────────────────────────
 //   useEffect(() => {
 //     if (!staffId) return
 //     setTicketsLoading(true)
 //     fetch(`${Url}/api/support/tickets/assigned/${staffId}`)
 //       .then(r => r.json())
 //       .then(d => {
-//         const list   = d.tickets || []
+//         const list = d.tickets || []
 //         const sorted = [...list].sort((a, b) => {
 //           if ((b.unreadByStaff || 0) !== (a.unreadByStaff || 0))
 //             return (b.unreadByStaff || 0) - (a.unreadByStaff || 0)
@@ -1863,31 +1865,31 @@
 
 //   const clearAll = useCallback(() => setNotifs([]), [])
 
-//   /* ── ✅ FIXED Socket — join with BOTH token AND staffId ── */
+//   // ─── Socket ───────────────────────────────────────────────────────────────
 //   const sockRef = useRef(null)
 
 //   useEffect(() => {
 //     if (!staffId) return
 
 //     const s = socketIo(Url, {
-//       transports:           ['websocket'],
+//       transports: ['websocket'],
 //       reconnectionAttempts: 10,
-//       reconnectionDelay:    1000,
+//       reconnectionDelay: 1000,
 //     })
 //     sockRef.current = s
 
-//     // ✅ KEY FIX: join with token + staffId explicitly
-//     // Server needs staffId to put socket in correct room: user_<staffId>
+//     // ✅ staffId ko String mein convert karo — socket closure ke andar
+//     const myId = String(staffId || '')
+
 //     const joinRoom = () => {
 //       const token = getToken()
 //       if (token) s.emit('join', token)
-//       // ✅ Also emit staffId directly so server can join user_<staffId> room
 //       s.emit('joinStaff', staffId)
 //     }
 //     s.on('connect',   joinRoom)
 //     s.on('reconnect', joinRoom)
 
-//     /* ── support:assigned_to_you ── */
+//     // ── New ticket assigned ──────────────────────────────────────────────
 //     s.on('support:assigned_to_you', (d) => {
 //       playNotifSound()
 //       upsertNotif({
@@ -1905,7 +1907,7 @@
 //       })
 //     })
 
-//     /* ── support:ticket_updated ── */
+//     // ── Ticket updated ───────────────────────────────────────────────────
 //     s.on('support:ticket_updated', (u) => {
 //       if (u.assignedTo?.id !== staffId) {
 //         setNotifs(prev => prev.filter(n => n.ticketId !== u._id))
@@ -1919,22 +1921,28 @@
 //       })
 //     })
 
-//     /* ── ✅ support:new_message — increment unreadMsgs count ── */
+//     // ── New message ──────────────────────────────────────────────────────
 //     s.on('support:new_message', (d) => {
-//       // d = { ticketId, ticketCode, message: {sender, message, senderName, ...} }
-//       const tid         = d.ticketId
-//       const msgText     = d.message?.message || ''
-//       const senderName  = d.message?.senderName || 'Someone'
-//       const sender      = d.message?.sender || ''
+//       const tid        = d.ticketId
+//       const msgText    = d.message?.message    || ''
+//       const senderName = d.message?.senderName || 'Someone'
+//       const sender     = d.message?.sender     || ''
+//       const senderId   = String(d.message?.senderId || '')
 
-//       // Only count if message is from client (not self)
+//       // ✅ FIX 1: Apna message — non-empty ID check ke saath ignore karo
+//       // Empty string match se bachne ke liye senderId && myId check zaroori hai
+//       if (sender === 'staff' && senderId && myId && senderId === myId) return
+
+//       // ✅ FIX 2: Doosre staff ka message — dashboard pe sound nahi bajna chahiye
 //       if (sender === 'staff') return
 
+//       // ✅ Sirf client message par sound bajao
 //       playNotifSound()
+
 //       setNotifs(prev => {
 //         const idx = prev.findIndex(n => n.ticketId === tid)
 //         if (idx === -1) return prev
-//         const next    = [...prev]
+//         const next = [...prev]
 //         next[idx] = {
 //           ...next[idx],
 //           unread:     true,
@@ -1949,9 +1957,8 @@
 //       })
 //     })
 
-//     /* ── ✅ support:unread_update — direct count sync from server ── */
+//     // ── Server unread sync ───────────────────────────────────────────────
 //     s.on('support:unread_update', (d) => {
-//       // d = { ticketId, unreadByStaff }
 //       if (!d.ticketId || d.unreadByStaff === undefined) return
 //       setNotifs(prev => prev.map(n =>
 //         n.ticketId === d.ticketId
@@ -1968,7 +1975,7 @@
 //     }
 //   }, [staffId, ticketToNotif, upsertNotif])
 
-//   /* ── Navigate ── */
+//   // ─── Navigate to ticket ───────────────────────────────────────────────────
 //   const handleNotifNavigate = useCallback((notif) => {
 //     markAllRead()
 //     navigate(
@@ -1977,7 +1984,7 @@
 //     )
 //   }, [slug, navigate, markAllRead])
 
-//   /* ── Misc ── */
+//   // ─── Misc ─────────────────────────────────────────────────────────────────
 //   const getGreeting = () => {
 //     const h = new Date().getHours()
 //     if (h < 12) return 'Good Morning'
@@ -2019,6 +2026,7 @@
 //     }
 //   })
 
+//   // ─── Render ───────────────────────────────────────────────────────────────
 //   return (
 //     <>
 //       <style>{`
@@ -2113,7 +2121,9 @@
 //                         background: '#EF4444', color: '#fff', borderRadius: 99,
 //                         minWidth: 18, height: 18, fontSize: 9.5, fontWeight: 700,
 //                         display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 4px',
-//                       }}>{unreadCount}</span>
+//                       }}>
+//                         {unreadCount}
+//                       </span>
 //                     )}
 //                     <div style={{ fontSize: 13, fontWeight: 600, color: '#0f172a', marginBottom: 8 }}>{info.label}</div>
 //                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
@@ -2147,13 +2157,19 @@
 
 
 
+
+
+
+
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { permissions } from 'src/utils/SessionfileData'
 import { io as socketIo } from 'socket.io-client'
 import { Url } from 'src/url/url'
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+/* ─────────────────────────────────────────────────────────────────
+   HELPERS
+───────────────────────────────────────────────────────────────── */
 const getToken = () =>
   sessionStorage.getItem('management_token') ||
   localStorage.getItem('management_token') ||
@@ -2167,7 +2183,6 @@ const playNotifSound = () => {
   } catch {}
 }
 
-// ─── Constants ────────────────────────────────────────────────────────────────
 const STATUS_COLORS = {
   open:          { bg: '#FFFBEB', color: '#B45309', dot: '#F59E0B', border: '#FDE68A' },
   'in-progress': { bg: '#EFF6FF', color: '#1D4ED8', dot: '#3B82F6', border: '#BFDBFE' },
@@ -2195,15 +2210,15 @@ const timeAgo = (ts) => {
   return `${Math.floor(h / 24)}d ago`
 }
 
-// ─── NotifPanel (Bell Dropdown) ───────────────────────────────────────────────
+/* ─────────────────────────────────────────────────────────────────
+   NOTIFICATION BELL DROPDOWN
+───────────────────────────────────────────────────────────────── */
 const NotifPanel = ({ notifs, onClearAll, onNavigate, unreadCount }) => {
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
 
   useEffect(() => {
-    const handler = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false)
-    }
+    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false) }
     document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
   }, [])
@@ -2224,8 +2239,8 @@ const NotifPanel = ({ notifs, onClearAll, onNavigate, unreadCount }) => {
       >
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none"
           stroke={open ? '#2563EB' : '#64748B'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
-          <path d="M13.73 21a2 2 0 01-3.46 0" />
+          <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 01-3.46 0"/>
         </svg>
         {unreadCount > 0 && (
           <span style={{
@@ -2305,7 +2320,7 @@ const NotifPanel = ({ notifs, onClearAll, onNavigate, unreadCount }) => {
                     </div>
                     <p style={{
                       margin: '2px 0 4px', fontSize: 11.5, color: '#374151', lineHeight: 1.4,
-                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
                     }}>
                       {n.text}
                     </p>
@@ -2341,14 +2356,12 @@ const NotifPanel = ({ notifs, onClearAll, onNavigate, unreadCount }) => {
 
           {notifs.length > 0 && (
             <div style={{ padding: '10px 14px', borderTop: '1px solid #F1F5F9', background: '#FAFBFC' }}>
-              <button
-                onClick={() => { onNavigate(null); setOpen(false) }}
+              <button onClick={() => { onNavigate(null); setOpen(false) }}
                 style={{
                   width: '100%', padding: '8px', borderRadius: 8, border: 'none',
                   background: '#2563EB', color: '#fff', fontWeight: 600, fontSize: 12.5,
                   cursor: 'pointer', fontFamily: 'inherit',
-                }}
-              >
+                }}>
                 View All Tickets →
               </button>
             </div>
@@ -2359,7 +2372,9 @@ const NotifPanel = ({ notifs, onClearAll, onNavigate, unreadCount }) => {
   )
 }
 
-// ─── NotifStrip (Support Tickets Strip) ──────────────────────────────────────
+/* ─────────────────────────────────────────────────────────────────
+   SUPPORT TICKETS STRIP
+───────────────────────────────────────────────────────────────── */
 const NotifStrip = ({ notifs, onNavigate, loading }) => {
   const totalUnread = notifs.filter(n => n.unread).length
   const recent = notifs.slice(0, 6)
@@ -2386,13 +2401,11 @@ const NotifStrip = ({ notifs, onNavigate, loading }) => {
             <span style={{ fontSize: 11, color: '#9CA3AF' }}>({notifs.length} assigned)</span>
           )}
         </div>
-        <button
-          onClick={() => onNavigate(null)}
-          style={{
-            padding: '5px 12px', borderRadius: 7, border: '1px solid #BFDBFE',
-            background: '#EFF6FF', color: '#2563EB', fontSize: 11.5, fontWeight: 600,
-            cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s',
-          }}
+        <button onClick={() => onNavigate(null)} style={{
+          padding: '5px 12px', borderRadius: 7, border: '1px solid #BFDBFE',
+          background: '#EFF6FF', color: '#2563EB', fontSize: 11.5, fontWeight: 600,
+          cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s',
+        }}
           onMouseEnter={e => { e.currentTarget.style.background = '#2563EB'; e.currentTarget.style.color = '#fff' }}
           onMouseLeave={e => { e.currentTarget.style.background = '#EFF6FF'; e.currentTarget.style.color = '#2563EB' }}
         >
@@ -2404,10 +2417,10 @@ const NotifStrip = ({ notifs, onNavigate, loading }) => {
         <div style={{ padding: '28px 20px', textAlign: 'center', color: '#9CA3AF' }}>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" strokeWidth="1.5"
             style={{ animation: 'spin 1s linear infinite', display: 'inline-block', marginBottom: 8 }}>
-            <line x1="12" y1="2" x2="12" y2="6" /><line x1="12" y1="18" x2="12" y2="22" />
-            <line x1="4.93" y1="4.93" x2="7.76" y2="7.76" /><line x1="16.24" y1="16.24" x2="19.07" y2="19.07" />
-            <line x1="2" y1="12" x2="6" y2="12" /><line x1="18" y1="12" x2="22" y2="12" />
-            <line x1="4.93" y1="19.07" x2="7.76" y2="16.24" /><line x1="16.24" y1="7.76" x2="19.07" y2="4.93" />
+            <line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/>
+            <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/>
+            <line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/>
+            <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/>
           </svg>
           <p style={{ margin: 0, fontSize: 13 }}>Loading tickets…</p>
         </div>
@@ -2484,7 +2497,9 @@ const NotifStrip = ({ notifs, onNavigate, loading }) => {
   )
 }
 
-// ─── Main Dashboard ───────────────────────────────────────────────────────────
+/* ─────────────────────────────────────────────────────────────────
+   MAIN DASHBOARD
+───────────────────────────────────────────────────────────────── */
 const DashBoard = () => {
   const navigate = useNavigate()
 
@@ -2492,12 +2507,11 @@ const DashBoard = () => {
   const slug    = staff?.slug || 'Management'
   const staffId = staff?._id || staff?.id || ''
 
-  const [notifs,         setNotifs]         = useState([])
+  const [notifs,        setNotifs]        = useState([])
   const [ticketsLoading, setTicketsLoading] = useState(false)
 
   const unreadCount = notifs.filter(n => n.unread).length
 
-  // ─── ticket → notif object ────────────────────────────────────────────────
   const ticketToNotif = useCallback((t, type = 'existing') => ({
     id:         t._id,
     type,
@@ -2505,14 +2519,13 @@ const DashBoard = () => {
     text:       t.subject === 'Other' ? (t.customSubject || 'Support ticket') : (t.subject || 'Support ticket'),
     status:     t.status,
     project:    t.projectName || t.projectId || '',
-    client:     t.clientName  || '',
+    client:     t.clientName || '',
     unreadMsgs: t.unreadByStaff || 0,
     unread:     (t.unreadByStaff || 0) > 0,
     ts:         t.updatedAt || t.createdAt || Date.now(),
     ticketId:   t._id,
   }), [])
 
-  // ─── Upsert notif ─────────────────────────────────────────────────────────
   const upsertNotif = useCallback((newN) => {
     setNotifs(prev => {
       const idx = prev.findIndex(n => n.ticketId === newN.ticketId)
@@ -2530,14 +2543,14 @@ const DashBoard = () => {
     })
   }, [])
 
-  // ─── Initial ticket fetch ─────────────────────────────────────────────────
+  /* ── Initial fetch ── */
   useEffect(() => {
     if (!staffId) return
     setTicketsLoading(true)
     fetch(`${Url}/api/support/tickets/assigned/${staffId}`)
       .then(r => r.json())
       .then(d => {
-        const list = d.tickets || []
+        const list   = d.tickets || []
         const sorted = [...list].sort((a, b) => {
           if ((b.unreadByStaff || 0) !== (a.unreadByStaff || 0))
             return (b.unreadByStaff || 0) - (a.unreadByStaff || 0)
@@ -2554,31 +2567,31 @@ const DashBoard = () => {
 
   const clearAll = useCallback(() => setNotifs([]), [])
 
-  // ─── Socket ───────────────────────────────────────────────────────────────
+  /* ── ✅ FIXED Socket — join with BOTH token AND staffId ── */
   const sockRef = useRef(null)
 
   useEffect(() => {
     if (!staffId) return
 
     const s = socketIo(Url, {
-      transports: ['websocket'],
+      transports:           ['websocket'],
       reconnectionAttempts: 10,
-      reconnectionDelay: 1000,
+      reconnectionDelay:    1000,
     })
     sockRef.current = s
 
-    // ✅ staffId ko String mein convert karo — socket closure ke andar
-    const myId = String(staffId || '')
-
+    // ✅ KEY FIX: join with token + staffId explicitly
+    // Server needs staffId to put socket in correct room: user_<staffId>
     const joinRoom = () => {
       const token = getToken()
       if (token) s.emit('join', token)
+      // ✅ Also emit staffId directly so server can join user_<staffId> room
       s.emit('joinStaff', staffId)
     }
     s.on('connect',   joinRoom)
     s.on('reconnect', joinRoom)
 
-    // ── New ticket assigned ──────────────────────────────────────────────
+    /* ── support:assigned_to_you ── */
     s.on('support:assigned_to_you', (d) => {
       playNotifSound()
       upsertNotif({
@@ -2596,7 +2609,7 @@ const DashBoard = () => {
       })
     })
 
-    // ── Ticket updated ───────────────────────────────────────────────────
+    /* ── support:ticket_updated ── */
     s.on('support:ticket_updated', (u) => {
       if (u.assignedTo?.id !== staffId) {
         setNotifs(prev => prev.filter(n => n.ticketId !== u._id))
@@ -2610,28 +2623,22 @@ const DashBoard = () => {
       })
     })
 
-    // ── New message ──────────────────────────────────────────────────────
+    /* ── ✅ support:new_message — increment unreadMsgs count ── */
     s.on('support:new_message', (d) => {
-      const tid        = d.ticketId
-      const msgText    = d.message?.message    || ''
-      const senderName = d.message?.senderName || 'Someone'
-      const sender     = d.message?.sender     || ''
-      const senderId   = String(d.message?.senderId || '')
+      // d = { ticketId, ticketCode, message: {sender, message, senderName, ...} }
+      const tid         = d.ticketId
+      const msgText     = d.message?.message || ''
+      const senderName  = d.message?.senderName || 'Someone'
+      const sender      = d.message?.sender || ''
 
-      // ✅ FIX 1: Apna message — non-empty ID check ke saath ignore karo
-      // Empty string match se bachne ke liye senderId && myId check zaroori hai
-      if (sender === 'staff' && senderId && myId && senderId === myId) return
-
-      // ✅ FIX 2: Doosre staff ka message — dashboard pe sound nahi bajna chahiye
+      // Only count if message is from client (not self)
       if (sender === 'staff') return
 
-      // ✅ Sirf client message par sound bajao
       playNotifSound()
-
       setNotifs(prev => {
         const idx = prev.findIndex(n => n.ticketId === tid)
         if (idx === -1) return prev
-        const next = [...prev]
+        const next    = [...prev]
         next[idx] = {
           ...next[idx],
           unread:     true,
@@ -2646,8 +2653,9 @@ const DashBoard = () => {
       })
     })
 
-    // ── Server unread sync ───────────────────────────────────────────────
+    /* ── ✅ support:unread_update — direct count sync from server ── */
     s.on('support:unread_update', (d) => {
+      // d = { ticketId, unreadByStaff }
       if (!d.ticketId || d.unreadByStaff === undefined) return
       setNotifs(prev => prev.map(n =>
         n.ticketId === d.ticketId
@@ -2664,7 +2672,7 @@ const DashBoard = () => {
     }
   }, [staffId, ticketToNotif, upsertNotif])
 
-  // ─── Navigate to ticket ───────────────────────────────────────────────────
+  /* ── Navigate ── */
   const handleNotifNavigate = useCallback((notif) => {
     markAllRead()
     navigate(
@@ -2673,7 +2681,7 @@ const DashBoard = () => {
     )
   }, [slug, navigate, markAllRead])
 
-  // ─── Misc ─────────────────────────────────────────────────────────────────
+  /* ── Misc ── */
   const getGreeting = () => {
     const h = new Date().getHours()
     if (h < 12) return 'Good Morning'
@@ -2715,7 +2723,6 @@ const DashBoard = () => {
     }
   })
 
-  // ─── Render ───────────────────────────────────────────────────────────────
   return (
     <>
       <style>{`
@@ -2810,9 +2817,7 @@ const DashBoard = () => {
                         background: '#EF4444', color: '#fff', borderRadius: 99,
                         minWidth: 18, height: 18, fontSize: 9.5, fontWeight: 700,
                         display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 4px',
-                      }}>
-                        {unreadCount}
-                      </span>
+                      }}>{unreadCount}</span>
                     )}
                     <div style={{ fontSize: 13, fontWeight: 600, color: '#0f172a', marginBottom: 8 }}>{info.label}</div>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
@@ -2832,3 +2837,16 @@ const DashBoard = () => {
 }
 
 export default DashBoard
+
+
+
+
+
+
+
+
+
+
+
+
+
