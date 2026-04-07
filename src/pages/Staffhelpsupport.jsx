@@ -9711,14 +9711,12 @@ const StaffHelpSupport = ({ staffId: pId, staffName: pName, staffRole: pRole, ad
     s.on("connect",   joinRoom);
     s.on("reconnect", joinRoom);
 
-    // ── New ticket assigned ──────────────────────────────────────────────
     s.on("support:assigned_to_you", (d) => {
       playNotifSound();
       Swal.fire({ toast: true, position: "top-end", icon: "info", showConfirmButton: false, timer: 4500, title: `New: #${d.ticketCode}`, text: d.subject });
       setTickets(prev => prev.some(t => t._id === d._id) ? prev : [d, ...prev]);
     });
 
-    // ── Ticket updated ───────────────────────────────────────────────────
     s.on("support:ticket_updated", (u) => {
       if (u.assignedTo?.id !== staffId) {
         setTickets(prev => prev.filter(t => t._id !== u._id));
@@ -9734,44 +9732,43 @@ const StaffHelpSupport = ({ staffId: pId, staffName: pName, staffRole: pRole, ad
       if (activeRef.current?._id === u._id) setActive(u);
     });
 
-    // ✅ FIX: String() comparison use karo — ObjectId vs string mismatch fix
     s.on("support:new_message", (d) => {
-      const tid      = d.ticketId;
-      const sender   = d.message?.sender   || "";
-      const senderId = d.message?.senderId || "";
+      const tid        = d.ticketId;
+      const sender     = d.message?.sender   || "";
+      const senderId   = String(d.message?.senderId || "");
+      const myId       = String(staffId || "");
 
-      // ✅ Apna message ignore karo — String() se compare karo taaki ObjectId match ho
-      if (sender === "staff" && String(senderId) === String(staffId)) return;
+      // ✅ FIX 1: Apna message — bilkul ignore karo (sender + non-empty ID match)
+      if (sender === "staff" && senderId && myId && senderId === myId) return;
 
+      // ✅ FIX 2: Active ticket open hai — sirf data refresh karo, NO SOUND
       const isActiveTicket = activeRef.current?._id === tid;
-
       if (isActiveTicket) {
-        // Chat open hai — fresh data fetch karo
         fetchOne(tid);
-      } else {
-        // ✅ Doosre staff ka message — sound nahi bajao
-        if (sender === "staff") return;
-
-        // Sirf client message par sound bajao
-        playNotifSound();
-        setTickets(prev => prev.map(t => {
-          if (t._id !== tid) return t;
-          const newMsg = {
-            message:    d.message?.message    || "",
-            senderName: d.message?.senderName || "",
-            sender,
-            createdAt:  new Date().toISOString(),
-          };
-          return {
-            ...t,
-            unreadByStaff: (t.unreadByStaff || 0) + 1,
-            messages:      [...(t.messages || []), newMsg],
-          };
-        }));
+        return; // ← return lagana zaroori hai — sound mat bajne do
       }
+
+      // ✅ FIX 3: Doosre staff ka message — sound nahi, sirf ticket list update
+      if (sender === "staff") return;
+
+      // ✅ Sirf client message par sound bajao (aur ticket list me dikhao)
+      playNotifSound();
+      setTickets(prev => prev.map(t => {
+        if (t._id !== tid) return t;
+        const newMsg = {
+          message:    d.message?.message    || "",
+          senderName: d.message?.senderName || "",
+          sender,
+          createdAt:  new Date().toISOString(),
+        };
+        return {
+          ...t,
+          unreadByStaff: (t.unreadByStaff || 0) + 1,
+          messages:      [...(t.messages || []), newMsg],
+        };
+      }));
     });
 
-    // ── Server unread sync ───────────────────────────────────────────────
     s.on("support:unread_update", ({ ticketId: tid, unreadByStaff }) => {
       if (unreadByStaff === undefined || activeRef.current?._id === tid) return;
       setTickets(prev => prev.map(t => t._id === tid ? { ...t, unreadByStaff } : t));
@@ -9872,7 +9869,6 @@ const StaffHelpSupport = ({ staffId: pId, staffName: pName, staffRole: pRole, ad
     </div>
   );
 
-  // ─── Render ───────────────────────────────────────────────────────────────
   return (
     <>
       <style>{GLOBAL_CSS}</style>
@@ -9902,7 +9898,6 @@ const StaffHelpSupport = ({ staffId: pId, staffName: pName, staffRole: pRole, ad
           </button>
         </div>
 
-        {/* Error */}
         {error && (
           <div style={{ background: "#FEF2F2", border: "1px solid #FECACA", borderRadius: 10, padding: "10px 16px", marginBottom: 18, fontSize: 13, color: "#991B1B" }}>
             {error}
@@ -9934,7 +9929,6 @@ const StaffHelpSupport = ({ staffId: pId, staffName: pName, staffRole: pRole, ad
         {/* Active Ticket View */}
         {active ? (
           <div style={{ border: "1px solid #E5E7EB", borderRadius: 16, overflow: "hidden", background: "#fff", boxShadow: "0 4px 24px rgba(0,0,0,0.07)" }}>
-            {/* Ticket Header */}
             <div style={{ padding: "14px 20px", borderBottom: `1px solid ${isEscActive ? "#EDE9FE" : "#F1F5F9"}`, background: isEscActive ? "#FDFCFF" : "#FAFBFC", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <button onClick={() => { setActive(null); setIsEscActive(false); setShowEsc(false); setRelatedTickets([]); }} className="shs-btn"

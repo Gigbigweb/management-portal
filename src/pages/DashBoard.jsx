@@ -2147,9 +2147,6 @@
 
 
 
-
-
-
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { permissions } from 'src/utils/SessionfileData'
@@ -2570,6 +2567,9 @@ const DashBoard = () => {
     })
     sockRef.current = s
 
+    // ✅ staffId ko String mein convert karo — socket closure ke andar
+    const myId = String(staffId || '')
+
     const joinRoom = () => {
       const token = getToken()
       if (token) s.emit('join', token)
@@ -2610,21 +2610,22 @@ const DashBoard = () => {
       })
     })
 
-    // ✅ FIX: String() comparison use karo — ObjectId vs string mismatch fix
+    // ── New message ──────────────────────────────────────────────────────
     s.on('support:new_message', (d) => {
       const tid        = d.ticketId
       const msgText    = d.message?.message    || ''
       const senderName = d.message?.senderName || 'Someone'
       const sender     = d.message?.sender     || ''
-      const senderId   = d.message?.senderId   || ''
+      const senderId   = String(d.message?.senderId || '')
 
-      // ✅ Apna message — bilkul ignore karo (String() se compare karo ObjectId fix ke liye)
-      if (sender === 'staff' && String(senderId) === String(staffId)) return
+      // ✅ FIX 1: Apna message — non-empty ID check ke saath ignore karo
+      // Empty string match se bachne ke liye senderId && myId check zaroori hai
+      if (sender === 'staff' && senderId && myId && senderId === myId) return
 
-      // ✅ Doosre staff ka message bhi dashboard par sound nahi bajaye
+      // ✅ FIX 2: Doosre staff ka message — dashboard pe sound nahi bajna chahiye
       if (sender === 'staff') return
 
-      // Sirf client message par sound bajao
+      // ✅ Sirf client message par sound bajao
       playNotifSound()
 
       setNotifs(prev => {
