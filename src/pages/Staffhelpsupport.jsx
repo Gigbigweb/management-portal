@@ -10265,7 +10265,7 @@ const TicketChat = ({ ticket, staffId, staffName, onUpdate, onMarkRead, readOnly
 
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
-      <div style={{ overflowY: "auto", padding: "20px 24px", display: "flex", flexDirection: "column", gap: 4, background: "#F8FAFC", minHeight: 320, maxHeight: 440 }}>
+      <div style={{ overflowY: "auto", padding: "20px 24px", display: "flex", flexDirection: "column", gap: 4, background: "white", minHeight: 320, maxHeight: 440 }}>
         {!msgs.length && (
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, paddingTop: 64, color: "#C4CAD4" }}>
             {Icon.empty}
