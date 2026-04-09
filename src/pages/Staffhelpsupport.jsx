@@ -11444,6 +11444,8 @@ const StaffHelpSupport = ({ staffId: pId, staffName: pName, staffRole: pRole, ad
     });
     sockRef.current = s;
 
+
+    
     const joinRoom = () => {
       const token = getToken();
       if (token) s.emit("join", token);
